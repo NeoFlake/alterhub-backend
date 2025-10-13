@@ -26,7 +26,7 @@ Thumbs.db
 # Environment / credentials
 .env
 application-*.yml
-application-*.properties
+src/main/resources/application.properties
 !application-example.yml
 !application-example.properties
 
@@ -38,3 +38,6 @@ application-*.properties
 # JAR/WAR generated
 *.jar
 *.war
+
+# SQL script
+resources/*.sql

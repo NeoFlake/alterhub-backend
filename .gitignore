@@ -1,0 +1,40 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment / credentials
+.env
+application-*.yml
+application-*.properties
+!application-example.yml
+!application-example.properties
+
+# Backup & temp files
+*.swp
+*.bak
+*.tmp
+
+# JAR/WAR generated
+*.jar
+*.war

@@ -31,6 +31,10 @@ public class User {
     @Column(nullable = false, length = 128)
     private String firstname;
 
+    @OneToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "playerId", nullable = false)
+    private Player player;
+
     @Column(nullable = false, length = 128)
     private String password;
 

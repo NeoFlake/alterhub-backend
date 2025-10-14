@@ -3,6 +3,8 @@ package com.alterhub.alterhubbackend.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -27,5 +29,8 @@ public class Tournament {
 
     @Column(nullable = false, length = 256)
     private String location;
+
+    @OneToMany(mappedBy = "tournament")
+    private List<Participant> participants = new ArrayList<>();
 
 }

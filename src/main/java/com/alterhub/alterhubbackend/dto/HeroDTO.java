@@ -16,7 +16,7 @@ public class HeroDTO {
 
     private UUID id;
     private String name;
-    private Faction faction;
+    private FactionDTO faction;
     private Short reserveSlot;
     private Short landmarkSlot;
     private String effect;

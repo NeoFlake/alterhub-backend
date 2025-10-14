@@ -62,4 +62,7 @@ public class Card {
     @Column(nullable = false)
     private Boolean isBanned;
 
+    @Column(nullable = false)
+    private Boolean isErrated;
+
 }

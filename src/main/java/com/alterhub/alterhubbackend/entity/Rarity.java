@@ -1,4 +1,4 @@
-package com.alterhub.alterhubbackend.entities;
+package com.alterhub.alterhubbackend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,13 +6,13 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "types")
+@Table(name = "rarities")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Type {
+public class Rarity {
 
     @Id
     @GeneratedValue
@@ -20,7 +20,7 @@ public class Type {
     private UUID id;
 
     @Column(nullable = false, length = 128)
-    private String typeId;
+    private String rarityId;
 
     @Column(nullable = false, length = 64)
     private String name;

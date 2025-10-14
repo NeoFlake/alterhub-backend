@@ -1,4 +1,4 @@
-package com.alterhub.alterhubbackend.entities;
+package com.alterhub.alterhubbackend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,13 +6,13 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "factions")
+@Table(name = "subtypes")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Faction {
+public class SubType {
 
     @Id
     @GeneratedValue
@@ -20,15 +20,13 @@ public class Faction {
     private UUID id;
 
     @Column(nullable = false, length = 128)
-    private String factionId;
+    private String subTypeId;
 
-    @Column(nullable = false, length = 32)
+    @Column(nullable = false, length = 64)
     private String name;
 
     @Column(nullable = false, length = 128)
     private String reference;
 
-    @Column(nullable = false, length = 32)
-    private String color;
 
 }

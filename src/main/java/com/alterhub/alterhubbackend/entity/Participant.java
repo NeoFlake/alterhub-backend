@@ -1,4 +1,4 @@
-package com.alterhub.alterhubbackend.entities;
+package com.alterhub.alterhubbackend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,6 +30,7 @@ public class Participant {
     @Column(nullable = false, length = 16)
     private String score;
 
+    @Column(nullable = false)
     private Short classement;
 
     @ManyToOne(fetch = FetchType.EAGER)

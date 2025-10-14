@@ -1,4 +1,4 @@
-package com.alterhub.alterhubbackend.entities;
+package com.alterhub.alterhubbackend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,29 +8,29 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "players")
+@Table(name = "tournaments")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Player {
+public class Tournament {
 
     @Id
     @GeneratedValue
     @Column(columnDefinition = "BINARY(16)") // Amélioration de la performance vis-à-vis d'un varchar(36)
     private UUID id;
 
-    @Column(nullable = false, unique = true, length = 128)
+    @Column(nullable = false, unique = true, length = 256)
     private String name;
 
-    @OneToOne(mappedBy = "player")
-    private User user;
+    @Column(nullable = false)
+    private Integer numberOfPlayers;
 
-    @OneToMany(mappedBy = "player")
-    private List<Deck> decks = new ArrayList<>();
+    @Column(nullable = false, length = 256)
+    private String location;
 
-    @OneToMany(mappedBy = "player")
+    @OneToMany(mappedBy = "tournament")
     private List<Participant> participants = new ArrayList<>();
 
 }

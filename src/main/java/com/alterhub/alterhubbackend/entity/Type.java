@@ -1,4 +1,4 @@
-package com.alterhub.alterhubbackend.entities;
+package com.alterhub.alterhubbackend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,24 +6,26 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "roles")
+@Table(name = "types")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Role {
+public class Type {
 
     @Id
     @GeneratedValue
     @Column(columnDefinition = "BINARY(16)") // Amélioration de la performance vis-à-vis d'un varchar(36)
     private UUID id;
 
-    @Column(nullable = false)
-    private UUID userId;
+    @Column(nullable = false, length = 128)
+    private String typeId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 5)
-    private com.alterhub.alterhubbackend.enums.Role role;
+    @Column(nullable = false, length = 64)
+    private String name;
+
+    @Column(nullable = false, length = 128)
+    private String reference;
 
 }

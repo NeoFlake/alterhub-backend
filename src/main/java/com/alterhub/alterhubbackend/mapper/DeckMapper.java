@@ -4,12 +4,9 @@ import com.alterhub.alterhubbackend.dto.CardDTO;
 import com.alterhub.alterhubbackend.dto.DeckDTO;
 import com.alterhub.alterhubbackend.entity.Deck;
 import com.alterhub.alterhubbackend.entity.Player;
-import com.alterhub.alterhubbackend.service.CardService;
 import lombok.experimental.UtilityClass;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @UtilityClass
 public class DeckMapper {

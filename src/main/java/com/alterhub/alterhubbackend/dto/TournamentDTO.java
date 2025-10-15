@@ -12,7 +12,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TounamentDTO {
+public class TournamentDTO {
 
     private UUID id;
     private String name;

@@ -3,25 +3,19 @@ package com.alterhub.alterhubbackend.mapper;
 import com.alterhub.alterhubbackend.dto.CardDTO;
 import com.alterhub.alterhubbackend.dto.DeckDTO;
 import com.alterhub.alterhubbackend.entity.Deck;
+import com.alterhub.alterhubbackend.entity.Player;
 import com.alterhub.alterhubbackend.service.CardService;
 import lombok.experimental.UtilityClass;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @UtilityClass
 public class DeckMapper {
 
-    public DeckDTO toDTO(Deck deck, CardService cardService) {
+    public DeckDTO toDTO(Deck deck, List<CardDTO> cards) {
         if (deck == null) return null;
-
-        List<CardDTO> cards = deck.getCards()
-                .stream()
-                .map(card -> {
-                    int deckCount = cardService.getDeckCount(card.getId());
-                    return CardMapper.toDTO(card, deckCount);
-                })
-                .toList();
 
         return DeckDTO.builder()
                 .id(deck.getId())
@@ -37,19 +31,22 @@ public class DeckMapper {
 
     }
 
-    public Deck toEntity(DeckDTO deckDTO) {
+    public Deck toEntity(DeckDTO deckDTO, Player player) {
         if (deckDTO == null) return null;
 
         return Deck.builder()
                 .id(deckDTO.getId())
                 .name(deckDTO.getName())
-                .player(deckDTO.getPlayer().getId())
+                .player(player)
                 .description(deckDTO.getDescription())
-                .faction(FactionMapper.toDTO(deckDTO.getFaction()))
-                .hero(HeroMapper.toDTO(deckDTO.getHero()))
+                .faction(FactionMapper.toEntity(deckDTO.getFaction()))
+                .hero(HeroMapper.toEntity(deckDTO.getHero()))
                 .dateOfCreation(deckDTO.getDateOfCreation())
                 .lastModification(deckDTO.getLastModification())
-                .cards(cards)
+                .cards(deckDTO.getCards()
+                        .stream()
+                        .map(CardMapper::toEntity)
+                        .toList())
                 .build();
 
     }

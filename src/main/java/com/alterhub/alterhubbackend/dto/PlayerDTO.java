@@ -17,5 +17,6 @@ public class PlayerDTO {
     private UUID id;
     private String name;
     private List<DeckDTO> decks;
+    private List<ParticipantDTO> participants;
 
 }

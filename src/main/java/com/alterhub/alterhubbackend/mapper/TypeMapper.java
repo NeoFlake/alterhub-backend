@@ -17,6 +17,7 @@ public class TypeMapper {
                 .id(type.getId())
                 .typeId(type.getTypeId())
                 .reference(type.getReference())
+                .name(type.getName())
                 .build();
     }
 
@@ -27,6 +28,7 @@ public class TypeMapper {
                 .id(typeDTO.getId())
                 .typeId(typeDTO.getTypeId())
                 .reference(typeDTO.getReference())
+                .name(typeDTO.getName())
                 .build();
 
     }

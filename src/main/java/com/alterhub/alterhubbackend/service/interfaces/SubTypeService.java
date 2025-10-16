@@ -9,9 +9,13 @@ public interface SubTypeService {
 
     List<SubTypeDTO> getAllSubTypes();
 
-    SubTypeDTO getSubType(UUID id);
+    SubTypeDTO getSubTypeById(UUID id);
+
+    SubTypeDTO createSubType(SubTypeDTO subTypeDTO);
 
     SubTypeDTO updateSubTypeById(UUID id, SubTypeDTO subTypeDTO);
+
+    void deleteSubTypeById(UUID id);
 
     void verifySubTypeIntegrity(SubTypeDTO subTypeDTO);
 

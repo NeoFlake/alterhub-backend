@@ -29,7 +29,7 @@ public class SubTypeServiceImpl implements SubTypeService {
                 .toList();
     }
 
-    public SubTypeDTO getSubType(UUID id) {
+    public SubTypeDTO getSubTypeById(UUID id) {
         SubType subType = subTypeRepository.findById(id).orElseThrow(NoResultByIdException::new);
         return SubTypeMapper.toDTO(subType);
     }
@@ -37,8 +37,7 @@ public class SubTypeServiceImpl implements SubTypeService {
     public SubTypeDTO createSubType(SubTypeDTO subTypeDTO) {
         verifySubTypeIntegrity(subTypeDTO);
         SubType subType = SubTypeMapper.toEntity(subTypeDTO);
-        subTypeRepository.save(subType);
-        return SubTypeMapper.toDTO(subType);
+        return SubTypeMapper.toDTO(subTypeRepository.save(subType));
     }
 
     public SubTypeDTO updateSubTypeById(UUID id, SubTypeDTO subTypeDTO) {

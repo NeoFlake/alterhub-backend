@@ -21,6 +21,7 @@ public class UserRequestDTO {
     private String playerName;
     private String email;
     private String password;
+    private String newPassword;
     private LocalDate dateOfCreation;
     private LocalDateTime lastModification;
 

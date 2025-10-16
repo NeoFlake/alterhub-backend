@@ -20,11 +20,11 @@ public class DeckDTO {
     private UUID id;
     private String name;
     private String description;
+    private UUID playerId;
     private FactionDTO faction;
     private HeroDTO hero;
     private LocalDate dateOfCreation;
     private LocalDateTime lastModification;
-    private UUID playerId;
     private List<CardDTO> cards;
 
 }

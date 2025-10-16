@@ -13,4 +13,10 @@ public interface TypeService {
 
     TypeDTO createType(TypeDTO typeDTO);
 
+    TypeDTO updateTypeById(UUID id, TypeDTO typeDTO);
+
+    void deleteTypeById(UUID id);
+
+    void verifyTypeIntegrity(TypeDTO typeDTO);
+
 }

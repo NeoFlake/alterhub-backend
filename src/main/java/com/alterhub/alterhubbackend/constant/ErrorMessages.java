@@ -5,6 +5,6 @@ public final class ErrorMessages {
     private ErrorMessages(){} // Permet d'éviter l'instanciation involontaire
 
     public static final String NOT_FOUND_BY_ID = "Aucun résultat trouvé avec cet identifiant";
-    public static final String ID_NOT_MATCH = "Erreur dans votre requête, veuillez reformuler";
+    public static final String BAD_REQUEST_LIBELLE = "Erreur dans votre requête, veuillez reformuler";
 
 }

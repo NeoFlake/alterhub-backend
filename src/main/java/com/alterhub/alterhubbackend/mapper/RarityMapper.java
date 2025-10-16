@@ -1,11 +1,8 @@
 package com.alterhub.alterhubbackend.mapper;
 
 import com.alterhub.alterhubbackend.dto.RarityDTO;
-import com.alterhub.alterhubbackend.dto.TypeDTO;
 import com.alterhub.alterhubbackend.entity.Rarity;
-import com.alterhub.alterhubbackend.entity.Type;
 import lombok.experimental.UtilityClass;
-import org.springframework.stereotype.Component;
 
 @UtilityClass
 public class RarityMapper {

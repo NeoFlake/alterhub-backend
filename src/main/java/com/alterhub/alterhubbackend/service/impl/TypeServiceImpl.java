@@ -27,7 +27,6 @@ public class TypeServiceImpl implements TypeService {
      * @author SCHMIDT Jonathan
      * @since 15/10/2025
      */
-    @Override
     public List<TypeDTO> getAllTypes() {
         return typeRepository.findAll()
                 .stream()
@@ -43,7 +42,6 @@ public class TypeServiceImpl implements TypeService {
      * @author SCHMIDT Jonathan
      * @since 16/10/2025
      */
-    @Override
     public TypeDTO getTypeById(UUID id) {
         Type type = typeRepository.findById(id)
                 .orElseThrow(NoResultByIdException::new);
@@ -51,14 +49,12 @@ public class TypeServiceImpl implements TypeService {
         return TypeMapper.toDTO(type);
     }
 
-    @Override
     public TypeDTO createType(TypeDTO typeDTO) {
         verifyTypeIntegrity(typeDTO);
         Type type = TypeMapper.toEntity(typeDTO);
         return TypeMapper.toDTO(typeRepository.save(type));
     }
 
-    @Override
     public TypeDTO updateTypeById(UUID id, TypeDTO typeDTO) {
         if (typeDTO.getId().equals(id)) {
             verifyTypeIntegrity(typeDTO);
@@ -89,6 +85,16 @@ public class TypeServiceImpl implements TypeService {
         if (typeDTO.getTypeId() == null || typeDTO.getTypeId().isEmpty()
                 || typeDTO.getName() == null || typeDTO.getName().isEmpty()
                 || typeDTO.getReference() == null || typeDTO.getReference().isEmpty()) {
+            throw new BadRequestException();
+        }
+    }
+
+    public void validateType(TypeDTO typeDTO) {
+        Type typeReceived = TypeMapper.toEntity(typeDTO);
+        Type typeOnBase = typeRepository.findById(typeReceived.getId()).orElseThrow(NoResultByIdException::new);
+        if(!typeOnBase.getTypeId().equals(typeReceived.getTypeId())
+        || !typeOnBase.getName().equals(typeReceived.getName())
+        || !typeOnBase.getReference().equals(typeReceived.getReference())) {
             throw new BadRequestException();
         }
     }

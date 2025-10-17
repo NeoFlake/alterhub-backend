@@ -1,6 +1,7 @@
 package com.alterhub.alterhubbackend.service.impl;
 
 import com.alterhub.alterhubbackend.dto.SubTypeDTO;
+import com.alterhub.alterhubbackend.dto.TypeDTO;
 import com.alterhub.alterhubbackend.entity.SubType;
 import com.alterhub.alterhubbackend.entity.Type;
 import com.alterhub.alterhubbackend.exception.BadRequestException;
@@ -69,6 +70,16 @@ public class SubTypeServiceImpl implements SubTypeService {
         if (subTypeDTO.getSubTypeId() == null || subTypeDTO.getSubTypeId().isEmpty()
                 || subTypeDTO.getName() == null || subTypeDTO.getName().isEmpty()
                 || subTypeDTO.getReference() == null || subTypeDTO.getReference().isEmpty()) {
+            throw new BadRequestException();
+        }
+    }
+
+    public void validateSubType(SubTypeDTO subTypeDTO) {
+        SubType subTypeReceived = SubTypeMapper.toEntity(subTypeDTO);
+        SubType subTypeOnBase = subTypeRepository.findById(subTypeReceived.getId()).orElseThrow(NoResultByIdException::new);
+        if(!subTypeOnBase.getSubTypeId().equals(subTypeReceived.getSubTypeId())
+                || !subTypeOnBase.getName().equals(subTypeReceived.getName())
+                || !subTypeOnBase.getReference().equals(subTypeReceived.getReference())) {
             throw new BadRequestException();
         }
     }

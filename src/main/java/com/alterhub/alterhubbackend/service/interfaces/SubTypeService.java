@@ -19,4 +19,6 @@ public interface SubTypeService {
 
     void verifySubTypeIntegrity(SubTypeDTO subTypeDTO);
 
+    void validateSubType(SubTypeDTO subTypeDTO);
+
 }

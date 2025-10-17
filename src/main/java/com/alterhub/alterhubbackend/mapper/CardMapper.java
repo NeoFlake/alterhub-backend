@@ -5,6 +5,7 @@ import com.alterhub.alterhubbackend.entity.Card;
 import lombok.experimental.UtilityClass;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @UtilityClass
@@ -45,10 +46,12 @@ public class CardMapper {
                 .image(cardDTO.getImage())
                 .faction(FactionMapper.toEntity(cardDTO.getFaction()))
                 .type(TypeMapper.toEntity(cardDTO.getType()))
-                .subtypes(cardDTO.getSubTypes()
-                        .stream()
-                        .map(SubTypeMapper::toEntity)
-                        .collect(Collectors.toList()))
+                .subtypes(
+                        cardDTO.getSubTypes() == null
+                                ? new ArrayList<>()
+                                : cardDTO.getSubTypes().stream()
+                                .map(SubTypeMapper::toEntity)
+                                .collect(Collectors.toList()))
                 .rarity(RarityMapper.toEntity(cardDTO.getRarity()))
                 .element(ElementMapper.toEntity(cardDTO.getElement()))
                 .isSuspended(cardDTO.getIsSuspended())

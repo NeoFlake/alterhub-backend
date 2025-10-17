@@ -2,12 +2,10 @@ package com.alterhub.alterhubbackend.service.impl;
 
 import com.alterhub.alterhubbackend.dto.RarityDTO;
 import com.alterhub.alterhubbackend.entity.Rarity;
-import com.alterhub.alterhubbackend.entity.SubType;
 import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.RarityMapper;
-import com.alterhub.alterhubbackend.mapper.SubTypeMapper;
 import com.alterhub.alterhubbackend.repository.RarityRepository;
 import com.alterhub.alterhubbackend.service.interfaces.RarityService;
 import lombok.RequiredArgsConstructor;
@@ -69,6 +67,16 @@ public class RarityServiceImpl implements RarityService {
         if (rarityDTO.getRarityId() == null || rarityDTO.getRarityId().isEmpty()
                 || rarityDTO.getName() == null || rarityDTO.getName().isEmpty()
                 || rarityDTO.getReference() == null || rarityDTO.getReference().isEmpty()) {
+            throw new BadRequestException();
+        }
+    }
+
+    public void validateRarity(RarityDTO rarityDTO) {
+        Rarity rarityReceived = RarityMapper.toEntity(rarityDTO);
+        Rarity rarityOnBase = rarityRepository.findById(rarityReceived.getId()).orElseThrow(NoResultByIdException::new);
+        if(!rarityOnBase.getRarityId().equals(rarityReceived.getRarityId())
+                || !rarityOnBase.getName().equals(rarityReceived.getName())
+                || !rarityOnBase.getReference().equals(rarityReceived.getReference())) {
             throw new BadRequestException();
         }
     }

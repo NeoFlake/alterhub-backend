@@ -19,4 +19,6 @@ public interface TypeService {
 
     void verifyTypeIntegrity(TypeDTO typeDTO);
 
+    void validateType(TypeDTO typeDTO);
+
 }

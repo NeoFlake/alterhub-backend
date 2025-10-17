@@ -19,4 +19,6 @@ public interface RarityService {
 
     void verifyRarityIntegrity (RarityDTO rarityDTO);
 
+    void validateRarity(RarityDTO rarityDTO);
+
 }

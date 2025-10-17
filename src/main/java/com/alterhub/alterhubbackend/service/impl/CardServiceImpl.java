@@ -1,11 +1,14 @@
 package com.alterhub.alterhubbackend.service.impl;
 
 import com.alterhub.alterhubbackend.dto.CardDTO;
+import com.alterhub.alterhubbackend.dto.RarityDTO;
 import com.alterhub.alterhubbackend.entity.Card;
+import com.alterhub.alterhubbackend.entity.Rarity;
 import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.CardMapper;
+import com.alterhub.alterhubbackend.mapper.RarityMapper;
 import com.alterhub.alterhubbackend.repository.CardRepository;
 import com.alterhub.alterhubbackend.service.interfaces.*;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +26,7 @@ public class CardServiceImpl implements CardService {
     private final FactionService factionService;
     private final TypeService typeService;
     private final SubTypeService subTypeService;
-    private final RarityService  rarityService;
+    private final RarityService rarityService;
     private final ElementService elementService;
 
     public List<CardDTO> getAllCards() {
@@ -42,7 +45,7 @@ public class CardServiceImpl implements CardService {
     }
 
     public CardDTO getCardsByAlteredId(String alteredId) {
-        if(alteredId != null && !alteredId.isEmpty()){
+        if (alteredId != null && !alteredId.isEmpty()) {
             Card card = cardRepository.findByAlteredId(alteredId).orElseThrow(NoResultByIdException::new);
             return mapWithDeckCount(card);
         } else {
@@ -99,13 +102,7 @@ public class CardServiceImpl implements CardService {
     public CardDTO updateCardById(UUID id, CardDTO cardDTO) {
         if (cardDTO.getId().equals(id)) {
             verifyCardIntegrity(cardDTO);
-            factionService.validateFaction(cardDTO.getFaction());
-            typeService.validateType(cardDTO.getType());
-            if (cardDTO.getSubTypes() != null && !cardDTO.getSubTypes().isEmpty()) {
-                cardDTO.getSubTypes().forEach(subTypeService::validateSubType);
-            }
-            rarityService.validateRarity(cardDTO.getRarity());
-            elementService.validateElement(cardDTO.getElement());
+            validateCardSubObject(cardDTO);
 
             Card cardToUpdate = cardRepository.findById(id).orElseThrow(NoResultByIdException::new);
             Card cardUpdated = CardMapper.toEntity(cardDTO);
@@ -132,7 +129,7 @@ public class CardServiceImpl implements CardService {
     }
 
     public void deleteCardById(UUID id) {
-        if(!cardRepository.existsById(id)){
+        if (!cardRepository.existsById(id)) {
             throw new NoResultByIdException();
         }
         cardRepository.deleteById(id);
@@ -140,6 +137,11 @@ public class CardServiceImpl implements CardService {
 
     public Integer getDeckCount(UUID cardId) {
         return cardRepository.countDecksContainingCard(cardId);
+    }
+
+    private CardDTO mapWithDeckCount(Card card) {
+        Integer deckCount = getDeckCount(card.getId());
+        return CardMapper.toDTO(card, deckCount);
     }
 
     public void verifyCardIntegrity(CardDTO cardDTO) {
@@ -155,16 +157,40 @@ public class CardServiceImpl implements CardService {
         }
         factionService.verifyFactionIntegrity(cardDTO.getFaction());
         typeService.verifyTypeIntegrity(cardDTO.getType());
-        if(cardDTO.getSubTypes() != null && !cardDTO.getSubTypes().isEmpty()) {
+        if (cardDTO.getSubTypes() != null && !cardDTO.getSubTypes().isEmpty()) {
             cardDTO.getSubTypes().forEach(subTypeService::verifySubTypeIntegrity);
         }
         rarityService.verifyRarityIntegrity(cardDTO.getRarity());
         elementService.verifyElementIntegrity(cardDTO.getElement());
     }
 
-    private CardDTO mapWithDeckCount(Card card){
-        Integer deckCount = getDeckCount(card.getId());
-        return CardMapper.toDTO(card, deckCount);
+    public void validateCard(CardDTO cardDTO) {
+        Card cardReceived = CardMapper.toEntity(cardDTO);
+        Card cardOnBase = cardRepository.findById(cardDTO.getId()).orElseThrow(NoResultByIdException::new);
+        if (!cardOnBase.getAlteredId().equals(cardReceived.getAlteredId())
+                || !cardOnBase.getReference().equals(cardReceived.getReference())
+                || !cardOnBase.getName().equals(cardReceived.getName())
+                || !cardOnBase.getImage().equals(cardReceived.getImage())
+                || !cardOnBase.getIsSuspended().equals(cardReceived.getIsSuspended())
+                || !cardOnBase.getIsErrated().equals(cardReceived.getIsErrated())
+                || !cardOnBase.getIsBanned().equals(cardReceived.getIsBanned())) {
+            throw new BadRequestException();
+        }
+
+        validateCardSubObject(cardDTO);
+
+    }
+
+    private void validateCardSubObject(CardDTO cardDTO) {
+        factionService.validateFaction(cardDTO.getFaction());
+        typeService.validateType(cardDTO.getType());
+
+        if(cardDTO.getSubTypes() != null && !cardDTO.getSubTypes().isEmpty()) {
+            cardDTO.getSubTypes().forEach(subTypeService::validateSubType);
+        }
+
+        rarityService.validateRarity(cardDTO.getRarity());
+        elementService.validateElement(cardDTO.getElement());
     }
 
 }

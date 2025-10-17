@@ -29,4 +29,8 @@ public interface CardService {
 
     Integer getDeckCount(UUID cardId);
 
+    void verifyCardIntegrity(CardDTO cardDTO);
+
+    void validateCard(CardDTO cardDTO);
+
 }

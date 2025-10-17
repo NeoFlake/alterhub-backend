@@ -1,6 +1,7 @@
 package com.alterhub.alterhubbackend.service.interfaces;
 
 import com.alterhub.alterhubbackend.dto.FactionDTO;
+import com.alterhub.alterhubbackend.entity.Faction;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,5 +19,7 @@ public interface FactionService {
     void deleteFactionById(UUID id);
 
     void verifyFactionIntegrity(FactionDTO factionDTO);
+
+    void validateFaction(FactionDTO factionReceived);
 
 }

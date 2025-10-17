@@ -39,7 +39,7 @@ public class FactionServiceImpl implements FactionService {
     }
 
     public FactionDTO updateFactionById(UUID id, FactionDTO factionDTO) {
-        if(factionDTO.getId().equals(id)) {
+        if (factionDTO.getId().equals(id)) {
             verifyFactionIntegrity(factionDTO);
             Faction factionToUpdate = factionRepository.findById(id).orElseThrow(NoResultByIdException::new);
             Faction factionUpdated = FactionMapper.toEntity(factionDTO);
@@ -56,17 +56,28 @@ public class FactionServiceImpl implements FactionService {
     }
 
     public void deleteFactionById(UUID id) {
-        if(!factionRepository.existsById(id)) {
+        if (!factionRepository.existsById(id)) {
             throw new NoResultByIdException();
         }
         factionRepository.deleteById(id);
     }
 
     public void verifyFactionIntegrity(FactionDTO factionDTO) {
-        if(factionDTO.getFactionId() == null || factionDTO.getFactionId().isEmpty()
-        || factionDTO.getName() == null || factionDTO.getName().isEmpty()
-        || factionDTO.getReference() == null || factionDTO.getReference().isEmpty()
-        || factionDTO.getColor() == null || factionDTO.getColor().isEmpty()){
+        if (factionDTO.getFactionId() == null || factionDTO.getFactionId().isEmpty()
+                || factionDTO.getName() == null || factionDTO.getName().isEmpty()
+                || factionDTO.getReference() == null || factionDTO.getReference().isEmpty()
+                || factionDTO.getColor() == null || factionDTO.getColor().isEmpty()) {
+            throw new BadRequestException();
+        }
+    }
+
+    public void validateFaction(FactionDTO factionReceived) {
+        Faction faction = FactionMapper.toEntity(factionReceived);
+        Faction factionOnBase = factionRepository.findById(faction.getId()).orElseThrow(NoResultByIdException::new);
+        if (!factionOnBase.getFactionId().equals(faction.getFactionId())
+                || !factionOnBase.getName().equals(faction.getName())
+                || !factionOnBase.getReference().equals(faction.getReference())
+                || !factionOnBase.getColor().equals(faction.getColor())) {
             throw new BadRequestException();
         }
     }

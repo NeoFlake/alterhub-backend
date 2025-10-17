@@ -6,5 +6,6 @@ public final class ErrorMessages {
 
     public static final String NOT_FOUND_BY_ID = "Aucun résultat trouvé avec cet identifiant";
     public static final String BAD_REQUEST_LIBELLE = "Erreur dans votre requête, veuillez reformuler";
+    public static final String NOT_FOUND_BY_ARGUMENT = "Aucun résultat trouvé avec votre requête";
 
 }

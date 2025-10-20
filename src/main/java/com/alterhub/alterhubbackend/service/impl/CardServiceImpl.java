@@ -28,6 +28,7 @@ public class CardServiceImpl implements CardService {
     private final SubTypeService subTypeService;
     private final RarityService rarityService;
     private final ElementService elementService;
+    private final SetService setService;
 
     public List<CardDTO> getAllCards() {
         return cardRepository.findAll()
@@ -114,6 +115,7 @@ public class CardServiceImpl implements CardService {
             cardToUpdate.setFaction(cardUpdated.getFaction());
             cardToUpdate.setType(cardUpdated.getType());
             cardToUpdate.setSubtypes(cardUpdated.getSubtypes());
+            cardToUpdate.setSet(cardUpdated.getSet());
             cardToUpdate.setRarity(cardUpdated.getRarity());
             cardToUpdate.setElement(cardUpdated.getElement());
             cardToUpdate.setIsSuspended(cardUpdated.getIsSuspended());
@@ -160,6 +162,7 @@ public class CardServiceImpl implements CardService {
         if (cardDTO.getSubTypes() != null && !cardDTO.getSubTypes().isEmpty()) {
             cardDTO.getSubTypes().forEach(subTypeService::verifySubTypeIntegrity);
         }
+        setService.verifySetIntegrity(cardDTO.getSet());
         rarityService.verifyRarityIntegrity(cardDTO.getRarity());
         elementService.verifyElementIntegrity(cardDTO.getElement());
     }
@@ -189,6 +192,7 @@ public class CardServiceImpl implements CardService {
             cardDTO.getSubTypes().forEach(subTypeService::validateSubType);
         }
 
+        setService.validateSet(cardDTO.getSet());
         rarityService.validateRarity(cardDTO.getRarity());
         elementService.validateElement(cardDTO.getElement());
     }

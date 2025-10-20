@@ -22,6 +22,7 @@ public class CardDTO {
     private FactionDTO faction;
     private TypeDTO type;
     private List<SubTypeDTO> subTypes;
+    private SetDTO set;
     private RarityDTO rarity;
     private ElementDTO element;
     private Boolean isSuspended;

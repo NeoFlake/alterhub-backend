@@ -50,6 +50,10 @@ public class Card {
     private List<SubType> subtypes = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "setId", nullable = false)
+    private Set set;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "rarityId", nullable = false)
     private Rarity rarity;
 

@@ -23,7 +23,7 @@ public class Deck {
     @Column(columnDefinition = "BINARY(16)") // Amélioration de la performance vis-à-vis d'un varchar(36)
     private UUID id;
 
-    @Column(nullable = false, length = 128)
+    @Column(nullable = false, length = 128, unique = true)
     private String name;
 
     @Column(nullable = false, length = 1024)
@@ -54,5 +54,13 @@ public class Deck {
     )
     @Column(nullable = false)
     private List<Card> cards = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "deck_tag",
+            joinColumns = @JoinColumn(name = "deckId"),
+            inverseJoinColumns = @JoinColumn(name = "tagId")
+    )
+    @Column(nullable = false)
+    private List<Tag> tags = new ArrayList<>();
 
 }

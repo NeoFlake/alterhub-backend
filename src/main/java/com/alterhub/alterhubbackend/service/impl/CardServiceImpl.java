@@ -45,7 +45,7 @@ public class CardServiceImpl implements CardService {
         return mapWithDeckCount(card);
     }
 
-    public CardDTO getCardsByAlteredId(String alteredId) {
+    public CardDTO getCardByAlteredId(String alteredId) {
         if (alteredId != null && !alteredId.isEmpty()) {
             Card card = cardRepository.findByAlteredId(alteredId).orElseThrow(NoResultByIdException::new);
             return mapWithDeckCount(card);
@@ -141,7 +141,7 @@ public class CardServiceImpl implements CardService {
         return cardRepository.countDecksContainingCard(cardId);
     }
 
-    private CardDTO mapWithDeckCount(Card card) {
+    public CardDTO mapWithDeckCount(Card card) {
         Integer deckCount = getDeckCount(card.getId());
         return CardMapper.toDTO(card, deckCount);
     }

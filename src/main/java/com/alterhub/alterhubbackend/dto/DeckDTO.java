@@ -26,5 +26,6 @@ public class DeckDTO {
     private LocalDate dateOfCreation;
     private LocalDateTime lastModification;
     private List<CardDTO> cards;
+    private List<TagDTO> tags;
 
 }

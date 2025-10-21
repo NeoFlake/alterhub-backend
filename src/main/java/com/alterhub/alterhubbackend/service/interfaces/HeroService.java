@@ -21,6 +21,8 @@ public interface HeroService {
 
     void  deleteHeroById(UUID id);
 
+    void validateHero(HeroDTO heroDTO);
+
     void verifyHeroIntegrity(HeroDTO heroDTO);
 
 }

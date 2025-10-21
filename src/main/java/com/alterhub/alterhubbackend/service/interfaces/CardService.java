@@ -1,6 +1,7 @@
 package com.alterhub.alterhubbackend.service.interfaces;
 
 import com.alterhub.alterhubbackend.dto.CardDTO;
+import com.alterhub.alterhubbackend.entity.Card;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,7 +12,7 @@ public interface CardService {
 
     CardDTO getCardById(UUID id);
 
-    CardDTO getCardsByAlteredId(String alteredId);
+    CardDTO getCardByAlteredId(String alteredId);
 
     List<CardDTO> getCardsByTypeId(UUID typeId);
 
@@ -28,6 +29,8 @@ public interface CardService {
     CardDTO addCard(CardDTO cardDTO);
 
     Integer getDeckCount(UUID cardId);
+
+    CardDTO mapWithDeckCount(Card card);
 
     void verifyCardIntegrity(CardDTO cardDTO);
 

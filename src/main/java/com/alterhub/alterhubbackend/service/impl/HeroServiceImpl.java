@@ -6,7 +6,6 @@ import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.exception.NotFindByArgumentException;
-import com.alterhub.alterhubbackend.mapper.FactionMapper;
 import com.alterhub.alterhubbackend.mapper.HeroMapper;
 import com.alterhub.alterhubbackend.repository.HeroRepository;
 import com.alterhub.alterhubbackend.service.interfaces.FactionService;
@@ -84,11 +83,24 @@ public class HeroServiceImpl implements HeroService {
         }
     }
 
-    public void  deleteHeroById(UUID id){
+    public void deleteHeroById(UUID id){
         if(!heroRepository.existsById(id)){
             throw new NoResultByIdException();
         }
         heroRepository.deleteById(id);
+    }
+
+    public void validateHero(HeroDTO heroDTO){
+        Hero heroReceived = HeroMapper.toEntity(heroDTO);
+        Hero heroOnBase = heroRepository.findById(heroDTO.getId()).orElseThrow(NoResultByIdException::new);
+        if (!heroOnBase.getName().equals(heroReceived.getName())
+                || !heroOnBase.getReserveSlot().equals(heroReceived.getReserveSlot())
+                || !heroOnBase.getLandmarkSlot().equals(heroReceived.getLandmarkSlot())
+                || !heroOnBase.getEffect().equals(heroReceived.getEffect())) {
+            throw new BadRequestException();
+        }
+
+        factionService.validateFaction(heroDTO.getFaction());
     }
 
     public void verifyHeroIntegrity(HeroDTO heroDTO) {

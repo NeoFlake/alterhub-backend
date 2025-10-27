@@ -24,6 +24,7 @@ public class DeckMapper {
                 .dateOfCreation(deck.getDateOfCreation())
                 .lastModification(deck.getLastModification())
                 .cards(cards)
+                .isParticipant(deck.getIsParticipant())
                 .build();
 
     }
@@ -44,6 +45,7 @@ public class DeckMapper {
                         .stream()
                         .map(CardMapper::toEntity)
                         .toList())
+                .isParticipant(deckDTO.getIsParticipant())
                 .build();
 
     }

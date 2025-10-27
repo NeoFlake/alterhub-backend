@@ -63,4 +63,7 @@ public class Deck {
     @Column(nullable = false)
     private List<Tag> tags = new ArrayList<>();
 
+    @Column(nullable = false)
+    private Boolean isParticipant;
+
 }

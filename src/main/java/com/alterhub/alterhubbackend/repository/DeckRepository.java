@@ -43,4 +43,7 @@ public interface DeckRepository extends JpaRepository<Deck, UUID> {
 
     List<Deck> findByLastModificationBetweenOrderByLastModificationDesc(LocalDateTime start, LocalDateTime end);
 
+    void deleteByPlayer_IdAndIsParticipantFalse(UUID playerId);
+
+    Boolean existsByPlayer_Id(UUID playerId);
 }

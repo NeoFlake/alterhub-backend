@@ -21,7 +21,7 @@ public class PlayerMapper {
         return PlayerDTO.builder()
                 .id(player.getId())
                 .name(player.getName())
-                .userId(player.getUser().getId())
+                .userId(player.getUser() != null ? player.getUser().getId() : null)
                 .decks(decksDTO != null ? decksDTO : new ArrayList<>())
                 .participants(participantsDTO != null ? participantsDTO : new ArrayList<>())
                 .build();

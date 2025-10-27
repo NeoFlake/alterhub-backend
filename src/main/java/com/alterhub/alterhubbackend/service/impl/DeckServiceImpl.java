@@ -1,12 +1,9 @@
 package com.alterhub.alterhubbackend.service.impl;
 
-import com.alterhub.alterhubbackend.dto.CardDTO;
 import com.alterhub.alterhubbackend.dto.DeckDTO;
-import com.alterhub.alterhubbackend.entity.Card;
 import com.alterhub.alterhubbackend.entity.Deck;
 import com.alterhub.alterhubbackend.entity.Player;
 import com.alterhub.alterhubbackend.exception.*;
-import com.alterhub.alterhubbackend.mapper.CardMapper;
 import com.alterhub.alterhubbackend.mapper.DeckMapper;
 import com.alterhub.alterhubbackend.repository.DeckRepository;
 import com.alterhub.alterhubbackend.repository.PlayerRepository;
@@ -205,6 +202,7 @@ public class DeckServiceImpl implements DeckService {
             deckToUpdate.setLastModification(LocalDateTime.now());
             deckToUpdate.setCards(deckUpdated.getCards());
             deckToUpdate.setTags(deckUpdated.getTags());
+            deckToUpdate.setIsParticipant(deckUpdated.getIsParticipant());
 
             Deck card = deckRepository.save(deckToUpdate);
 
@@ -214,11 +212,24 @@ public class DeckServiceImpl implements DeckService {
         }
     }
 
+    public DeckDTO patchIsParticipantByDeckId(UUID id, Boolean isParticipant){
+        Deck deckToUpdate = deckRepository.findById(id).orElseThrow(NoResultByIdException::new);
+        deckToUpdate.setIsParticipant(isParticipant);
+        return mapDeckDTOWithSubObjects(deckRepository.save(deckToUpdate));
+    }
+
     public void deleteDeckById(UUID id) {
         if (!deckRepository.existsById(id)) {
             throw new NoResultByIdException();
         }
         deckRepository.deleteById(id);
+    }
+
+    public void deleteDeckNonParticipantByPlayerId(UUID playerId) {
+        if (!deckRepository.existsByPlayer_Id(playerId)) {
+            throw new NoResultByIdException();
+        }
+        deckRepository.deleteByPlayer_IdAndIsParticipantFalse(playerId);
     }
 
     public void validateDeck(DeckDTO deckDTO) {

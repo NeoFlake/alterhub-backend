@@ -54,7 +54,11 @@ public interface DeckService {
 
     DeckDTO updateDeckById(UUID id, DeckDTO deckDTO);
 
+    DeckDTO patchIsParticipantByDeckId(UUID id, Boolean isParticipant);
+
     void deleteDeckById(UUID id);
+
+    void deleteDeckNonParticipantByPlayerId(UUID playerId);
 
     void validateDeck(DeckDTO deckDTO);
 

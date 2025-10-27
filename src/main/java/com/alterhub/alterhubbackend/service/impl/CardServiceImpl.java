@@ -2,7 +2,6 @@ package com.alterhub.alterhubbackend.service.impl;
 
 import com.alterhub.alterhubbackend.dto.CardDTO;
 import com.alterhub.alterhubbackend.entity.Card;
-import com.alterhub.alterhubbackend.entity.Deck;
 import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
@@ -28,13 +27,7 @@ public class CardServiceImpl implements CardService {
     private final SetService setService;
 
     public List<CardDTO> getAllCards() {
-        return cardRepository.findAll()
-                .stream()
-                .map(card -> {
-                    Integer deckCount = getDeckCount(card.getId());
-                    return CardMapper.toDTO(card, deckCount);
-                })
-                .toList();
+        return mapCardsWithDeckCount(cardRepository.findAll());
     }
 
     public CardDTO getCardById(UUID id) {
@@ -93,8 +86,7 @@ public class CardServiceImpl implements CardService {
 
     public CardDTO addCard(CardDTO cardDTO) {
         verifyCardIntegrity(cardDTO);
-        Card card = cardRepository.save(CardMapper.toEntity(cardDTO));
-        return mapWithDeckCount(card);
+        return mapWithDeckCount(cardRepository.save(CardMapper.toEntity(cardDTO)));
     }
 
     public CardDTO updateCardById(UUID id, CardDTO cardDTO) {

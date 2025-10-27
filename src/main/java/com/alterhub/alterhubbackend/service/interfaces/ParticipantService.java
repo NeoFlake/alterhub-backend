@@ -4,8 +4,11 @@ import com.alterhub.alterhubbackend.dto.ParticipantDTO;
 import com.alterhub.alterhubbackend.entity.Participant;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ParticipantService {
+
+    List<ParticipantDTO> getParticipantsByPlayerId(UUID playerId);
 
     ParticipantDTO mapParticipantDTOWithSubObjets(Participant participant);
 
@@ -15,4 +18,5 @@ public interface ParticipantService {
 
     List<Participant> mapParticipantsWithSubObjets(List<ParticipantDTO> participantsDTO);
 
+    void validateParticipant(ParticipantDTO participantDTO);
 }

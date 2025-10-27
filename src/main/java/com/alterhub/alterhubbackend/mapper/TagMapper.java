@@ -1,13 +1,8 @@
 package com.alterhub.alterhubbackend.mapper;
 
-import com.alterhub.alterhubbackend.dto.DeckDTO;
 import com.alterhub.alterhubbackend.dto.TagDTO;
-import com.alterhub.alterhubbackend.entity.Deck;
 import com.alterhub.alterhubbackend.entity.Tag;
 import lombok.experimental.UtilityClass;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @UtilityClass
 public class TagMapper {

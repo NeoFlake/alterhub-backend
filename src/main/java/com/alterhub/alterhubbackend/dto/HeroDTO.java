@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -17,6 +18,7 @@ public class HeroDTO {
     private UUID id;
     private String name;
     private FactionDTO faction;
+    private List<SetDTO> sets;
     private Short reserveSlot;
     private Short landmarkSlot;
     private String effect;

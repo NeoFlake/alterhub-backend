@@ -9,6 +9,7 @@ import com.alterhub.alterhubbackend.entity.Player;
 import com.alterhub.alterhubbackend.entity.User;
 import lombok.experimental.UtilityClass;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @UtilityClass
@@ -21,8 +22,8 @@ public class PlayerMapper {
                 .id(player.getId())
                 .name(player.getName())
                 .userId(player.getUser().getId())
-                .decks(decksDTO)
-                .participants(participantsDTO)
+                .decks(decksDTO != null ? decksDTO : new ArrayList<>())
+                .participants(participantsDTO != null ? participantsDTO : new ArrayList<>())
                 .build();
     }
 

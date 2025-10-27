@@ -32,6 +32,8 @@ public interface CardService {
 
     CardDTO mapWithDeckCount(Card card);
 
+    List<CardDTO> mapCardsWithDeckCount(List<Card> cards);
+
     void verifyCardIntegrity(CardDTO cardDTO);
 
     void validateCard(CardDTO cardDTO);

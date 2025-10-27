@@ -42,16 +42,19 @@ public class Card {
     private Type type;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "card_subtypes",
-            joinColumns = @JoinColumn(name = "cardId"),
+    @JoinTable(name = "cards_subtypes",
+            joinColumns = @JoinColumn(name = "cardsId"),
             inverseJoinColumns = @JoinColumn(name = "subTypesId")
     )
     @Column(nullable = false)
     private List<SubType> subtypes = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "setId", nullable = false)
-    private Set set;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "cards_sets",
+            joinColumns = @JoinColumn(name = "cardsId"),
+            inverseJoinColumns = @JoinColumn(name = "setsId")
+    )
+    private List<Set> sets;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "rarityId", nullable = false)

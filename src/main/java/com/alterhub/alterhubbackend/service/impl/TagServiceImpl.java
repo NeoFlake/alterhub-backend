@@ -1,14 +1,10 @@
 package com.alterhub.alterhubbackend.service.impl;
 
-import com.alterhub.alterhubbackend.dto.CardDTO;
-import com.alterhub.alterhubbackend.dto.DeckDTO;
 import com.alterhub.alterhubbackend.dto.TagDTO;
 import com.alterhub.alterhubbackend.entity.*;
 import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
-import com.alterhub.alterhubbackend.mapper.CardMapper;
-import com.alterhub.alterhubbackend.mapper.DeckMapper;
 import com.alterhub.alterhubbackend.mapper.TagMapper;
 import com.alterhub.alterhubbackend.repository.PlayerRepository;
 import com.alterhub.alterhubbackend.repository.TagRepository;
@@ -26,9 +22,6 @@ import java.util.UUID;
 public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
-    private final PlayerRepository playerRepository;
-    private final CardService cardService;
-    private final DeckService deckService;
 
     public List<TagDTO> getAllTags() {
         return tagRepository.findAll()

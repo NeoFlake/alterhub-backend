@@ -3,6 +3,8 @@ package com.alterhub.alterhubbackend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -25,6 +27,14 @@ public class Hero {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "factionId", nullable = false)
     private Faction faction;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "heros_sets",
+            joinColumns = @JoinColumn(name = "herosId"),
+            inverseJoinColumns = @JoinColumn(name = "setsId")
+    )
+    @Column(nullable = false)
+    private List<Set> sets = new ArrayList<>();
 
     private Short reserveSlot;
 

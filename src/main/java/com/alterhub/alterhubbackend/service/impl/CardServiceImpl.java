@@ -1,18 +1,15 @@
 package com.alterhub.alterhubbackend.service.impl;
 
 import com.alterhub.alterhubbackend.dto.CardDTO;
-import com.alterhub.alterhubbackend.dto.RarityDTO;
 import com.alterhub.alterhubbackend.entity.Card;
-import com.alterhub.alterhubbackend.entity.Rarity;
+import com.alterhub.alterhubbackend.entity.Deck;
 import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.CardMapper;
-import com.alterhub.alterhubbackend.mapper.RarityMapper;
 import com.alterhub.alterhubbackend.repository.CardRepository;
 import com.alterhub.alterhubbackend.service.interfaces.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -115,7 +112,7 @@ public class CardServiceImpl implements CardService {
             cardToUpdate.setFaction(cardUpdated.getFaction());
             cardToUpdate.setType(cardUpdated.getType());
             cardToUpdate.setSubtypes(cardUpdated.getSubtypes());
-            cardToUpdate.setSet(cardUpdated.getSet());
+            cardToUpdate.setSets(cardUpdated.getSets());
             cardToUpdate.setRarity(cardUpdated.getRarity());
             cardToUpdate.setElement(cardUpdated.getElement());
             cardToUpdate.setIsSuspended(cardUpdated.getIsSuspended());
@@ -162,7 +159,7 @@ public class CardServiceImpl implements CardService {
         if (cardDTO.getSubTypes() != null && !cardDTO.getSubTypes().isEmpty()) {
             cardDTO.getSubTypes().forEach(subTypeService::verifySubTypeIntegrity);
         }
-        setService.verifySetIntegrity(cardDTO.getSet());
+        cardDTO.getSets().forEach(setService::verifySetIntegrity);
         rarityService.verifyRarityIntegrity(cardDTO.getRarity());
         elementService.verifyElementIntegrity(cardDTO.getElement());
     }
@@ -184,6 +181,12 @@ public class CardServiceImpl implements CardService {
 
     }
 
+    public List<CardDTO> mapCardsWithDeckCount(List<Card> cards) {
+        return cards.stream()
+                .map(this::mapWithDeckCount)
+                .toList();
+    }
+
     private void validateCardSubObject(CardDTO cardDTO) {
         factionService.validateFaction(cardDTO.getFaction());
         typeService.validateType(cardDTO.getType());
@@ -191,8 +194,7 @@ public class CardServiceImpl implements CardService {
         if(cardDTO.getSubTypes() != null && !cardDTO.getSubTypes().isEmpty()) {
             cardDTO.getSubTypes().forEach(subTypeService::validateSubType);
         }
-
-        setService.validateSet(cardDTO.getSet());
+        cardDTO.getSets().forEach(setService::validateSet);
         rarityService.validateRarity(cardDTO.getRarity());
         elementService.validateElement(cardDTO.getElement());
     }

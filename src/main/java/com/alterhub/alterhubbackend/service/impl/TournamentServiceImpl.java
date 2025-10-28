@@ -25,6 +25,10 @@ public class TournamentServiceImpl implements TournamentService {
         return mapTournamentDTOWithSubObjet(tournament);
     }
 
+    public Boolean existsById(UUID tournamentId) {
+        return tournamentRepository.existsById(tournamentId);
+    }
+
     public TournamentDTO mapTournamentDTOWithSubObjet(Tournament tournament) {
         return TournamentMapper.toDto(tournament, participantService.mapParticipantsDTOWithSubObjets(tournament.getParticipants()));
     }

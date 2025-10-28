@@ -2,8 +2,6 @@ package com.alterhub.alterhubbackend.service.interfaces;
 
 import com.alterhub.alterhubbackend.dto.TournamentDTO;
 import com.alterhub.alterhubbackend.entity.Tournament;
-import com.alterhub.alterhubbackend.exception.NoResultByIdException;
-import com.alterhub.alterhubbackend.mapper.TournamentMapper;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,6 +9,8 @@ import java.util.UUID;
 public interface TournamentService {
 
     TournamentDTO getTournamentById(UUID tournamentId);
+
+    Boolean existsById(UUID tournamentId);
 
     TournamentDTO mapTournamentDTOWithSubObjet(Tournament tournament);
 

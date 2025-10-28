@@ -28,18 +28,8 @@ public class ParticipantServiceImpl implements ParticipantService {
     private final PlayerService playerService;
     private final TournamentService tournamentService;
 
-    public void validateParticipant(ParticipantDTO participantDTO) {
-        Participant participantReceived = mapParticipantWithSubObjets(participantDTO);
-        Participant participantOnBase = participantRepository.findById(participantDTO.getId()).orElseThrow(NoResultByIdException::new);
-
-        if(!participantOnBase.getScore().equals(participantReceived.getScore())
-        || !participantOnBase.getClassement().equals(participantReceived.getClassement())
-        || !participantOnBase.getPlayer().getName().equals(participantDTO.getPlayerName())
-        || !participantOnBase.getTournament().getId().equals(participantDTO.getTournamentId())) {
-            throw new BadRequestException();
-        }
-
-        deckService.validateDeck(participantDTO.getDeck());
+    public List<ParticipantDTO> getAllParticipants(){
+        return mapParticipantsDTOWithSubObjets(participantRepository.findAll());
     }
 
     private List<Participant> getParticipantsByPlayerIdInternalUsage(UUID playerId) {
@@ -52,6 +42,88 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     public List<ParticipantDTO> getParticipantsByPlayerId(UUID playerId) {
         return mapParticipantsDTOWithSubObjets(getParticipantsByPlayerIdInternalUsage(playerId));
+    }
+
+    public List<ParticipantDTO> getParticipantsByTournamentId(UUID tournamentId) {
+        if(tournamentId == null){
+            throw new BadRequestException();
+        }
+        return mapParticipantsDTOWithSubObjets(participantRepository.findByTournament_Id(tournamentId));
+    }
+
+    public List<ParticipantDTO> getParticipantsByClassement(Short classement) {
+        if(classement==null || classement < 1){
+            throw new BadRequestException();
+        }
+        return mapParticipantsDTOWithSubObjets(participantRepository.findByClassement(classement));
+    }
+
+    public List<ParticipantDTO> getParticipantsByDeckFactionId(UUID deckFactionId) {
+        if(deckFactionId == null){
+            throw new BadRequestException();
+        }
+        return mapParticipantsDTOWithSubObjets(participantRepository.findByDeckFaction_Id(deckFactionId));
+    }
+
+    public List<ParticipantDTO> getParticipantsByDeckFactionIdIn(List<UUID> deckFactionIds) {
+        if(deckFactionIds == null ||  deckFactionIds.isEmpty()){
+            throw new BadRequestException();
+        }
+        return mapParticipantsDTOWithSubObjets(participantRepository.findByDeckFaction_IdIn(deckFactionIds));
+    }
+
+    public List<ParticipantDTO> getParticipantsByDeckHeroId(UUID deckHeroId) {
+        if(deckHeroId == null){
+            throw new BadRequestException();
+        }
+        return mapParticipantsDTOWithSubObjets(participantRepository.findByDeckHero_Id(deckHeroId));
+    }
+
+    public List<ParticipantDTO> getParticipantsByDeckHeroIdIn(List<UUID> deckHeroIds) {
+        if(deckHeroIds == null || deckHeroIds.isEmpty()) {
+            throw new BadRequestException();
+        }
+        return mapParticipantsDTOWithSubObjets(participantRepository.findByDeckHero_IdIn(deckHeroIds));
+    }
+
+    public List<ParticipantDTO> getParticipantsByDeckTagId(UUID deckTagId) {
+        if(deckTagId == null){
+            throw new BadRequestException();
+        }
+        return mapParticipantsDTOWithSubObjets(participantRepository.findByDeckTags_Id(deckTagId));
+    }
+
+    public List<ParticipantDTO> getParticipantsByDeckTagIdIn(List<UUID> deckTagIds) {
+        if(deckTagIds == null || deckTagIds.isEmpty()) {
+            throw new BadRequestException();
+        }
+        return mapParticipantsDTOWithSubObjets(participantRepository.findByDeckTags_IdIn(deckTagIds));
+    }
+
+    public void verifyParticipantIntegrity(ParticipantDTO participantDTO) {
+        if(participantDTO.getScore() == null || participantDTO.getScore().isEmpty()
+        || participantDTO.getClassement() == null || participantDTO.getClassement() <= 1
+        || !playerService.existsByName(participantDTO.getPlayerName())
+        || !tournamentService.existsById(participantDTO.getTournamentId())) {
+            throw new BadRequestException();
+        }
+
+        deckService.verifyDeckIntegrity(participantDTO.getDeck());
+
+    }
+
+    public void validateParticipant(ParticipantDTO participantDTO) {
+        Participant participantReceived = mapParticipantWithSubObjets(participantDTO);
+        Participant participantOnBase = participantRepository.findById(participantDTO.getId()).orElseThrow(NoResultByIdException::new);
+
+        if(!participantOnBase.getScore().equals(participantReceived.getScore())
+        || !participantOnBase.getClassement().equals(participantReceived.getClassement())
+        || !participantOnBase.getPlayer().getName().equals(participantDTO.getPlayerName())
+        || !participantOnBase.getTournament().getId().equals(participantDTO.getTournamentId())) {
+            throw new BadRequestException();
+        }
+
+        deckService.validateDeck(participantDTO.getDeck());
     }
 
     public ParticipantDTO mapParticipantDTOWithSubObjets(Participant participant) {

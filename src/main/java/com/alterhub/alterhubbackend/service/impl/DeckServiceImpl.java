@@ -112,7 +112,7 @@ public class DeckServiceImpl implements DeckService {
     }
 
     public List<DeckDTO> getLast5DecksCreatedByHeroId(UUID heroId) {
-        if(heroId==null){
+        if (heroId==null) {
             throw new BadRequestException();
         }
         return mapDecksDTOWithSubObjects(deckRepository.findTop5ByHero_IdOrderByDateOfCreationDesc(heroId));

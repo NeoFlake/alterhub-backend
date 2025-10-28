@@ -82,6 +82,10 @@ public class PlayerServiceImpl implements PlayerService {
 
     }
 
+    public Boolean existsByName(String name) {
+        return playerRepository.existsByName(name);
+    }
+
     public void validatePlayer(PlayerDTO playerDTO) {
         Player playerReceived = mapPlayerWithSubObject(playerDTO);
         Player playerOnBase = playerRepository.findById(playerDTO.getId()).orElseThrow(NoResultByIdException::new);

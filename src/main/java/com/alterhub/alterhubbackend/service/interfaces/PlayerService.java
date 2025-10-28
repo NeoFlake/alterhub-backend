@@ -25,6 +25,8 @@ public interface PlayerService {
 
     void verifyPlayerIntegrity(PlayerDTO playerDTO);
 
+    Boolean existsByName(String name);
+
     void validatePlayer(PlayerDTO playerDTO);
 
     PlayerDTO mapPlayerDTOWithSubObject(Player player);

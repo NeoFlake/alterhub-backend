@@ -28,4 +28,8 @@ public interface ParticipantRepository extends JpaRepository<Participant, UUID> 
 
     void deleteByPlayer_Id(UUID id);
 
+    void deleteByTournamentId(UUID tournamentId);
+
+    Boolean existsByTournamentId(UUID tournamentId);
+
 }

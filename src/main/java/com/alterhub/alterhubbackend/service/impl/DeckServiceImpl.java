@@ -204,9 +204,7 @@ public class DeckServiceImpl implements DeckService {
             deckToUpdate.setTags(deckUpdated.getTags());
             deckToUpdate.setIsParticipant(deckUpdated.getIsParticipant());
 
-            Deck card = deckRepository.save(deckToUpdate);
-
-            return mapDeckDTOWithSubObjects(card);
+            return mapDeckDTOWithSubObjects(deckRepository.save(deckToUpdate));
         } else {
             throw new IdNotMatchException();
         }

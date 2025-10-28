@@ -6,6 +6,7 @@ import com.alterhub.alterhubbackend.entity.Participant;
 import com.alterhub.alterhubbackend.entity.Player;
 import com.alterhub.alterhubbackend.entity.Tournament;
 import com.alterhub.alterhubbackend.exception.BadRequestException;
+import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.ParticipantMapper;
 import com.alterhub.alterhubbackend.repository.ParticipantRepository;
@@ -29,7 +30,7 @@ public class ParticipantServiceImpl implements ParticipantService {
     private final TournamentService tournamentService;
 
     public List<ParticipantDTO> getAllParticipants(){
-        return mapParticipantsDTOWithSubObjets(participantRepository.findAll());
+        return mapParticipantsDTOWithSubObjects(participantRepository.findAll());
     }
 
     private List<Participant> getParticipantsByPlayerIdInternalUsage(UUID playerId) {
@@ -41,63 +42,99 @@ public class ParticipantServiceImpl implements ParticipantService {
     }
 
     public List<ParticipantDTO> getParticipantsByPlayerId(UUID playerId) {
-        return mapParticipantsDTOWithSubObjets(getParticipantsByPlayerIdInternalUsage(playerId));
+        return mapParticipantsDTOWithSubObjects(getParticipantsByPlayerIdInternalUsage(playerId));
     }
 
     public List<ParticipantDTO> getParticipantsByTournamentId(UUID tournamentId) {
         if(tournamentId == null){
             throw new BadRequestException();
         }
-        return mapParticipantsDTOWithSubObjets(participantRepository.findByTournament_Id(tournamentId));
+        return mapParticipantsDTOWithSubObjects(participantRepository.findByTournament_Id(tournamentId));
     }
 
     public List<ParticipantDTO> getParticipantsByClassement(Short classement) {
         if(classement==null || classement < 1){
             throw new BadRequestException();
         }
-        return mapParticipantsDTOWithSubObjets(participantRepository.findByClassement(classement));
+        return mapParticipantsDTOWithSubObjects(participantRepository.findByClassement(classement));
     }
 
     public List<ParticipantDTO> getParticipantsByDeckFactionId(UUID deckFactionId) {
         if(deckFactionId == null){
             throw new BadRequestException();
         }
-        return mapParticipantsDTOWithSubObjets(participantRepository.findByDeckFaction_Id(deckFactionId));
+        return mapParticipantsDTOWithSubObjects(participantRepository.findByDeckFaction_Id(deckFactionId));
     }
 
     public List<ParticipantDTO> getParticipantsByDeckFactionIdIn(List<UUID> deckFactionIds) {
         if(deckFactionIds == null ||  deckFactionIds.isEmpty()){
             throw new BadRequestException();
         }
-        return mapParticipantsDTOWithSubObjets(participantRepository.findByDeckFaction_IdIn(deckFactionIds));
+        return mapParticipantsDTOWithSubObjects(participantRepository.findByDeckFaction_IdIn(deckFactionIds));
     }
 
     public List<ParticipantDTO> getParticipantsByDeckHeroId(UUID deckHeroId) {
         if(deckHeroId == null){
             throw new BadRequestException();
         }
-        return mapParticipantsDTOWithSubObjets(participantRepository.findByDeckHero_Id(deckHeroId));
+        return mapParticipantsDTOWithSubObjects(participantRepository.findByDeckHero_Id(deckHeroId));
     }
 
     public List<ParticipantDTO> getParticipantsByDeckHeroIdIn(List<UUID> deckHeroIds) {
         if(deckHeroIds == null || deckHeroIds.isEmpty()) {
             throw new BadRequestException();
         }
-        return mapParticipantsDTOWithSubObjets(participantRepository.findByDeckHero_IdIn(deckHeroIds));
+        return mapParticipantsDTOWithSubObjects(participantRepository.findByDeckHero_IdIn(deckHeroIds));
     }
 
     public List<ParticipantDTO> getParticipantsByDeckTagId(UUID deckTagId) {
         if(deckTagId == null){
             throw new BadRequestException();
         }
-        return mapParticipantsDTOWithSubObjets(participantRepository.findByDeckTags_Id(deckTagId));
+        return mapParticipantsDTOWithSubObjects(participantRepository.findByDeckTags_Id(deckTagId));
     }
 
     public List<ParticipantDTO> getParticipantsByDeckTagIdIn(List<UUID> deckTagIds) {
         if(deckTagIds == null || deckTagIds.isEmpty()) {
             throw new BadRequestException();
         }
-        return mapParticipantsDTOWithSubObjets(participantRepository.findByDeckTags_IdIn(deckTagIds));
+        return mapParticipantsDTOWithSubObjects(participantRepository.findByDeckTags_IdIn(deckTagIds));
+    }
+
+    public ParticipantDTO addParticipant(ParticipantDTO participantDTO) {
+        verifyParticipantIntegrity(participantDTO);
+        return mapParticipantDTOWithSubObjects(participantRepository.save(mapParticipantWithSubObjects(participantDTO)));
+    }
+
+    public ParticipantDTO updateParticipantById(UUID id, ParticipantDTO participantDTO) {
+        if (participantDTO.getId().equals(id)) {
+            verifyParticipantIntegrity(participantDTO);
+
+            Participant participantToUpdate = participantRepository.findById(id).orElseThrow(NoResultByIdException::new);
+            Participant participantUpdated = mapParticipantWithSubObjects(participantDTO);
+
+            participantUpdated.setPlayer(participantToUpdate.getPlayer());
+            participantUpdated.setDeck(participantToUpdate.getDeck());
+            participantUpdated.setTournament(participantToUpdate.getTournament());
+
+            return mapParticipantDTOWithSubObjects(participantRepository.save(participantToUpdate));
+        } else {
+            throw new IdNotMatchException();
+        }
+    }
+
+    public void deleteParticipantById(UUID id) {
+        if(!participantRepository.existsById(id)){
+            throw new NoResultByIdException();
+        }
+        participantRepository.deleteById(id);
+    }
+
+    public void deleteParticipantsByTournamentId(UUID tournamentId){
+        if(!participantRepository.existsByTournamentId(tournamentId)){
+            throw new NoResultByIdException();
+        }
+        participantRepository.deleteByTournamentId(tournamentId);
     }
 
     public void verifyParticipantIntegrity(ParticipantDTO participantDTO) {
@@ -113,7 +150,7 @@ public class ParticipantServiceImpl implements ParticipantService {
     }
 
     public void validateParticipant(ParticipantDTO participantDTO) {
-        Participant participantReceived = mapParticipantWithSubObjets(participantDTO);
+        Participant participantReceived = mapParticipantWithSubObjects(participantDTO);
         Participant participantOnBase = participantRepository.findById(participantDTO.getId()).orElseThrow(NoResultByIdException::new);
 
         if(!participantOnBase.getScore().equals(participantReceived.getScore())
@@ -126,15 +163,15 @@ public class ParticipantServiceImpl implements ParticipantService {
         deckService.validateDeck(participantDTO.getDeck());
     }
 
-    public ParticipantDTO mapParticipantDTOWithSubObjets(Participant participant) {
+    public ParticipantDTO mapParticipantDTOWithSubObjects(Participant participant) {
         return  ParticipantMapper.toDto(participant, deckService.mapDeckDTOWithSubObjects(participant.getDeck()));
     }
 
-    public List<ParticipantDTO> mapParticipantsDTOWithSubObjets(List<Participant> participants) {
-        return participants.stream().map(this::mapParticipantDTOWithSubObjets).toList();
+    public List<ParticipantDTO> mapParticipantsDTOWithSubObjects(List<Participant> participants) {
+        return participants.stream().map(this::mapParticipantDTOWithSubObjects).toList();
     }
 
-    public Participant mapParticipantWithSubObjets(ParticipantDTO participantDTO) {
+    public Participant mapParticipantWithSubObjects(ParticipantDTO participantDTO) {
 
         Player player = playerService.mapPlayerWithSubObject(playerService.getPlayerById(participantDTO.getId()));
         Tournament tournament = tournamentService.mapTournamentWithSubObjet(tournamentService.getTournamentById(participantDTO.getId()));
@@ -143,8 +180,8 @@ public class ParticipantServiceImpl implements ParticipantService {
         return  ParticipantMapper.toEntity(participantDTO, player, tournament, deck);
     }
 
-    public List<Participant> mapParticipantsWithSubObjets(List<ParticipantDTO> participantsDTO) {
-        return participantsDTO.stream().map(this::mapParticipantWithSubObjets).toList();
+    public List<Participant> mapParticipantsWithSubObjects(List<ParticipantDTO> participantsDTO) {
+        return participantsDTO.stream().map(this::mapParticipantWithSubObjects).toList();
     }
 
 }

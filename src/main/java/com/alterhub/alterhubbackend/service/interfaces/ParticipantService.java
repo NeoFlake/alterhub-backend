@@ -28,13 +28,21 @@ public interface ParticipantService {
 
     List<ParticipantDTO> getParticipantsByDeckTagIdIn(List<UUID> deckTagIds);
 
-    ParticipantDTO mapParticipantDTOWithSubObjets(Participant participant);
+    ParticipantDTO addParticipant(ParticipantDTO participantDTO);
 
-    List<ParticipantDTO> mapParticipantsDTOWithSubObjets(List<Participant> participants);
+    ParticipantDTO updateParticipantById(UUID id, ParticipantDTO participantDTO);
 
-    Participant mapParticipantWithSubObjets(ParticipantDTO participantDTO);
+    void deleteParticipantById(UUID id);
 
-    List<Participant> mapParticipantsWithSubObjets(List<ParticipantDTO> participantsDTO);
+    void deleteParticipantsByTournamentId(UUID tournamentId);
+
+    ParticipantDTO mapParticipantDTOWithSubObjects(Participant participant);
+
+    List<ParticipantDTO> mapParticipantsDTOWithSubObjects(List<Participant> participants);
+
+    Participant mapParticipantWithSubObjects(ParticipantDTO participantDTO);
+
+    List<Participant> mapParticipantsWithSubObjects(List<ParticipantDTO> participantsDTO);
 
     void validateParticipant(ParticipantDTO participantDTO);
 

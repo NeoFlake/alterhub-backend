@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,6 +19,7 @@ public class TournamentDTO {
     private String name;
     private Integer numberOfPlayers;
     private String location;
+    private LocalDate date;
     private List<ParticipantDTO> participants;
 
 }

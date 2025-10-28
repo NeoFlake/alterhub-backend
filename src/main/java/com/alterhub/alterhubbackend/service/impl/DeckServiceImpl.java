@@ -39,11 +39,11 @@ public class DeckServiceImpl implements DeckService {
     private final LocalDate endOfMonthLocalDate = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth());
     // Dans celui-ci, on tape sur le paramètre lastModification qui est en LocalDateTime
     private final LocalDateTime startOfDayLocalDateTime = LocalDate.now().atStartOfDay();
-    private final LocalDateTime endOfDayLocalDateTime   = LocalDate.now().atTime(23, 59, 59);
+    private final LocalDateTime endOfDayLocalDateTime   = LocalDateTime.now();
     private final LocalDateTime startOfWeekLocalDateTime = LocalDateTime.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-    private final LocalDateTime endOfWeekLocalDateTime = LocalDateTime.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+    private final LocalDateTime endOfWeekLocalDateTime = LocalDateTime.now();
     private final LocalDateTime startOfMonthLocalDateTime = LocalDateTime.now().withDayOfMonth(1);
-    private final LocalDateTime endOfMonthLocalDateTime = LocalDateTime.now().withDayOfMonth(LocalDate.now().lengthOfMonth());
+    private final LocalDateTime endOfMonthLocalDateTime = LocalDateTime.now();
 
     public List<DeckDTO> getAllDecks() {
         return mapDecksDTOWithSubObjects(deckRepository.findAll());
@@ -170,6 +170,20 @@ public class DeckServiceImpl implements DeckService {
         return mapDecksDTOWithSubObjects(deckRepository.findByLastModificationBetweenOrderByLastModificationDesc(startOfMonthLocalDateTime, endOfMonthLocalDateTime));
     }
 
+    public List<DeckDTO> getDecksByTagId(UUID tagId){
+        if(tagId==null){
+            throw new BadRequestException();
+        }
+        return mapDecksDTOWithSubObjects(deckRepository.findByTags_Id(tagId));
+    }
+
+    public List<DeckDTO> getDecksByTagIdIn(List<UUID> tagIds){
+        if(tagIds==null){
+            throw new BadRequestException();
+        }
+        return mapDecksDTOWithSubObjects(deckRepository.findByTags_IdIn(tagIds));
+    }
+
     public DeckDTO addDeck(DeckDTO deckDTO) {
         verifyDeckIntegrity(deckDTO);
 
@@ -177,6 +191,7 @@ public class DeckServiceImpl implements DeckService {
         deckDTO.setDescription(Encode.forHtml(deckDTO.getDescription()));
         deckDTO.setDateOfCreation(LocalDate.now());
         deckDTO.setLastModification(LocalDateTime.now());
+        deckDTO.setIsParticipant(false);
 
         Deck deck = deckRepository.save(mapDeckWithSubObjects(deckDTO));
 
@@ -210,10 +225,19 @@ public class DeckServiceImpl implements DeckService {
         }
     }
 
-    public DeckDTO patchIsParticipantByDeckId(UUID id, Boolean isParticipant){
+    public void patchIsParticipantByDeckId(UUID id, Boolean isParticipant){
         Deck deckToUpdate = deckRepository.findById(id).orElseThrow(NoResultByIdException::new);
         deckToUpdate.setIsParticipant(isParticipant);
-        return mapDeckDTOWithSubObjects(deckRepository.save(deckToUpdate));
+        mapDeckDTOWithSubObjects(deckRepository.save(deckToUpdate));
+    }
+
+    public void patchIsParticipantByDeckIdIn(List<UUID> deckIds, Boolean isParticipant){
+        List<Deck> decksToUpdate = deckRepository.findByIdIn(deckIds);
+        if(decksToUpdate.isEmpty()){
+           throw new NoResultByIdException();
+        }
+        List<Deck> deckUpdated = decksToUpdate.stream().peek(deck -> deck.setIsParticipant(isParticipant)).toList();
+        mapDecksDTOWithSubObjects(deckRepository.saveAll(deckUpdated));
     }
 
     public void deleteDeckById(UUID id) {

@@ -9,6 +9,7 @@ import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.ParticipantMapper;
+import com.alterhub.alterhubbackend.repository.DeckRepository;
 import com.alterhub.alterhubbackend.repository.ParticipantRepository;
 import com.alterhub.alterhubbackend.service.interfaces.DeckService;
 import com.alterhub.alterhubbackend.service.interfaces.ParticipantService;
@@ -17,8 +18,7 @@ import com.alterhub.alterhubbackend.service.interfaces.TournamentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -103,6 +103,7 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     public ParticipantDTO addParticipant(ParticipantDTO participantDTO) {
         verifyParticipantIntegrity(participantDTO);
+        participantDTO.getDeck().setIsParticipant(true);
         return mapParticipantDTOWithSubObjects(participantRepository.save(mapParticipantWithSubObjects(participantDTO)));
     }
 
@@ -127,14 +128,39 @@ public class ParticipantServiceImpl implements ParticipantService {
         if(!participantRepository.existsById(id)){
             throw new NoResultByIdException();
         }
+
+        UUID deckId = participantRepository.findById(id).orElseThrow(NoResultByIdException::new).getDeck().getId();
+
         participantRepository.deleteById(id);
+        // Si le deck n'a plus aucune participation à un tournoi active, alors il faut lui supprimer
+        // Son statut de deck participant pour permettre sa modification/suppression par son utilisateur.
+        if(!participantRepository.existsByPlayer_Id(deckId)){
+            deckService.patchIsParticipantByDeckId(deckId, false);
+        }
     }
 
     public void deleteParticipantsByTournamentId(UUID tournamentId){
+
         if(!participantRepository.existsByTournamentId(tournamentId)){
             throw new NoResultByIdException();
         }
+        List<Participant> participants = participantRepository.findByTournament_Id(tournamentId);
+        List<UUID> deckIds = new ArrayList<>();
+
+        if(!participants.isEmpty()){
+            deckIds = participants.stream().map(participant -> participant.getDeck().getId()).toList();
+        }
         participantRepository.deleteByTournamentId(tournamentId);
+
+        // Vérification groupée de l'ensemble des decks impactés par la suppression du tournoi
+        // et savoir s'ils nécessitent le switch de leurs paramètres isParticipant
+        if(!participants.isEmpty()){
+            Set<UUID> decksIdWhoStayOnParticipant = new HashSet<>(participantRepository.findExistingDeckIds(deckIds));
+            List<UUID> decksIdNotPresentOnParticipant = deckIds.stream()
+                    .filter(id -> !decksIdWhoStayOnParticipant.contains(id))
+                    .toList();
+            deckService.patchIsParticipantByDeckIdIn(decksIdNotPresentOnParticipant, false);
+        }
     }
 
     public void verifyParticipantIntegrity(ParticipantDTO participantDTO) {
@@ -174,7 +200,7 @@ public class ParticipantServiceImpl implements ParticipantService {
     public Participant mapParticipantWithSubObjects(ParticipantDTO participantDTO) {
 
         Player player = playerService.mapPlayerWithSubObject(playerService.getPlayerById(participantDTO.getId()));
-        Tournament tournament = tournamentService.mapTournamentWithSubObjet(tournamentService.getTournamentById(participantDTO.getId()));
+        Tournament tournament = tournamentService.mapTournamentWithSubObject(tournamentService.getTournamentById(participantDTO.getId()));
         Deck deck = deckService.mapDeckWithSubObjects(participantDTO.getDeck());
 
         return  ParticipantMapper.toEntity(participantDTO, player, tournament, deck);

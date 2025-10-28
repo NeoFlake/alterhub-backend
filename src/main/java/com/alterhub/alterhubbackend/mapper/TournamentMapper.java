@@ -19,6 +19,7 @@ public class TournamentMapper {
                 .name(tournament.getName())
                 .numberOfPlayers(tournament.getNumberOfPlayers())
                 .location(tournament.getLocation())
+                .date(tournament.getDate())
                 .participants(participantsDTO)
                 .build();
     }
@@ -31,6 +32,7 @@ public class TournamentMapper {
                 .name(tournamentDTO.getName())
                 .numberOfPlayers(tournamentDTO.getNumberOfPlayers())
                 .location(tournamentDTO.getLocation())
+                .date(tournamentDTO.getDate())
                 .participants(participants)
                 .build();
     }

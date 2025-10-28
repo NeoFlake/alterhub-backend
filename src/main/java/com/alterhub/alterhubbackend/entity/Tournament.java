@@ -3,6 +3,7 @@ package com.alterhub.alterhubbackend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -29,6 +30,9 @@ public class Tournament {
 
     @Column(nullable = false, length = 256)
     private String location;
+
+    @Column(nullable = false, columnDefinition = "DATE")
+    private LocalDate date;
 
     @OneToMany(mappedBy = "tournament")
     private List<Participant> participants = new ArrayList<>();

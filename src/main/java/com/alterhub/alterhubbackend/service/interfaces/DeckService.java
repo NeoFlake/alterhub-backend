@@ -50,11 +50,17 @@ public interface DeckService {
 
     List<DeckDTO> getDecksModifiedThisMonth();
 
+    List<DeckDTO> getDecksByTagId(UUID tagId);
+
+    List<DeckDTO> getDecksByTagIdIn(List<UUID> tagIds);
+
     DeckDTO addDeck(DeckDTO deckDTO);
 
     DeckDTO updateDeckById(UUID id, DeckDTO deckDTO);
 
-    DeckDTO patchIsParticipantByDeckId(UUID id, Boolean isParticipant);
+    void patchIsParticipantByDeckId(UUID id, Boolean isParticipant);
+
+    void patchIsParticipantByDeckIdIn(List<UUID> deckIds, Boolean isParticipant);
 
     void deleteDeckById(UUID id);
 

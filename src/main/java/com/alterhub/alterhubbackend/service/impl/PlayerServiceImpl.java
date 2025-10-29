@@ -37,13 +37,17 @@ public class PlayerServiceImpl implements PlayerService {
         return mapPlayerDTOWithSubObject(playerRepository.findById(id).orElseThrow(NoResultByIdException::new));
     }
 
-    public PlayerDTO getPlayerByName(String name) {
+    public Player getPlayerByNameInternalUsage(String name) {
         if(name == null || name.isEmpty()){
             throw new BadRequestException();
         }
         name = Encode.forHtml(name);
 
-        return mapPlayerDTOWithSubObject(playerRepository.findByName(name).orElseThrow(NoResultByIdException::new));
+        return playerRepository.findByName(name).orElseThrow(NoResultByIdException::new);
+    }
+
+    public PlayerDTO getPlayerByName(String name) {
+        return mapPlayerDTOWithSubObject(getPlayerByNameInternalUsage(name));
     }
 
     public PlayerDTO getPlayerByUserId(UUID id) {
@@ -108,7 +112,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     public PlayerDTO mapPlayerDTOWithSubObject(Player player) {
         List<DeckDTO> decksDTO = deckService.mapDecksDTOWithSubObjects(player.getDecks());
-        List<ParticipantDTO> participantsDTO = participantService.mapParticipantsDTOWithSubObjets(player.getParticipants());
+        List<ParticipantDTO> participantsDTO = participantService.mapParticipantsDTOWithSubObjects(player.getParticipants());
 
         return PlayerMapper.toDTO(player, decksDTO, participantsDTO);
     }
@@ -119,7 +123,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     public Player mapPlayerWithSubObject(PlayerDTO playerDTO) {
         List<Deck> decks = deckService.mapDecksWithSubObjects(playerDTO.getDecks());
-        List<Participant> participants = participantService.mapParticipantsWithSubObjets(playerDTO.getParticipants());
+        List<Participant> participants = participantService.mapParticipantsWithSubObjects(playerDTO.getParticipants());
         User user = playerDTO.getUserId() != null
                 ? userService.getUserByIdInternalUsage(playerDTO.getUserId())
                 : null;

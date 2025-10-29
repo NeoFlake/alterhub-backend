@@ -23,7 +23,21 @@ public class UserMapper {
                 .build();
     }
 
-    public User toEntity(UserRequestDTO userRequestDTO, Player player){
+    public User toEntityFromDTO(UserDTO userDTO, Player player){
+        if (userDTO == null) return null;
+
+        return User.builder()
+                .id(userDTO.getId())
+                .lastname(userDTO.getLastName())
+                .firstname(userDTO.getFirstName())
+                .player(player)
+                .email(userDTO.getEmail())
+                .dateOfCreation(userDTO.getDateOfCreation())
+                .lastModification(userDTO.getLastModification())
+                .build();
+    }
+
+    public User toEntityFromRequestDTO(UserRequestDTO userRequestDTO, Player player){
         if (userRequestDTO == null) return null;
 
         return User.builder()

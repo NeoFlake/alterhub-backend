@@ -31,10 +31,10 @@ public class User {
     @JoinColumn(name = "playerId", nullable = false)
     private Player player;
 
-    @Column(nullable = false, length = 256)
+    @Column(nullable = false, length = 256, unique = true)
     private String email;
 
-    @Column(nullable = false, length = 128)
+    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false, columnDefinition = "DATE")

@@ -1,5 +1,6 @@
 package com.alterhub.alterhubbackend.service.interfaces;
 
+import com.alterhub.alterhubbackend.dto.UserAuthenticationDTO;
 import com.alterhub.alterhubbackend.dto.UserDTO;
 import com.alterhub.alterhubbackend.dto.UserRequestDTO;
 import com.alterhub.alterhubbackend.entity.User;
@@ -12,8 +13,20 @@ public interface UserService {
 
     UserDTO getUserById(UUID id);
 
+    UserDTO addUser(UserRequestDTO userRequestDTO);
+
+    UserDTO authentication(UserAuthenticationDTO userAuthenticationDTO);
+
+    UserDTO updateUserById(UUID id, UserRequestDTO userRequestDTO);
+
+    Boolean accessGranted(UserRequestDTO userRequestDTO);
+
+    void deleteUserById(UUID id, UserAuthenticationDTO userAuthenticationDTO);
+
     void verifyUserIntegrity(UserDTO userDTO);
 
     void verifyUserRequestIntegrity(UserRequestDTO userRequestDTO);
+
+    void verifyUserAuthenticationIntegrity(UserAuthenticationDTO userAuthenticationDTO);
 
 }

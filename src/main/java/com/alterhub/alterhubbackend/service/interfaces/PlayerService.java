@@ -15,6 +15,8 @@ public interface PlayerService {
 
     PlayerDTO getPlayerByUserId(UUID id);
 
+    Player getPlayerByNameInternalUsage(String name);
+
     PlayerDTO getPlayerByName(String name);
 
     PlayerDTO addPlayer(PlayerDTO playerDTO);

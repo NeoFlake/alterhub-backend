@@ -2,25 +2,27 @@ package com.alterhub.alterhubbackend.service.interfaces;
 
 import com.alterhub.alterhubbackend.dto.CardDTO;
 import com.alterhub.alterhubbackend.entity.Card;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface CardService {
 
-    List<CardDTO> getAllCards();
+    Page<CardDTO> getAllCards(Pageable pageable);
 
     CardDTO getCardById(UUID id);
 
     CardDTO getCardByAlteredId(String alteredId);
 
-    List<CardDTO> getCardsByTypeId(UUID typeId);
+    Page<CardDTO> getCardsByTypeId(UUID typeId, Pageable pageable);
 
-    List<CardDTO> getCardsByFactionId(UUID factionId);
+    Page<CardDTO> getCardsByFactionId(UUID factionId, Pageable pageable);
 
-    List<CardDTO> getCardsBySubTypeId(UUID subTypeId);
+    Page<CardDTO> getCardsBySubTypeId(UUID subTypeId, Pageable pageable);
 
-    List<CardDTO> getCardsByRarityId(UUID rarityId);
+    Page<CardDTO> getCardsByRarityId(UUID rarityId, Pageable pageable);
 
     CardDTO updateCardById(UUID id, CardDTO cardDTO);
 

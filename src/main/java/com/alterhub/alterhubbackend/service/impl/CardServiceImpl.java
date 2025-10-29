@@ -9,6 +9,9 @@ import com.alterhub.alterhubbackend.mapper.CardMapper;
 import com.alterhub.alterhubbackend.repository.CardRepository;
 import com.alterhub.alterhubbackend.service.interfaces.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,8 +29,9 @@ public class CardServiceImpl implements CardService {
     private final ElementService elementService;
     private final SetService setService;
 
-    public List<CardDTO> getAllCards() {
-        return mapCardsWithDeckCount(cardRepository.findAll());
+    public Page<CardDTO> getAllCards(Pageable pageable) {
+        Page<Card> cardPage = cardRepository.findAll(pageable);
+        return new PageImpl<>(mapCardsWithDeckCount(cardPage.getContent()), pageable, cardPage.getTotalElements());
     }
 
     public CardDTO getCardById(UUID id) {
@@ -44,44 +48,36 @@ public class CardServiceImpl implements CardService {
         }
     }
 
-    public List<CardDTO> getCardsByTypeId(UUID typeId) {
+    public Page<CardDTO> getCardsByTypeId(UUID typeId, Pageable pageable) {
         if (typeId == null) {
             throw new BadRequestException();
         }
-        return cardRepository.findByTypeId(typeId)
-                .stream()
-                .map(this::mapWithDeckCount)
-                .toList();
+        Page<Card> cardPage = cardRepository.findByTypeId(typeId, pageable);
+        return new PageImpl<>(mapCardsWithDeckCount(cardPage.getContent()), pageable, cardPage.getTotalElements());
     }
 
-    public List<CardDTO> getCardsBySubTypeId(UUID subTypeId) {
+    public Page<CardDTO> getCardsBySubTypeId(UUID subTypeId, Pageable pageable) {
         if (subTypeId == null) {
             throw new BadRequestException();
         }
-        return cardRepository.findBySubtypes_Id(subTypeId)
-                .stream()
-                .map(this::mapWithDeckCount)
-                .toList();
+        Page<Card> cardPage = cardRepository.findBySubtypes_Id(subTypeId, pageable);
+        return new PageImpl<>(mapCardsWithDeckCount(cardPage.getContent()), pageable, cardPage.getTotalElements());
     }
 
-    public List<CardDTO> getCardsByRarityId(UUID rarityId) {
+    public Page<CardDTO> getCardsByRarityId(UUID rarityId, Pageable pageable) {
         if (rarityId == null) {
             throw new BadRequestException();
         }
-        return cardRepository.findByRarityId(rarityId)
-                .stream()
-                .map(this::mapWithDeckCount)
-                .toList();
+        Page<Card> cardPage = cardRepository.findByRarityId(rarityId, pageable);
+        return new PageImpl<>(mapCardsWithDeckCount(cardPage.getContent()), pageable, cardPage.getTotalElements());
     }
 
-    public List<CardDTO> getCardsByFactionId(UUID factionId) {
+    public Page<CardDTO> getCardsByFactionId(UUID factionId, Pageable pageable) {
         if (factionId == null) {
             throw new BadRequestException();
         }
-        return cardRepository.findByFactionId(factionId)
-                .stream()
-                .map(this::mapWithDeckCount)
-                .toList();
+        Page<Card> cardPage = cardRepository.findByFactionId(factionId, pageable);
+        return new PageImpl<>(mapCardsWithDeckCount(cardPage.getContent()), pageable, cardPage.getTotalElements());
     }
 
     public CardDTO addCard(CardDTO cardDTO) {

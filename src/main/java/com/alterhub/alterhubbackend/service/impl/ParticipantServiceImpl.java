@@ -33,8 +33,7 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     public Page<ParticipantDTO> getAllParticipants(Pageable pageable){
         Page<Participant> participantPage = participantRepository.findAll(pageable);
-        List<ParticipantDTO> participantsDTO = mapParticipantsDTOWithSubObjects(participantPage.getContent());
-        return new PageImpl<>(participantsDTO, pageable, participantPage.getTotalElements());
+        return new PageImpl<>(mapParticipantsDTOWithSubObjects(participantPage.getContent()), pageable, participantPage.getTotalElements());
     }
 
     private List<Participant> getParticipantsByPlayerIdInternalUsage(UUID playerId) {
@@ -68,7 +67,7 @@ public class ParticipantServiceImpl implements ParticipantService {
             throw new BadRequestException();
         }
         Page<Participant> participantPage = participantRepository.findByDeckFaction_Id(deckFactionId, pageable);
-        return mapParticipantDTOOnPage(participantPage, pageable);
+        return new PageImpl<>(mapParticipantsDTOWithSubObjects(participantPage.getContent()), pageable, participantPage.getTotalElements());
     }
 
     public Page<ParticipantDTO> getParticipantsByDeckFactionIdIn(List<UUID> deckFactionIds, Pageable pageable) {
@@ -76,7 +75,7 @@ public class ParticipantServiceImpl implements ParticipantService {
             throw new BadRequestException();
         }
         Page<Participant> participantPage = participantRepository.findByDeckFaction_IdIn(deckFactionIds, pageable);
-        return mapParticipantDTOOnPage(participantPage, pageable);
+        return new PageImpl<>(mapParticipantsDTOWithSubObjects(participantPage.getContent()), pageable, participantPage.getTotalElements());
     }
 
     public Page<ParticipantDTO> getParticipantsByDeckHeroId(UUID deckHeroId, Pageable pageable) {
@@ -84,7 +83,7 @@ public class ParticipantServiceImpl implements ParticipantService {
             throw new BadRequestException();
         }
         Page<Participant> participantPage = participantRepository.findByDeckHero_Id(deckHeroId, pageable);
-        return mapParticipantDTOOnPage(participantPage, pageable);
+        return new PageImpl<>(mapParticipantsDTOWithSubObjects(participantPage.getContent()), pageable, participantPage.getTotalElements());
     }
 
     public Page<ParticipantDTO> getParticipantsByDeckHeroIdIn(List<UUID> deckHeroIds, Pageable pageable) {
@@ -92,7 +91,7 @@ public class ParticipantServiceImpl implements ParticipantService {
             throw new BadRequestException();
         }
         Page<Participant> participantPage = participantRepository.findByDeckHero_IdIn(deckHeroIds, pageable);
-        return mapParticipantDTOOnPage(participantPage, pageable);
+        return new PageImpl<>(mapParticipantsDTOWithSubObjects(participantPage.getContent()), pageable, participantPage.getTotalElements());
     }
 
     public Page<ParticipantDTO> getParticipantsByDeckTagId(UUID deckTagId, Pageable pageable) {
@@ -100,7 +99,7 @@ public class ParticipantServiceImpl implements ParticipantService {
             throw new BadRequestException();
         }
         Page<Participant> participantPage = participantRepository.findByDeckTags_Id(deckTagId, pageable);
-        return mapParticipantDTOOnPage(participantPage, pageable);
+        return new PageImpl<>(mapParticipantsDTOWithSubObjects(participantPage.getContent()), pageable, participantPage.getTotalElements());
     }
 
     public Page<ParticipantDTO> getParticipantsByDeckTagIdIn(List<UUID> deckTagIds, Pageable pageable) {
@@ -108,7 +107,7 @@ public class ParticipantServiceImpl implements ParticipantService {
             throw new BadRequestException();
         }
         Page<Participant> participantPage = participantRepository.findByDeckTags_IdIn(deckTagIds, pageable);
-        return mapParticipantDTOOnPage(participantPage, pageable);
+        return new PageImpl<>(mapParticipantsDTOWithSubObjects(participantPage.getContent()), pageable, participantPage.getTotalElements());
     }
 
     public ParticipantDTO addParticipant(ParticipantDTO participantDTO) {
@@ -218,11 +217,6 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     public List<Participant> mapParticipantsWithSubObjects(List<ParticipantDTO> participantsDTO) {
         return participantsDTO.stream().map(this::mapParticipantWithSubObjects).toList();
-    }
-
-    private Page<ParticipantDTO> mapParticipantDTOOnPage(Page<Participant> participantPage, Pageable pageable) {
-        List<ParticipantDTO> participantsDTO = mapParticipantsDTOWithSubObjects(participantPage.getContent());
-        return new PageImpl<>(participantsDTO, pageable, participantPage.getTotalElements());
     }
 
 }

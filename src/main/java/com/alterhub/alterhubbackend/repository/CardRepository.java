@@ -1,11 +1,12 @@
 package com.alterhub.alterhubbackend.repository;
 
 import com.alterhub.alterhubbackend.entity.Card;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,13 +14,13 @@ public interface CardRepository extends JpaRepository<Card, UUID> {
 
     Optional<Card> findByAlteredId(String alteredId);
 
-    List<Card> findByTypeId(UUID typeId);
+    Page<Card> findByTypeId(UUID typeId, Pageable pageable);
 
-    List<Card> findBySubtypes_Id(UUID subTypeId);
+    Page<Card> findBySubtypes_Id(UUID subTypeId, Pageable pageable);
 
-    List<Card> findByFactionId(UUID factionId);
+    Page<Card> findByFactionId(UUID factionId, Pageable pageable);
 
-    List<Card> findByRarityId(UUID rarityId);
+    Page<Card> findByRarityId(UUID rarityId, Pageable pageable);
 
     @Query("SELECT COUNT(d) FROM Deck d JOIN d.cards c WHERE c.id = :cardId")
     Integer countDecksContainingCard(@Param("cardId") UUID cardId);

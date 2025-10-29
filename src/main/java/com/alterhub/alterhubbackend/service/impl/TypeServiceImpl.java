@@ -22,7 +22,6 @@ public class TypeServiceImpl implements TypeService {
 
     /**
      * Permet de récupérer l'ensemble des types disponibles
-     *
      * @return L'ensemble des types de cartes disponibles
      * @author SCHMIDT Jonathan
      * @since 15/10/2025
@@ -36,7 +35,6 @@ public class TypeServiceImpl implements TypeService {
 
     /**
      * Permet de récupérer un type grâce à son identifiant
-     *
      * @param id L'identifiant du type que l'on souhaite récupérer
      * @return Le type de carte récupéré grâce à l'id passé en paramètre
      * @author SCHMIDT Jonathan

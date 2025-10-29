@@ -3,13 +3,15 @@ package com.alterhub.alterhubbackend.service.interfaces;
 import com.alterhub.alterhubbackend.dto.PlayerDTO;
 import com.alterhub.alterhubbackend.entity.Player;
 import com.alterhub.alterhubbackend.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface PlayerService {
 
-    List<PlayerDTO> getAllPlayers();
+    Page<PlayerDTO> getAllPlayers(Pageable pageable);
 
     PlayerDTO getPlayerById(UUID id);
 
@@ -29,14 +31,10 @@ public interface PlayerService {
 
     Boolean existsByName(String name);
 
-    void validatePlayer(PlayerDTO playerDTO);
-
     PlayerDTO mapPlayerDTOWithSubObject(Player player);
 
     List<PlayerDTO> mapPlayersDTOWithSubObject(List<Player> players);
 
     Player mapPlayerWithSubObject(PlayerDTO playerDTO);
-
-    List<Player> mapPlayersWithSubObject(List<PlayerDTO> playersDTO);
 
 }

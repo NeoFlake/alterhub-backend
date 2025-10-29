@@ -14,6 +14,9 @@ import com.alterhub.alterhubbackend.repository.PlayerRepository;
 import com.alterhub.alterhubbackend.service.interfaces.*;
 import lombok.RequiredArgsConstructor;
 import org.owasp.encoder.Encode;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,8 +32,10 @@ public class PlayerServiceImpl implements PlayerService {
     private final ParticipantService participantService;
     private final UserService userService;
 
-    public List<PlayerDTO> getAllPlayers() {
-        return mapPlayersDTOWithSubObject(playerRepository.findAll());
+    public Page<PlayerDTO> getAllPlayers(Pageable pageable) {
+        Page<Player> playerPage = playerRepository.findAll(pageable);
+        List<PlayerDTO> playersDTO = mapPlayersDTOWithSubObject(playerPage.getContent());
+        return new PageImpl<>(playersDTO, pageable, playerPage.getTotalElements());
     }
 
     public PlayerDTO getPlayerById(UUID id) {
@@ -90,26 +95,6 @@ public class PlayerServiceImpl implements PlayerService {
         return playerRepository.existsByName(name);
     }
 
-    public void validatePlayer(PlayerDTO playerDTO) {
-        Player playerReceived = mapPlayerWithSubObject(playerDTO);
-        Player playerOnBase = playerRepository.findById(playerDTO.getId()).orElseThrow(NoResultByIdException::new);
-
-        if (!playerOnBase.getName().equals(playerReceived.getName())) {
-            throw new BadRequestException();
-        }
-
-        validatePlayerSubObject(playerDTO);
-    }
-
-    private void validatePlayerSubObject(PlayerDTO playerDTO) {
-        if(playerDTO.getDecks() != null && !playerDTO.getDecks().isEmpty()){
-            playerDTO.getDecks().forEach(deckService::validateDeck);
-        }
-        if(playerDTO.getParticipants() != null && !playerDTO.getParticipants().isEmpty()){
-            playerDTO.getParticipants().forEach(participantService::validateParticipant);
-        }
-    }
-
     public PlayerDTO mapPlayerDTOWithSubObject(Player player) {
         List<DeckDTO> decksDTO = deckService.mapDecksDTOWithSubObjects(player.getDecks());
         List<ParticipantDTO> participantsDTO = participantService.mapParticipantsDTOWithSubObjects(player.getParticipants());
@@ -129,10 +114,6 @@ public class PlayerServiceImpl implements PlayerService {
                 : null;
 
         return PlayerMapper.toEntity(playerDTO, decks, participants, user);
-    }
-
-    public List<Player> mapPlayersWithSubObject(List<PlayerDTO> playersDTO) {
-        return playersDTO.stream().map(this::mapPlayerWithSubObject).toList();
     }
 
 }

@@ -11,6 +11,9 @@ import com.alterhub.alterhubbackend.service.interfaces.ParticipantService;
 import com.alterhub.alterhubbackend.service.interfaces.TournamentService;
 import lombok.RequiredArgsConstructor;
 import org.owasp.encoder.Encode;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -31,8 +34,9 @@ public class TournamentServiceImpl implements TournamentService {
     private final LocalDate startOfMonthLocalDate = LocalDate.now().withDayOfMonth(1);
     private final LocalDate endOfMonthLocalDate = LocalDate.now();
 
-    public List<TournamentDTO> getAllTournaments() {
-        return mapTournamentsDTOWithSubObject(tournamentRepository.findAll());
+    public Page<TournamentDTO> getAllTournaments(Pageable pageable) {
+        Page<Tournament> tournamentPage = tournamentRepository.findAll(pageable);
+        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
     public TournamentDTO getTournamentById(UUID tournamentId) {
@@ -47,103 +51,118 @@ public class TournamentServiceImpl implements TournamentService {
         return mapTournamentDTOWithSubObject(tournamentRepository.findByName(Encode.forHtml(tournamentName)));
     }
 
-    public List<TournamentDTO> getTournamentByLessOfNumberOfPlayer(Integer numberOfPlayers) {
+    public Page<TournamentDTO> getTournamentByLessOfNumberOfPlayer(Integer numberOfPlayers, Pageable pageable) {
         if (numberOfPlayers == null || numberOfPlayers <= 0) {
             throw new BadRequestException();
         }
-        return mapTournamentsDTOWithSubObject(tournamentRepository.findByNumberOfPlayersIsLessThanEqual((numberOfPlayers)));
+        Page<Tournament> tournamentPage = tournamentRepository.findByNumberOfPlayersIsLessThanEqual(numberOfPlayers, pageable);
+        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
-    public List<TournamentDTO> getTournamentByGreaterOfNumberOfPlayer(Integer numberOfPlayers) {
+    public Page<TournamentDTO> getTournamentByGreaterOfNumberOfPlayer(Integer numberOfPlayers, Pageable pageable) {
         if (numberOfPlayers == null || numberOfPlayers <= 0) {
             throw new BadRequestException();
         }
-        return mapTournamentsDTOWithSubObject(tournamentRepository.findByNumberOfPlayersIsGreaterThanEqual((numberOfPlayers)));
+        Page<Tournament> tournamentPage = tournamentRepository.findByNumberOfPlayersIsGreaterThanEqual(numberOfPlayers, pageable);
+        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
-    public List<TournamentDTO> getTournamentBetweenARangeOfNumberOfPlayers(Integer minimalNumberOfPlayers, Integer maximalNumberOfPlayers) {
+    public Page<TournamentDTO> getTournamentBetweenARangeOfNumberOfPlayers(Integer minimalNumberOfPlayers, Integer maximalNumberOfPlayers, Pageable pageable) {
         if (minimalNumberOfPlayers == null || maximalNumberOfPlayers == null || minimalNumberOfPlayers <= 0 || maximalNumberOfPlayers <= 0) {
             throw new BadRequestException();
         }
-        return mapTournamentsDTOWithSubObject(tournamentRepository.findByNumberOfPlayersIsBetween(minimalNumberOfPlayers, maximalNumberOfPlayers));
+        Page<Tournament> tournamentPage = tournamentRepository.findByNumberOfPlayersIsBetween(minimalNumberOfPlayers, maximalNumberOfPlayers, pageable);
+        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
-    public List<TournamentDTO> getTournamentByLocation(String location) {
+    public Page<TournamentDTO> getTournamentByLocation(String location, Pageable pageable) {
         if (location == null || location.isEmpty()) {
             throw new BadRequestException();
         }
-        return mapTournamentsDTOWithSubObject(tournamentRepository.findByLocation(Encode.forHtml(location)));
+        Page<Tournament> tournamentPage = tournamentRepository.findByLocation(Encode.forHtml(location), pageable);
+        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
-    public List<TournamentDTO> getTournamentByDate(LocalDate date) {
+    public Page<TournamentDTO> getTournamentByDate(LocalDate date, Pageable pageable) {
         if (date == null || date.isAfter(LocalDate.now())) {
             throw new BadRequestException();
         }
-        return mapTournamentsDTOWithSubObject(tournamentRepository.findByDate(date));
+        Page<Tournament> tournamentPage = tournamentRepository.findByDate(date, pageable);
+        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
-    public List<TournamentDTO> getTournamentPlayedBeforeADate(LocalDate date) {
+    public Page<TournamentDTO> getTournamentPlayedBeforeADate(LocalDate date, Pageable pageable) {
         if (date == null || date.isAfter(LocalDate.now())) {
             throw new BadRequestException();
         }
-        return mapTournamentsDTOWithSubObject(tournamentRepository.findByDateIsBefore(date));
+        Page<Tournament> tournamentPage = tournamentRepository.findByDateIsBefore(date, pageable);
+        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
-    public List<TournamentDTO> getTournamentPlayedAfterADate(LocalDate date) {
+    public Page<TournamentDTO> getTournamentPlayedAfterADate(LocalDate date, Pageable pageable) {
         if (date == null || date.isAfter(LocalDate.now().minusDays(2))) {
             throw new BadRequestException();
         }
-        return mapTournamentsDTOWithSubObject(tournamentRepository.findByDateIsAfter(date));
+        Page<Tournament> tournamentPage = tournamentRepository.findByDateIsAfter(date, pageable);
+        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
-    public List<TournamentDTO> getTournamentPlayedBetweenARangeOfDate(LocalDate startingDate, LocalDate endingDate) {
+    public Page<TournamentDTO> getTournamentPlayedBetweenARangeOfDate(LocalDate startingDate, LocalDate endingDate, Pageable pageable) {
         if (startingDate == null || endingDate == null || endingDate.isBefore(startingDate) || startingDate.isAfter(LocalDate.now().minusDays(2)) || endingDate.isAfter(LocalDate.now())) {
             throw new BadRequestException();
         }
-        return mapTournamentsDTOWithSubObject(tournamentRepository.findByDateIsBetween(startingDate, endingDate));
+        Page<Tournament> tournamentPage = tournamentRepository.findByDateIsBetween(startingDate, endingDate, pageable);
+        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
-    public List<TournamentDTO> getTournamentPlayedThisWeek() {
-        return mapTournamentsDTOWithSubObject(tournamentRepository.findByDateIsBetween(startOfWeekLocalDate, endOfWeekLocalDate));
+    public Page<TournamentDTO> getTournamentPlayedThisWeek(Pageable pageable) {
+        Page<Tournament> tournamentPage = tournamentRepository.findByDateIsBetween(startOfWeekLocalDate, endOfWeekLocalDate, pageable);
+        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
-    public List<TournamentDTO> getTournamentPlayedThisMonth() {
-        return mapTournamentsDTOWithSubObject(tournamentRepository.findByDateIsBetween(startOfMonthLocalDate, endOfMonthLocalDate));
+    public Page<TournamentDTO> getTournamentPlayedThisMonth(Pageable pageable) {
+        Page<Tournament> tournamentPage = tournamentRepository.findByDateIsBetween(startOfMonthLocalDate, endOfMonthLocalDate, pageable);
+        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
-    public List<TournamentDTO> getTournamentByPlayerId(UUID playerId) {
+    public Page<TournamentDTO> getTournamentByPlayerId(UUID playerId, Pageable pageable) {
         if (playerId == null) {
             throw new BadRequestException();
         }
-        return mapTournamentsDTOWithSubObject(tournamentRepository.findByParticipantsPlayer_Id(playerId));
+        Page<Tournament> tournamentPage = tournamentRepository.findByParticipantsPlayer_Id(playerId, pageable);
+        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
-    public List<TournamentDTO> getTournamentsByFactionId(UUID factionId) {
+    public Page<TournamentDTO> getTournamentsByFactionId(UUID factionId, Pageable pageable) {
         if (factionId == null) {
             throw new BadRequestException();
         }
-        return mapTournamentsDTOWithSubObject(tournamentRepository.findByParticipantsDeckFaction_Id(factionId));
+        Page<Tournament> tournamentPage = tournamentRepository.findByParticipantsDeckFaction_Id(factionId, pageable);
+        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
-    public List<TournamentDTO> getTournamentsByFactionIdIn(List<UUID> factionIds) {
+    public Page<TournamentDTO> getTournamentsByFactionIdIn(List<UUID> factionIds, Pageable pageable) {
         if (factionIds == null || factionIds.isEmpty()) {
             throw new BadRequestException();
         }
-        return mapTournamentsDTOWithSubObject(tournamentRepository.findByParticipantsDeckFaction_IdIn(factionIds));
+        Page<Tournament> tournamentPage = tournamentRepository.findByParticipantsDeckFaction_IdIn(factionIds, pageable);
+        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
-    public List<TournamentDTO> getTournamentsByHeroId(UUID heroId) {
+    public Page<TournamentDTO> getTournamentsByHeroId(UUID heroId, Pageable pageable) {
         if (heroId == null) {
             throw new BadRequestException();
         }
-        return mapTournamentsDTOWithSubObject(tournamentRepository.findByParticipantsDeckHero_Id(heroId));
+        Page<Tournament> tournamentPage = tournamentRepository.findByParticipantsDeckHero_Id(heroId, pageable);
+        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
-    public List<TournamentDTO> getTournamentsByHeroIdIn(List<UUID> heroIds) {
+    public Page<TournamentDTO> getTournamentsByHeroIdIn(List<UUID> heroIds, Pageable pageable) {
         if (heroIds == null || heroIds.isEmpty()) {
             throw new BadRequestException();
         }
-        return mapTournamentsDTOWithSubObject(tournamentRepository.findByParticipantsDeckHero_IdIn(heroIds));
+        Page<Tournament> tournamentPage = tournamentRepository.findByParticipantsDeckHero_IdIn(heroIds, pageable);
+        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
     public TournamentDTO addTournament(TournamentDTO tournamentDTO) {

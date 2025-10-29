@@ -2,6 +2,8 @@ package com.alterhub.alterhubbackend.service.interfaces;
 
 import com.alterhub.alterhubbackend.dto.TournamentDTO;
 import com.alterhub.alterhubbackend.entity.Tournament;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,43 +11,43 @@ import java.util.UUID;
 
 public interface TournamentService {
 
-    List<TournamentDTO> getAllTournaments();
+    Page<TournamentDTO> getAllTournaments(Pageable pageable);
 
     TournamentDTO getTournamentById(UUID tournamentId);
 
-    List<TournamentDTO> getTournamentByLessOfNumberOfPlayer(Integer numberOfPlayers);
+    Page<TournamentDTO> getTournamentByLessOfNumberOfPlayer(Integer numberOfPlayers, Pageable pageable);
 
-    List<TournamentDTO> getTournamentByGreaterOfNumberOfPlayer(Integer numberOfPlayers);
+    Page<TournamentDTO> getTournamentByGreaterOfNumberOfPlayer(Integer numberOfPlayers, Pageable pageable);
 
-    List<TournamentDTO> getTournamentBetweenARangeOfNumberOfPlayers(Integer minimalNumberOfPlayers, Integer maximalNumberOfPlayers);
+    Page<TournamentDTO> getTournamentBetweenARangeOfNumberOfPlayers(Integer minimalNumberOfPlayers, Integer maximalNumberOfPlayers, Pageable pageable);
 
-    List<TournamentDTO> getTournamentByDate(LocalDate date);
+    Page<TournamentDTO> getTournamentByDate(LocalDate date, Pageable pageable);
 
-    List<TournamentDTO> getTournamentPlayedBeforeADate(LocalDate date);
+    Page<TournamentDTO> getTournamentPlayedBeforeADate(LocalDate date, Pageable pageable);
 
-    List<TournamentDTO> getTournamentPlayedAfterADate(LocalDate date);
+    Page<TournamentDTO> getTournamentPlayedAfterADate(LocalDate date, Pageable pageable);
 
-    List<TournamentDTO> getTournamentPlayedBetweenARangeOfDate(LocalDate startingDate, LocalDate endingDate);
+    Page<TournamentDTO> getTournamentPlayedBetweenARangeOfDate(LocalDate startingDate, LocalDate endingDate, Pageable pageable);
 
-    List<TournamentDTO> getTournamentByPlayerId(UUID playerId);
+    Page<TournamentDTO> getTournamentByPlayerId(UUID playerId, Pageable pageable);
 
-    List<TournamentDTO> getTournamentsByFactionId(UUID factionId);
+    Page<TournamentDTO> getTournamentsByFactionId(UUID factionId, Pageable pageable);
 
-    List<TournamentDTO> getTournamentsByHeroId(UUID heroId);
+    Page<TournamentDTO> getTournamentsByHeroId(UUID heroId, Pageable pageable);
 
-    List<TournamentDTO> getTournamentsByFactionIdIn(List<UUID> factionIds);
+    Page<TournamentDTO> getTournamentsByFactionIdIn(List<UUID> factionIds, Pageable pageable);
 
-    List<TournamentDTO> getTournamentsByHeroIdIn(List<UUID> heroIds);
+    Page<TournamentDTO> getTournamentsByHeroIdIn(List<UUID> heroIds, Pageable pageable);
 
-    List<TournamentDTO> getTournamentPlayedThisWeek();
+    Page<TournamentDTO> getTournamentPlayedThisWeek(Pageable pageable);
 
-    List<TournamentDTO> getTournamentPlayedThisMonth();
+    Page<TournamentDTO> getTournamentPlayedThisMonth(Pageable pageable);
 
     Boolean existsById(UUID tournamentId);
 
     TournamentDTO getTournamentByName(String tournamentName);
 
-    List<TournamentDTO> getTournamentByLocation(String location);
+    Page<TournamentDTO> getTournamentByLocation(String location, Pageable pageable);
 
     void verifyTournamentIntegrity(TournamentDTO tournamentDTO);
 

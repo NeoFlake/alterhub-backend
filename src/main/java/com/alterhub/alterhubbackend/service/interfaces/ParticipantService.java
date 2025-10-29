@@ -2,13 +2,15 @@ package com.alterhub.alterhubbackend.service.interfaces;
 
 import com.alterhub.alterhubbackend.dto.ParticipantDTO;
 import com.alterhub.alterhubbackend.entity.Participant;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface ParticipantService {
 
-    List<ParticipantDTO> getAllParticipants();
+    Page<ParticipantDTO> getAllParticipants(Pageable pageable);
 
     List<ParticipantDTO> getParticipantsByPlayerId(UUID playerId);
 
@@ -16,17 +18,17 @@ public interface ParticipantService {
 
     List<ParticipantDTO> getParticipantsByClassement(Short classement);
 
-    List<ParticipantDTO> getParticipantsByDeckFactionId(UUID deckFactionId);
+    Page<ParticipantDTO> getParticipantsByDeckFactionId(UUID deckFactionId, Pageable pageable);
 
-    List<ParticipantDTO> getParticipantsByDeckFactionIdIn(List<UUID> deckFactionIds);
+    Page<ParticipantDTO> getParticipantsByDeckFactionIdIn(List<UUID> deckFactionIds, Pageable pageable);
 
-    List<ParticipantDTO> getParticipantsByDeckHeroId(UUID deckHeroId);
+    Page<ParticipantDTO> getParticipantsByDeckHeroId(UUID deckHeroId, Pageable pageable);
 
-    List<ParticipantDTO> getParticipantsByDeckHeroIdIn(List<UUID> deckHeroIds);
+    Page<ParticipantDTO> getParticipantsByDeckHeroIdIn(List<UUID> deckHeroIds, Pageable pageable);
 
-    List<ParticipantDTO> getParticipantsByDeckTagId(UUID deckTagId);
+    Page<ParticipantDTO> getParticipantsByDeckTagId(UUID deckTagId, Pageable pageable);
 
-    List<ParticipantDTO> getParticipantsByDeckTagIdIn(List<UUID> deckTagIds);
+    Page<ParticipantDTO> getParticipantsByDeckTagIdIn(List<UUID> deckTagIds, Pageable pageable);
 
     ParticipantDTO addParticipant(ParticipantDTO participantDTO);
 

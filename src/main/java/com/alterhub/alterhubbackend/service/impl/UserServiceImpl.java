@@ -207,6 +207,9 @@ public class UserServiceImpl implements UserService {
         // Puis, on délie le player de son utilisateur associé en plaçant l'user associé à null
         playerService.unsetUserFromPlayer(id);
 
+        // On supprime également son role dans la table associé
+        roleService.deleteRoleByUserId(id);
+
         // Enfin, on supprime proprement l'user
         userRepository.deleteById(id);
     }

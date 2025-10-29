@@ -9,13 +9,15 @@ import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.ParticipantMapper;
-import com.alterhub.alterhubbackend.repository.DeckRepository;
 import com.alterhub.alterhubbackend.repository.ParticipantRepository;
 import com.alterhub.alterhubbackend.service.interfaces.DeckService;
 import com.alterhub.alterhubbackend.service.interfaces.ParticipantService;
 import com.alterhub.alterhubbackend.service.interfaces.PlayerService;
 import com.alterhub.alterhubbackend.service.interfaces.TournamentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -29,8 +31,10 @@ public class ParticipantServiceImpl implements ParticipantService {
     private final PlayerService playerService;
     private final TournamentService tournamentService;
 
-    public List<ParticipantDTO> getAllParticipants(){
-        return mapParticipantsDTOWithSubObjects(participantRepository.findAll());
+    public Page<ParticipantDTO> getAllParticipants(Pageable pageable){
+        Page<Participant> participantPage = participantRepository.findAll(pageable);
+        List<ParticipantDTO> participantsDTO = mapParticipantsDTOWithSubObjects(participantPage.getContent());
+        return new PageImpl<>(participantsDTO, pageable, participantPage.getTotalElements());
     }
 
     private List<Participant> getParticipantsByPlayerIdInternalUsage(UUID playerId) {
@@ -59,46 +63,52 @@ public class ParticipantServiceImpl implements ParticipantService {
         return mapParticipantsDTOWithSubObjects(participantRepository.findByClassement(classement));
     }
 
-    public List<ParticipantDTO> getParticipantsByDeckFactionId(UUID deckFactionId) {
+    public Page<ParticipantDTO> getParticipantsByDeckFactionId(UUID deckFactionId, Pageable pageable) {
         if(deckFactionId == null){
             throw new BadRequestException();
         }
-        return mapParticipantsDTOWithSubObjects(participantRepository.findByDeckFaction_Id(deckFactionId));
+        Page<Participant> participantPage = participantRepository.findByDeckFaction_Id(deckFactionId, pageable);
+        return mapParticipantDTOOnPage(participantPage, pageable);
     }
 
-    public List<ParticipantDTO> getParticipantsByDeckFactionIdIn(List<UUID> deckFactionIds) {
+    public Page<ParticipantDTO> getParticipantsByDeckFactionIdIn(List<UUID> deckFactionIds, Pageable pageable) {
         if(deckFactionIds == null ||  deckFactionIds.isEmpty()){
             throw new BadRequestException();
         }
-        return mapParticipantsDTOWithSubObjects(participantRepository.findByDeckFaction_IdIn(deckFactionIds));
+        Page<Participant> participantPage = participantRepository.findByDeckFaction_IdIn(deckFactionIds, pageable);
+        return mapParticipantDTOOnPage(participantPage, pageable);
     }
 
-    public List<ParticipantDTO> getParticipantsByDeckHeroId(UUID deckHeroId) {
+    public Page<ParticipantDTO> getParticipantsByDeckHeroId(UUID deckHeroId, Pageable pageable) {
         if(deckHeroId == null){
             throw new BadRequestException();
         }
-        return mapParticipantsDTOWithSubObjects(participantRepository.findByDeckHero_Id(deckHeroId));
+        Page<Participant> participantPage = participantRepository.findByDeckHero_Id(deckHeroId, pageable);
+        return mapParticipantDTOOnPage(participantPage, pageable);
     }
 
-    public List<ParticipantDTO> getParticipantsByDeckHeroIdIn(List<UUID> deckHeroIds) {
+    public Page<ParticipantDTO> getParticipantsByDeckHeroIdIn(List<UUID> deckHeroIds, Pageable pageable) {
         if(deckHeroIds == null || deckHeroIds.isEmpty()) {
             throw new BadRequestException();
         }
-        return mapParticipantsDTOWithSubObjects(participantRepository.findByDeckHero_IdIn(deckHeroIds));
+        Page<Participant> participantPage = participantRepository.findByDeckHero_IdIn(deckHeroIds, pageable);
+        return mapParticipantDTOOnPage(participantPage, pageable);
     }
 
-    public List<ParticipantDTO> getParticipantsByDeckTagId(UUID deckTagId) {
+    public Page<ParticipantDTO> getParticipantsByDeckTagId(UUID deckTagId, Pageable pageable) {
         if(deckTagId == null){
             throw new BadRequestException();
         }
-        return mapParticipantsDTOWithSubObjects(participantRepository.findByDeckTags_Id(deckTagId));
+        Page<Participant> participantPage = participantRepository.findByDeckTags_Id(deckTagId, pageable);
+        return mapParticipantDTOOnPage(participantPage, pageable);
     }
 
-    public List<ParticipantDTO> getParticipantsByDeckTagIdIn(List<UUID> deckTagIds) {
+    public Page<ParticipantDTO> getParticipantsByDeckTagIdIn(List<UUID> deckTagIds, Pageable pageable) {
         if(deckTagIds == null || deckTagIds.isEmpty()) {
             throw new BadRequestException();
         }
-        return mapParticipantsDTOWithSubObjects(participantRepository.findByDeckTags_IdIn(deckTagIds));
+        Page<Participant> participantPage = participantRepository.findByDeckTags_IdIn(deckTagIds, pageable);
+        return mapParticipantDTOOnPage(participantPage, pageable);
     }
 
     public ParticipantDTO addParticipant(ParticipantDTO participantDTO) {
@@ -208,6 +218,11 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     public List<Participant> mapParticipantsWithSubObjects(List<ParticipantDTO> participantsDTO) {
         return participantsDTO.stream().map(this::mapParticipantWithSubObjects).toList();
+    }
+
+    private Page<ParticipantDTO> mapParticipantDTOOnPage(Page<Participant> participantPage, Pageable pageable) {
+        List<ParticipantDTO> participantsDTO = mapParticipantsDTOWithSubObjects(participantPage.getContent());
+        return new PageImpl<>(participantsDTO, pageable, participantPage.getTotalElements());
     }
 
 }

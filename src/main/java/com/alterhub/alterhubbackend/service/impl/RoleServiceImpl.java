@@ -40,11 +40,11 @@ public class RoleServiceImpl implements RoleService {
         }
     }
 
-    public void deleteRoleById(UUID id) {
-        if(!roleRepository.existsById(id)) {
+    public void deleteRoleByUserId(UUID id) {
+        if(!roleRepository.existsByUserId(id)) {
             throw new NoResultByIdException();
         }
-        roleRepository.deleteById(id);
+        roleRepository.deleteByUserId(id);
     }
 
 }

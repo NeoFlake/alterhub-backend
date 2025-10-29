@@ -10,7 +10,7 @@ public interface RoleService {
 
     RoleDTO updateRoleById(UUID id, RoleDTO roleDTO);
 
-    void deleteRoleById(UUID id);
+    void deleteRoleByUserId(UUID id);
 
     Boolean permissionGrantedForUser(UUID id);
 

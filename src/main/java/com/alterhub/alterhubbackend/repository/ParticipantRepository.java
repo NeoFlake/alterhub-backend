@@ -1,6 +1,8 @@
 package com.alterhub.alterhubbackend.repository;
 
 import com.alterhub.alterhubbackend.entity.Participant;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,17 +18,17 @@ public interface ParticipantRepository extends JpaRepository<Participant, UUID> 
 
     List<Participant> findByClassement(Short classement);
 
-    List<Participant> findByDeckFaction_Id(UUID deckFactionId);
+    Page<Participant> findByDeckFaction_Id(UUID deckFactionId, Pageable pageable);
 
-    List<Participant> findByDeckFaction_IdIn(List<UUID> deckFactionIds);
+    Page<Participant> findByDeckFaction_IdIn(List<UUID> deckFactionIds, Pageable pageable);
 
-    List<Participant> findByDeckHero_Id(UUID deckHeroId);
+    Page<Participant> findByDeckHero_Id(UUID deckHeroId, Pageable pageable);
 
-    List<Participant> findByDeckHero_IdIn(List<UUID> deckHeroId);
+    Page<Participant> findByDeckHero_IdIn(List<UUID> deckHeroId, Pageable pageable);
 
-    List<Participant> findByDeckTags_Id(UUID deckTagId);
+    Page<Participant> findByDeckTags_Id(UUID deckTagId, Pageable pageable);
 
-    List<Participant> findByDeckTags_IdIn(List<UUID> deckTagIds);
+    Page<Participant> findByDeckTags_IdIn(List<UUID> deckTagIds, Pageable pageable);
 
     void deleteByPlayer_Id(UUID id);
 

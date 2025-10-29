@@ -8,4 +8,8 @@ import java.util.UUID;
 public interface RoleRepository extends JpaRepository<Role, UUID> {
 
     Boolean existsByUserIdAndRole(UUID userId, com.alterhub.alterhubbackend.enums.Role role);
+
+    Boolean existsByUserId(UUID id);
+
+    void deleteByUserId(UUID userId);
 }

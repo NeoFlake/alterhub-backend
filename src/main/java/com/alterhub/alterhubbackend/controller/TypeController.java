@@ -1,6 +1,7 @@
 package com.alterhub.alterhubbackend.controller;
 
 import com.alterhub.alterhubbackend.constant.ApiRoutes;
+import com.alterhub.alterhubbackend.constant.ReturnMessages;
 import com.alterhub.alterhubbackend.dto.TypeDTO;
 import com.alterhub.alterhubbackend.service.interfaces.TypeService;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -38,9 +40,10 @@ public class TypeController {
     }
 
     @DeleteMapping(ApiRoutes.SEARCH_BY_ID)
-    public ResponseEntity<TypeDTO> deleteType(@PathVariable UUID id) {
+    public ResponseEntity<Map<String, String>> deleteType(@PathVariable UUID id) {
         typeService.deleteTypeById(id);
-        return ResponseEntity.noContent().build();
+        Map<String, String> response = Map.of("message", ReturnMessages.SUPPRESSION_SUCCESS);
+        return ResponseEntity.ok(response);
     }
 
 }

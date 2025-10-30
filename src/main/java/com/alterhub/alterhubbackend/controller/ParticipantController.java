@@ -77,8 +77,8 @@ public class ParticipantController {
     }
 
     @PostMapping
-    public ResponseEntity<ParticipantDTO> addParticipant(@RequestBody ParticipantDTO deckDTO) {
-        return ResponseEntity.ok(participantService.addParticipant(deckDTO));
+    public ResponseEntity<ParticipantDTO> addParticipant(@RequestBody ParticipantDTO participantDTO) {
+        return ResponseEntity.ok(participantService.addParticipant(participantDTO));
     }
 
     @PutMapping(ApiRoutes.SEARCH_BY_ID)

@@ -1,17 +1,5 @@
 package com.alterhub.alterhubbackend.constant;
 
-import com.alterhub.alterhubbackend.dto.DeckDTO;
-import com.alterhub.alterhubbackend.dto.ParticipantDTO;
-import com.alterhub.alterhubbackend.dto.PlayerDTO;
-import com.alterhub.alterhubbackend.dto.TournamentDTO;
-import com.alterhub.alterhubbackend.entity.Player;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
-
 public final class ApiRoutes {
 
     private ApiRoutes() {
@@ -139,9 +127,8 @@ public final class ApiRoutes {
         public static final String BY_FACTION_ID_IN = FACTIONS + "/in";
         public static final String BY_HERO_ID = HEROS + SEARCH_BY_ID;
         public static final String BY_HERO_ID_IN = HEROS + "/in";
-        public static final String PLAYED_TODAY = PLAYED + TODAY;
-        public static final String CREATED_THIS_WEEK = PLAYED + WEEK;
-        public static final String CREATED_THIS_MONTH = PLAYED + MONTH;
+        public static final String PLAYED_THIS_WEEK = PLAYED + WEEK;
+        public static final String PLAYED_THIS_MONTH = PLAYED + MONTH;
         public static final String BY_LOCATION = "/location/{location}";
     }
 

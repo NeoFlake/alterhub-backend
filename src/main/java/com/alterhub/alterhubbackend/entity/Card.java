@@ -60,7 +60,7 @@ public class Card {
     @JoinColumn(name = "rarityId", nullable = false)
     private Rarity rarity;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Element element;
 
     @Column(nullable = false)

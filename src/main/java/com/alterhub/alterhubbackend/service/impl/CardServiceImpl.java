@@ -184,7 +184,6 @@ public class CardServiceImpl implements CardService {
         }
         cardDTO.getSets().forEach(setService::validateSet);
         rarityService.validateRarity(cardDTO.getRarity());
-        elementService.validateElement(cardDTO.getElement());
     }
 
 }

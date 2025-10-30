@@ -81,18 +81,4 @@ public class ElementServiceImpl implements ElementService {
         }
     }
 
-    public void validateElement(ElementDTO elementDTO) {
-        Element elementReceived = ElementMapper.toEntity(elementDTO);
-        Element elementOnBase = elementRepository.findById(elementReceived.getId()).orElseThrow(NoResultByIdException::new);
-        if (!Objects.equals(elementOnBase.getMainCost(), elementReceived.getMainCost())
-                || !Objects.equals(elementOnBase.getRecallCost(), elementReceived.getRecallCost())
-                || !Objects.equals(elementOnBase.getOceanPower(), elementReceived.getOceanPower())
-                || !Objects.equals(elementOnBase.getMountainPower(), elementReceived.getMountainPower())
-                || !Objects.equals(elementOnBase.getForestPower(), elementReceived.getForestPower())
-                || !Objects.equals(elementOnBase.getMainEffect(), elementReceived.getMainEffect())
-                || !Objects.equals(elementOnBase.getEchoEffect(), elementReceived.getEchoEffect())) {
-            throw new BadRequestException();
-        }
-    }
-
 }

@@ -36,6 +36,10 @@ public class ParticipantServiceImpl implements ParticipantService {
         return new PageImpl<>(mapParticipantsDTOWithSubObjects(participantPage.getContent()), pageable, participantPage.getTotalElements());
     }
 
+    public ParticipantDTO getParticipantById(UUID id){
+        return mapParticipantDTOWithSubObjects(participantRepository.findById(id).orElseThrow(NoResultByIdException::new));
+    }
+
     private List<Participant> getParticipantsByPlayerIdInternalUsage(UUID playerId) {
         if(playerId == null){
             throw new BadRequestException();

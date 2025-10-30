@@ -43,11 +43,11 @@ public interface TournamentService {
 
     Page<TournamentDTO> getTournamentPlayedThisMonth(Pageable pageable);
 
-    Boolean existsById(UUID tournamentId);
-
     TournamentDTO getTournamentByName(String tournamentName);
 
     Page<TournamentDTO> getTournamentByLocation(String location, Pageable pageable);
+
+    Boolean existsById(UUID tournamentId);
 
     void verifyTournamentIntegrity(TournamentDTO tournamentDTO);
 

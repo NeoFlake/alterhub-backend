@@ -12,6 +12,8 @@ public interface ParticipantService {
 
     Page<ParticipantDTO> getAllParticipants(Pageable pageable);
 
+    ParticipantDTO getParticipantById(UUID id);
+
     List<ParticipantDTO> getParticipantsByPlayerId(UUID playerId);
 
     List<ParticipantDTO> getParticipantsByTournamentId(UUID tournamentId);

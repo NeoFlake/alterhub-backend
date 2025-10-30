@@ -19,6 +19,4 @@ public interface ElementService {
 
     void verifyElementIntegrity(ElementDTO elementDTO);
 
-    void validateElement(ElementDTO elementDTO);
-
 }

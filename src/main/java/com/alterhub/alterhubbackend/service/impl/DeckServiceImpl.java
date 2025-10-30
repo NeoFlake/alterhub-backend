@@ -132,7 +132,7 @@ public class DeckServiceImpl implements DeckService {
         return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
-    public Page<DeckDTO> getDecksCreatedOThisWeek(Pageable pageable) {
+    public Page<DeckDTO> getDecksCreatedThisWeek(Pageable pageable) {
         Page<Deck> deckPage = deckRepository.findByDateOfCreationBetweenOrderByDateOfCreationDesc(startOfWeekLocalDate, endOfWeekLocalDate, pageable);
         return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
@@ -157,7 +157,7 @@ public class DeckServiceImpl implements DeckService {
         return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
-    public DeckDTO getLastDeckModifiedByHeroId(UUID heroId, Pageable pageable){
+    public DeckDTO getLastDeckModifiedByHeroId(UUID heroId){
         if(heroId==null){
             throw new BadRequestException();
         }
@@ -177,7 +177,7 @@ public class DeckServiceImpl implements DeckService {
         return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
-    public Page<DeckDTO> getDecksModifiedOThisWeek(Pageable pageable){
+    public Page<DeckDTO> getDecksModifiedThisWeek(Pageable pageable){
         Page<Deck> deckPage = deckRepository.findByLastModificationBetweenOrderByLastModificationDesc(startOfWeekLocalDateTime, endOfWeekLocalDateTime, pageable);
         return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }

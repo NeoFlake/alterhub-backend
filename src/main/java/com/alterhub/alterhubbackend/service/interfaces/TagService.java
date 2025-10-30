@@ -13,14 +13,12 @@ public interface TagService {
 
     TagDTO getTagByName(String name);
 
-    TagDTO addTag(TagDTO tagDTO);
+    TagDTO createTag(TagDTO tagDTO);
 
     TagDTO updateTagById(UUID id, TagDTO tagDTO);
 
     void deleteTagById(UUID id);
 
     void verifyTagIntegrity(TagDTO tagDTO);
-
-    void validateTag(TagDTO tagDTO);
 
 }

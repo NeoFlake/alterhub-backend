@@ -6,10 +6,7 @@ import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.TagMapper;
-import com.alterhub.alterhubbackend.repository.PlayerRepository;
 import com.alterhub.alterhubbackend.repository.TagRepository;
-import com.alterhub.alterhubbackend.service.interfaces.CardService;
-import com.alterhub.alterhubbackend.service.interfaces.DeckService;
 import com.alterhub.alterhubbackend.service.interfaces.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,7 +37,7 @@ public class TagServiceImpl implements TagService {
         return TagMapper.toDTO(tag);
     }
 
-    public TagDTO addTag(TagDTO tagDTO) {
+    public TagDTO createTag(TagDTO tagDTO) {
         verifyTagIntegrity(tagDTO);
         Tag tag = TagMapper.toEntity(tagDTO);
         return TagMapper.toDTO(tagRepository.save(tag));
@@ -75,16 +72,6 @@ public class TagServiceImpl implements TagService {
         if (tagDTO.getName() == null || tagDTO.getName().isEmpty()) {
             throw new BadRequestException();
         }
-    }
-
-    public void validateTag(TagDTO tagDTO) {
-
-        Tag tagReceived = TagMapper.toEntity(tagDTO);
-        Tag tagOnBase = tagRepository.findById(tagReceived.getId()).orElseThrow(NoResultByIdException::new);
-        if (!tagOnBase.getName().equals(tagReceived.getName())) {
-            throw new BadRequestException();
-        }
-
     }
 
 }

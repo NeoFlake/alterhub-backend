@@ -2,57 +2,59 @@ package com.alterhub.alterhubbackend.service.interfaces;
 
 import com.alterhub.alterhubbackend.dto.DeckDTO;
 import com.alterhub.alterhubbackend.entity.Deck;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface DeckService {
 
-    List<DeckDTO> getAllDecks();
+    Page<DeckDTO> getAllDecks(Pageable pageable);
 
     DeckDTO getDeckById(UUID deckId);
 
     DeckDTO getDeckByName(String name);
 
-    List<DeckDTO> getDecksLikeByName(String name);
+    Page<DeckDTO> getDecksLikeByName(String name, Pageable pageable);
 
-    List<DeckDTO> getDecksByPlayerId(UUID playerId);
+    Page<DeckDTO> getDecksByPlayerId(UUID playerId, Pageable pageable);
 
-    List<DeckDTO> getDecksByFactionId(UUID factionId);
+    Page<DeckDTO> getDecksByFactionId(UUID factionId, Pageable pageable);
 
-    List<DeckDTO> getDecksByHeroId(UUID heroId);
+    Page<DeckDTO> getDecksByHeroId(UUID heroId, Pageable pageable);
 
     DeckDTO getLastDeckCreatedByFactionId(UUID factionId);
 
-    List<DeckDTO> getLast5DecksCreatedByFactionId(UUID factionId);
+    Page<DeckDTO> getLast5DecksCreatedByFactionId(UUID factionId, Pageable pageable);
 
     DeckDTO getLastDeckCreatedByHeroId(UUID heroId);
 
-    List<DeckDTO> getLast5DecksCreatedByHeroId(UUID heroId);
+    Page<DeckDTO> getLast5DecksCreatedByHeroId(UUID heroId, Pageable pageable);
 
-    List<DeckDTO> getDecksCreatedThisDay();
+    Page<DeckDTO> getDecksCreatedThisDay(Pageable pageable);
 
-    List<DeckDTO> getDecksCreatedOThisWeek();
+    Page<DeckDTO> getDecksCreatedOThisWeek(Pageable pageable);
 
-    List<DeckDTO> getDecksCreatedThisMonth();
+    Page<DeckDTO> getDecksCreatedThisMonth(Pageable pageable);
 
     DeckDTO getLastDeckModifiedByFactionId(UUID factionId);
 
-    List<DeckDTO> getLast5DecksModifiedByFactionId(UUID factionId);
+    Page<DeckDTO> getLast5DecksModifiedByFactionId(UUID factionId, Pageable pageable);
 
-    DeckDTO getLastDeckModifiedByHeroId(UUID heroId);
+    DeckDTO getLastDeckModifiedByHeroId(UUID heroId, Pageable pageable);
 
-    List<DeckDTO> getLast5DecksModifiedByHeroId(UUID heroId);
+    Page<DeckDTO> getLast5DecksModifiedByHeroId(UUID heroId, Pageable pageable);
 
-    List<DeckDTO> getDecksModifiedThisDay();
+    Page<DeckDTO> getDecksModifiedThisDay(Pageable pageable);
 
-    List<DeckDTO> getDecksModifiedOThisWeek();
+    Page<DeckDTO> getDecksModifiedOThisWeek(Pageable pageable);
 
-    List<DeckDTO> getDecksModifiedThisMonth();
+    Page<DeckDTO> getDecksModifiedThisMonth(Pageable pageable);
 
-    List<DeckDTO> getDecksByTagId(UUID tagId);
+    Page<DeckDTO> getDecksByTagId(UUID tagId, Pageable pageable);
 
-    List<DeckDTO> getDecksByTagIdIn(List<UUID> tagIds);
+    Page<DeckDTO> getDecksByTagIdIn(List<UUID> tagIds, Pageable pageable);
 
     DeckDTO addDeck(DeckDTO deckDTO);
 

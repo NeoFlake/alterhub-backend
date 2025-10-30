@@ -9,6 +9,9 @@ import com.alterhub.alterhubbackend.repository.DeckRepository;
 import com.alterhub.alterhubbackend.repository.PlayerRepository;
 import com.alterhub.alterhubbackend.service.interfaces.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.owasp.encoder.Encode;
 
@@ -45,8 +48,9 @@ public class DeckServiceImpl implements DeckService {
     private final LocalDateTime startOfMonthLocalDateTime = LocalDateTime.now().withDayOfMonth(1);
     private final LocalDateTime endOfMonthLocalDateTime = LocalDateTime.now();
 
-    public List<DeckDTO> getAllDecks() {
-        return mapDecksDTOWithSubObjects(deckRepository.findAll());
+    public Page<DeckDTO> getAllDecks(Pageable pageable) {
+        Page<Deck> deckPage = deckRepository.findAll(pageable);
+        return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
     public DeckDTO getDeckById(UUID id) {
@@ -61,33 +65,36 @@ public class DeckServiceImpl implements DeckService {
         return mapDeckDTOWithSubObjects(deckRepository.findByName(name).orElseThrow(NotFindByArgumentException::new));
     }
 
-    public List<DeckDTO> getDecksLikeByName(String name) {
+    public Page<DeckDTO> getDecksLikeByName(String name, Pageable pageable) {
         if (name == null || name.isEmpty()) {
             throw new BadRequestException();
         }
-        name = Encode.forHtml(name);
-        return mapDecksDTOWithSubObjects(deckRepository.findByNameContaining(name));
+        Page<Deck> deckPage = deckRepository.findByNameContaining(Encode.forHtml(name), pageable);
+        return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
-    public List<DeckDTO> getDecksByPlayerId(UUID playerId) {
+    public Page<DeckDTO> getDecksByPlayerId(UUID playerId, Pageable pageable) {
         if(playerId==null){
             throw new BadRequestException();
         }
-        return mapDecksDTOWithSubObjects(deckRepository.findByPlayer_Id(playerId));
+        Page<Deck> deckPage = deckRepository.findByPlayer_Id(playerId, pageable);
+        return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
-    public List<DeckDTO> getDecksByFactionId(UUID factionId) {
+    public Page<DeckDTO> getDecksByFactionId(UUID factionId, Pageable pageable) {
         if(factionId==null){
             throw new BadRequestException();
         }
-        return mapDecksDTOWithSubObjects(deckRepository.findByFaction_Id(factionId));
+        Page<Deck> deckPage = deckRepository.findByFaction_Id(factionId, pageable);
+        return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
-    public List<DeckDTO> getDecksByHeroId(UUID heroId) {
+    public Page<DeckDTO> getDecksByHeroId(UUID heroId, Pageable pageable) {
         if(heroId==null){
             throw new BadRequestException();
         }
-        return mapDecksDTOWithSubObjects(deckRepository.findByHero_id(heroId));
+        Page<Deck> deckPage = deckRepository.findByHero_id(heroId, pageable);
+        return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
     public DeckDTO getLastDeckCreatedByFactionId(UUID factionId) {
@@ -97,11 +104,12 @@ public class DeckServiceImpl implements DeckService {
         return mapDeckDTOWithSubObjects(deckRepository.findFirstByFaction_IdOrderByDateOfCreationDesc(factionId).orElseThrow(NotFindByArgumentException::new));
     }
 
-    public List<DeckDTO> getLast5DecksCreatedByFactionId(UUID factionId) {
+    public Page<DeckDTO> getLast5DecksCreatedByFactionId(UUID factionId, Pageable pageable) {
         if(factionId==null){
             throw new BadRequestException();
         }
-        return mapDecksDTOWithSubObjects(deckRepository.findTop5ByFaction_IdOrderByDateOfCreationDesc(factionId));
+        Page<Deck> deckPage = deckRepository.findTop5ByFaction_IdOrderByDateOfCreationDesc(factionId, pageable);
+        return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
     public DeckDTO getLastDeckCreatedByHeroId(UUID heroId) {
@@ -111,23 +119,27 @@ public class DeckServiceImpl implements DeckService {
         return mapDeckDTOWithSubObjects(deckRepository.findFirstByHero_IdOrderByDateOfCreationDesc(heroId).orElseThrow(NotFindByArgumentException::new));
     }
 
-    public List<DeckDTO> getLast5DecksCreatedByHeroId(UUID heroId) {
+    public Page<DeckDTO> getLast5DecksCreatedByHeroId(UUID heroId, Pageable pageable) {
         if (heroId==null) {
             throw new BadRequestException();
         }
-        return mapDecksDTOWithSubObjects(deckRepository.findTop5ByHero_IdOrderByDateOfCreationDesc(heroId));
+        Page<Deck> deckPage = deckRepository.findTop5ByHero_IdOrderByDateOfCreationDesc(heroId, pageable);
+        return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
-    public List<DeckDTO> getDecksCreatedThisDay() {
-        return mapDecksDTOWithSubObjects(deckRepository.findByDateOfCreationOrderByDateOfCreationDesc(LocalDate.now()));
+    public Page<DeckDTO> getDecksCreatedThisDay(Pageable pageable) {
+        Page<Deck> deckPage = deckRepository.findByDateOfCreationOrderByDateOfCreationDesc(LocalDate.now(), pageable);
+        return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
-    public List<DeckDTO> getDecksCreatedOThisWeek() {
-        return mapDecksDTOWithSubObjects(deckRepository.findByDateOfCreationBetweenOrderByDateOfCreationDesc(startOfWeekLocalDate, endOfWeekLocalDate));
+    public Page<DeckDTO> getDecksCreatedOThisWeek(Pageable pageable) {
+        Page<Deck> deckPage = deckRepository.findByDateOfCreationBetweenOrderByDateOfCreationDesc(startOfWeekLocalDate, endOfWeekLocalDate, pageable);
+        return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
-    public List<DeckDTO> getDecksCreatedThisMonth() {
-        return mapDecksDTOWithSubObjects(deckRepository.findByDateOfCreationBetweenOrderByDateOfCreationDesc(startOfMonthLocalDate, endOfMonthLocalDate));
+    public Page<DeckDTO> getDecksCreatedThisMonth(Pageable pageable) {
+        Page<Deck> deckPage = deckRepository.findByDateOfCreationBetweenOrderByDateOfCreationDesc(startOfMonthLocalDate, endOfMonthLocalDate, pageable);
+        return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
     public DeckDTO getLastDeckModifiedByFactionId(UUID factionId){
@@ -137,51 +149,58 @@ public class DeckServiceImpl implements DeckService {
         return mapDeckDTOWithSubObjects(deckRepository.findFirstByFaction_IdOrderByLastModificationDesc(factionId).orElseThrow(NotFindByArgumentException::new));
     }
 
-    public List<DeckDTO> getLast5DecksModifiedByFactionId(UUID factionId){
+    public Page<DeckDTO> getLast5DecksModifiedByFactionId(UUID factionId, Pageable pageable){
         if(factionId==null){
             throw new BadRequestException();
         }
-        return mapDecksDTOWithSubObjects(deckRepository.findTop5ByFaction_IdOrderByLastModificationDesc(factionId));
+        Page<Deck> deckPage = deckRepository.findTop5ByFaction_IdOrderByLastModificationDesc(factionId, pageable);
+        return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
-    public DeckDTO getLastDeckModifiedByHeroId(UUID heroId){
+    public DeckDTO getLastDeckModifiedByHeroId(UUID heroId, Pageable pageable){
         if(heroId==null){
             throw new BadRequestException();
         }
         return mapDeckDTOWithSubObjects(deckRepository.findFirstByHero_IdOrderByLastModificationDesc(heroId).orElseThrow(NotFindByArgumentException::new));
     }
 
-    public List<DeckDTO> getLast5DecksModifiedByHeroId(UUID heroId){
+    public Page<DeckDTO> getLast5DecksModifiedByHeroId(UUID heroId, Pageable pageable){
         if(heroId==null){
             throw new BadRequestException();
         }
-        return mapDecksDTOWithSubObjects(deckRepository.findTop5ByHero_IdOrderByLastModificationDesc(heroId));
+        Page<Deck> deckPage = deckRepository.findTop5ByHero_IdOrderByLastModificationDesc(heroId, pageable);
+        return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
-    public List<DeckDTO> getDecksModifiedThisDay(){
-        return mapDecksDTOWithSubObjects(deckRepository.findByLastModificationBetweenOrderByLastModificationDesc(startOfDayLocalDateTime, endOfDayLocalDateTime));
+    public Page<DeckDTO> getDecksModifiedThisDay(Pageable pageable){
+        Page<Deck> deckPage = deckRepository.findByLastModificationBetweenOrderByLastModificationDesc(startOfDayLocalDateTime, endOfDayLocalDateTime, pageable);
+        return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
-    public List<DeckDTO> getDecksModifiedOThisWeek(){
-        return mapDecksDTOWithSubObjects(deckRepository.findByLastModificationBetweenOrderByLastModificationDesc(startOfWeekLocalDateTime, endOfWeekLocalDateTime));
+    public Page<DeckDTO> getDecksModifiedOThisWeek(Pageable pageable){
+        Page<Deck> deckPage = deckRepository.findByLastModificationBetweenOrderByLastModificationDesc(startOfWeekLocalDateTime, endOfWeekLocalDateTime, pageable);
+        return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
-    public List<DeckDTO> getDecksModifiedThisMonth(){
-        return mapDecksDTOWithSubObjects(deckRepository.findByLastModificationBetweenOrderByLastModificationDesc(startOfMonthLocalDateTime, endOfMonthLocalDateTime));
+    public Page<DeckDTO> getDecksModifiedThisMonth(Pageable pageable){
+        Page<Deck> deckPage = deckRepository.findByLastModificationBetweenOrderByLastModificationDesc(startOfMonthLocalDateTime, endOfMonthLocalDateTime, pageable);
+        return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
-    public List<DeckDTO> getDecksByTagId(UUID tagId){
+    public Page<DeckDTO> getDecksByTagId(UUID tagId, Pageable pageable){
         if(tagId==null){
             throw new BadRequestException();
         }
-        return mapDecksDTOWithSubObjects(deckRepository.findByTags_Id(tagId));
+        Page<Deck> deckPage = deckRepository.findByTags_Id(tagId, pageable);
+        return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
-    public List<DeckDTO> getDecksByTagIdIn(List<UUID> tagIds){
+    public Page<DeckDTO> getDecksByTagIdIn(List<UUID> tagIds, Pageable pageable){
         if(tagIds==null){
             throw new BadRequestException();
         }
-        return mapDecksDTOWithSubObjects(deckRepository.findByTags_IdIn(tagIds));
+        Page<Deck> deckPage = deckRepository.findByTags_IdIn(tagIds, pageable);
+        return new PageImpl<>(mapDecksDTOWithSubObjects(deckPage.getContent()), pageable, deckPage.getTotalElements());
     }
 
     public DeckDTO addDeck(DeckDTO deckDTO) {

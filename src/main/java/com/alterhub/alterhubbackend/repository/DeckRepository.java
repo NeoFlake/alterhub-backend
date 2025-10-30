@@ -1,6 +1,8 @@
 package com.alterhub.alterhubbackend.repository;
 
 import com.alterhub.alterhubbackend.entity.Deck;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
@@ -13,39 +15,39 @@ public interface DeckRepository extends JpaRepository<Deck, UUID> {
 
     Optional<Deck> findByName(String name);
 
-    List<Deck> findByNameContaining(String name);
+    Page<Deck> findByNameContaining(String name, Pageable pageable);
 
-    List<Deck> findByPlayer_Id(UUID playerId);
+    Page<Deck> findByPlayer_Id(UUID playerId, Pageable pageable);
 
-    List<Deck> findByFaction_Id(UUID factionId);
+    Page<Deck> findByFaction_Id(UUID factionId, Pageable pageable);
 
-    List<Deck> findByHero_id(UUID heroId);
+    Page<Deck> findByHero_id(UUID heroId, Pageable pageable);
 
     Optional<Deck> findFirstByFaction_IdOrderByDateOfCreationDesc(UUID factionId);
 
-    List<Deck> findTop5ByFaction_IdOrderByDateOfCreationDesc(UUID factionId);
+    Page<Deck> findTop5ByFaction_IdOrderByDateOfCreationDesc(UUID factionId, Pageable pageable);
 
     Optional<Deck> findFirstByHero_IdOrderByDateOfCreationDesc(UUID factionId);
 
-    List<Deck> findTop5ByHero_IdOrderByDateOfCreationDesc(UUID factionId);
+    Page<Deck> findTop5ByHero_IdOrderByDateOfCreationDesc(UUID factionId, Pageable pageable);
 
     Optional<Deck> findFirstByFaction_IdOrderByLastModificationDesc(UUID factionId);
 
-    List<Deck> findTop5ByFaction_IdOrderByLastModificationDesc(UUID factionId);
+    Page<Deck> findTop5ByFaction_IdOrderByLastModificationDesc(UUID factionId, Pageable pageable);
 
     Optional<Deck> findFirstByHero_IdOrderByLastModificationDesc(UUID factionId);
 
-    List<Deck> findTop5ByHero_IdOrderByLastModificationDesc(UUID factionId);
+    Page<Deck> findTop5ByHero_IdOrderByLastModificationDesc(UUID factionId, Pageable pageable);
 
-    List<Deck> findByDateOfCreationOrderByDateOfCreationDesc(LocalDate date);
+    Page<Deck> findByDateOfCreationOrderByDateOfCreationDesc(LocalDate date, Pageable pageable);
 
-    List<Deck> findByDateOfCreationBetweenOrderByDateOfCreationDesc(LocalDate start, LocalDate end);
+    Page<Deck> findByDateOfCreationBetweenOrderByDateOfCreationDesc(LocalDate start, LocalDate end, Pageable pageable);
 
-    List<Deck> findByLastModificationBetweenOrderByLastModificationDesc(LocalDateTime start, LocalDateTime end);
+    Page<Deck> findByLastModificationBetweenOrderByLastModificationDesc(LocalDateTime start, LocalDateTime end, Pageable pageable);
 
-    List<Deck> findByTags_Id(UUID tagId);
+    Page<Deck> findByTags_Id(UUID tagId, Pageable pageable);
 
-    List<Deck> findByTags_IdIn(List<UUID> tagIds);
+    Page<Deck> findByTags_IdIn(List<UUID> tagIds, Pageable pageable);
 
     List<Deck> findByIdIn(List<UUID> deckIds);
 

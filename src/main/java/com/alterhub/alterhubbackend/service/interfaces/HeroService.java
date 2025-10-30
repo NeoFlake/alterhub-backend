@@ -19,7 +19,7 @@ public interface HeroService {
 
     HeroDTO updateHeroById(UUID id, HeroDTO heroDTO);
 
-    void  deleteHeroById(UUID id);
+    void deleteHeroById(UUID id);
 
     void validateHero(HeroDTO heroDTO);
 

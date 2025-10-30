@@ -22,7 +22,7 @@ public class DeckController {
     private final DeckService deckService;
 
     @GetMapping
-    public ResponseEntity<Page<DeckDTO>> getAllCards(Pageable pageable) {
+    public ResponseEntity<Page<DeckDTO>> getAllDecks(Pageable pageable) {
         return ResponseEntity.ok(deckService.getAllDecks(pageable));
     }
 

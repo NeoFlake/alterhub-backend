@@ -23,8 +23,6 @@ public interface UserService {
 
     void deleteUserById(UUID id, UserAuthenticationDTO userAuthenticationDTO);
 
-    void verifyUserIntegrity(UserDTO userDTO);
-
     void verifyUserRequestIntegrity(UserRequestDTO userRequestDTO);
 
     void verifyUserAuthenticationIntegrity(UserAuthenticationDTO userAuthenticationDTO);

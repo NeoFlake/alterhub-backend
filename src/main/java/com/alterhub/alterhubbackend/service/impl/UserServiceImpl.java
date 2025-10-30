@@ -232,16 +232,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public void verifyUserIntegrity(UserDTO userDTO) {
-        if (userDTO.getLastName() == null || userDTO.getLastName().isEmpty()
-                || userDTO.getFirstName() == null || userDTO.getFirstName().isEmpty()
-                || userDTO.getEmail() == null || userDTO.getEmail().isEmpty()
-                || userDTO.getPlayerName() == null || userDTO.getPlayerName().isEmpty()
-                || userDTO.getDateOfCreation() == null || userDTO.getLastModification() == null) {
-            throw new BadRequestException();
-        }
-    }
-
     public void verifyUserRequestIntegrity(UserRequestDTO userRequestDTO) {
         if (userRequestDTO.getLastName() == null || userRequestDTO.getLastName().isEmpty()
                 || userRequestDTO.getFirstName() == null || userRequestDTO.getFirstName().isEmpty()

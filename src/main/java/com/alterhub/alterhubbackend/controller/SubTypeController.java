@@ -20,27 +20,27 @@ public class SubTypeController {
     private final SubTypeService subTypeService;
 
     @GetMapping
-    public ResponseEntity<List<SubTypeDTO>> getAllTypes() {
+    public ResponseEntity<List<SubTypeDTO>> getAllSubTypes() {
         return ResponseEntity.ok(subTypeService.getAllSubTypes());
     }
 
     @GetMapping(ApiRoutes.SEARCH_BY_ID)
-    public ResponseEntity<SubTypeDTO> getTypeById(@PathVariable UUID id) {
+    public ResponseEntity<SubTypeDTO> getSubTypeById(@PathVariable UUID id) {
         return ResponseEntity.ok(subTypeService.getSubTypeById(id));
     }
 
     @PostMapping
-    public ResponseEntity<SubTypeDTO> createType(@RequestBody SubTypeDTO subtypeDTO) {
+    public ResponseEntity<SubTypeDTO> createSubType(@RequestBody SubTypeDTO subtypeDTO) {
         return ResponseEntity.ok(subTypeService.createSubType(subtypeDTO));
     }
 
     @PutMapping(ApiRoutes.SEARCH_BY_ID)
-    public ResponseEntity<SubTypeDTO> updateType(@PathVariable UUID id, @RequestBody SubTypeDTO subtypeDTO) {
+    public ResponseEntity<SubTypeDTO> updateSubTypeById(@PathVariable UUID id, @RequestBody SubTypeDTO subtypeDTO) {
         return ResponseEntity.ok(subTypeService.updateSubTypeById(id, subtypeDTO));
     }
 
     @DeleteMapping(ApiRoutes.SEARCH_BY_ID)
-    public ResponseEntity<Map<String, String>> deleteType(@PathVariable UUID id) {
+    public ResponseEntity<Map<String, String>> deleteSubTypeById(@PathVariable UUID id) {
         subTypeService.deleteSubTypeById(id);
         Map<String, String> response = Map.of("message", ReturnMessages.SUPPRESSION_SUCCESS);
         return ResponseEntity.ok(response);

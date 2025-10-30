@@ -20,27 +20,27 @@ public class RarityController {
     private final RarityService  rarityService;
 
     @GetMapping
-    public ResponseEntity<List<RarityDTO>> getAllTypes() {
+    public ResponseEntity<List<RarityDTO>> getAllRarities() {
         return ResponseEntity.ok(rarityService.getAllRarities());
     }
 
     @GetMapping(ApiRoutes.SEARCH_BY_ID)
-    public ResponseEntity<RarityDTO> getTypeById(@PathVariable UUID id) {
+    public ResponseEntity<RarityDTO> getRarityById(@PathVariable UUID id) {
         return ResponseEntity.ok(rarityService.getRarityById(id));
     }
 
     @PostMapping
-    public ResponseEntity<RarityDTO> createType(@RequestBody RarityDTO rarityDTO) {
+    public ResponseEntity<RarityDTO> createRarity(@RequestBody RarityDTO rarityDTO) {
         return ResponseEntity.ok(rarityService.createRarity(rarityDTO));
     }
 
     @PutMapping(ApiRoutes.SEARCH_BY_ID)
-    public ResponseEntity<RarityDTO> updateType(@PathVariable UUID id, @RequestBody RarityDTO rarityDTO) {
+    public ResponseEntity<RarityDTO> updateRarityById(@PathVariable UUID id, @RequestBody RarityDTO rarityDTO) {
         return ResponseEntity.ok(rarityService.updateRarityById(id, rarityDTO));
     }
 
     @DeleteMapping(ApiRoutes.SEARCH_BY_ID)
-    public ResponseEntity<Map<String, String>> deleteType(@PathVariable UUID id) {
+    public ResponseEntity<Map<String, String>> deleteRarityById(@PathVariable UUID id) {
         rarityService.deleteRarityById(id);
         Map<String, String> response = Map.of("message", ReturnMessages.SUPPRESSION_SUCCESS);
         return ResponseEntity.ok(response);

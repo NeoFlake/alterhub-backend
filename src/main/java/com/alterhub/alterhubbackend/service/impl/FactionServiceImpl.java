@@ -20,14 +20,14 @@ public class FactionServiceImpl implements FactionService {
 
     private final FactionRepository factionRepository;
 
-    public List<FactionDTO> findAllFactions() {
+    public List<FactionDTO> getAllFactions() {
         return factionRepository.findAll()
                 .stream()
                 .map(FactionMapper::toDTO)
                 .toList();
     }
 
-    public FactionDTO findFactionById(UUID id) {
+    public FactionDTO getFactionById(UUID id) {
         Faction faction = factionRepository.findById(id).orElseThrow(NoResultByIdException::new);
         return FactionMapper.toDTO(faction);
     }

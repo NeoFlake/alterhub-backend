@@ -1,16 +1,15 @@
 package com.alterhub.alterhubbackend.service.interfaces;
 
 import com.alterhub.alterhubbackend.dto.FactionDTO;
-import com.alterhub.alterhubbackend.entity.Faction;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface FactionService {
 
-    List<FactionDTO> findAllFactions();
+    List<FactionDTO> getAllFactions();
 
-    FactionDTO findFactionById(UUID id);
+    FactionDTO getFactionById(UUID id);
 
     FactionDTO createFaction(FactionDTO factionDTO);
 

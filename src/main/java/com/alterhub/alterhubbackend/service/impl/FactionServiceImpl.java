@@ -8,6 +8,7 @@ import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.FactionMapper;
 import com.alterhub.alterhubbackend.repository.FactionRepository;
 import com.alterhub.alterhubbackend.service.interfaces.FactionService;
+import com.alterhub.alterhubbackend.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,8 @@ import java.util.UUID;
 public class FactionServiceImpl implements FactionService {
 
     private final FactionRepository factionRepository;
+
+    private final ValidationService validationService;
 
     public List<FactionDTO> getAllFactions() {
         return factionRepository.findAll()
@@ -33,14 +36,14 @@ public class FactionServiceImpl implements FactionService {
     }
 
     public FactionDTO createFaction(FactionDTO factionDTO) {
-        verifyFactionIntegrity(factionDTO);
+        validationService.verifyFactionIntegrity(factionDTO);
         Faction faction = FactionMapper.toEntity(factionDTO);
         return FactionMapper.toDTO(factionRepository.save(faction));
     }
 
     public FactionDTO updateFactionById(UUID id, FactionDTO factionDTO) {
         if (factionDTO.getId().equals(id)) {
-            verifyFactionIntegrity(factionDTO);
+            validationService.verifyFactionIntegrity(factionDTO);
             Faction factionToUpdate = factionRepository.findById(id).orElseThrow(NoResultByIdException::new);
             Faction factionUpdated = FactionMapper.toEntity(factionDTO);
 
@@ -60,26 +63,6 @@ public class FactionServiceImpl implements FactionService {
             throw new NoResultByIdException();
         }
         factionRepository.deleteById(id);
-    }
-
-    public void verifyFactionIntegrity(FactionDTO factionDTO) {
-        if (factionDTO.getFactionId() == null || factionDTO.getFactionId().isEmpty()
-                || factionDTO.getName() == null || factionDTO.getName().isEmpty()
-                || factionDTO.getReference() == null || factionDTO.getReference().isEmpty()
-                || factionDTO.getColor() == null || factionDTO.getColor().isEmpty()) {
-            throw new BadRequestException();
-        }
-    }
-
-    public void validateFaction(FactionDTO factionReceived) {
-        Faction faction = FactionMapper.toEntity(factionReceived);
-        Faction factionOnBase = factionRepository.findById(faction.getId()).orElseThrow(NoResultByIdException::new);
-        if (!factionOnBase.getFactionId().equals(faction.getFactionId())
-                || !factionOnBase.getName().equals(faction.getName())
-                || !factionOnBase.getReference().equals(faction.getReference())
-                || !factionOnBase.getColor().equals(faction.getColor())) {
-            throw new BadRequestException();
-        }
     }
 
 }

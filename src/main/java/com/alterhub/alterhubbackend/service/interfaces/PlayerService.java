@@ -31,10 +31,4 @@ public interface PlayerService {
 
     Boolean existsByName(String name);
 
-    PlayerDTO mapPlayerDTOWithSubObject(Player player);
-
-    List<PlayerDTO> mapPlayersDTOWithSubObject(List<Player> players);
-
-    Player mapPlayerWithSubObject(PlayerDTO playerDTO);
-
 }

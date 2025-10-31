@@ -17,6 +17,4 @@ public interface ElementService {
 
     void  deleteElementById(UUID id);
 
-    void verifyElementIntegrity(ElementDTO elementDTO);
-
 }

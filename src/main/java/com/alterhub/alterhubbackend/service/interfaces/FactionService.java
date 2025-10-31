@@ -17,8 +17,4 @@ public interface FactionService {
 
     void deleteFactionById(UUID id);
 
-    void verifyFactionIntegrity(FactionDTO factionDTO);
-
-    void validateFaction(FactionDTO factionReceived);
-
 }

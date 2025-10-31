@@ -10,6 +10,7 @@ import com.alterhub.alterhubbackend.mapper.HeroMapper;
 import com.alterhub.alterhubbackend.repository.HeroRepository;
 import com.alterhub.alterhubbackend.service.interfaces.FactionService;
 import com.alterhub.alterhubbackend.service.interfaces.HeroService;
+import com.alterhub.alterhubbackend.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ import java.util.UUID;
 public class HeroServiceImpl implements HeroService {
 
     private final HeroRepository heroRepository;
-    private final FactionService factionService;
+    private final ValidationService validationService;
 
     public List<HeroDTO> getAllHeroes(){
         return heroRepository.findAll()
@@ -56,16 +57,16 @@ public class HeroServiceImpl implements HeroService {
     }
 
     public HeroDTO createHero(HeroDTO heroDTO){
-        verifyHeroIntegrity(heroDTO);
-        factionService.validateFaction(heroDTO.getFaction());
+        validationService.verifyHeroIntegrity(heroDTO);
+        validationService.validateFaction(heroDTO.getFaction());
         Hero hero = HeroMapper.toEntity(heroDTO);
         return  HeroMapper.toDTO(heroRepository.save(hero));
     }
 
     public HeroDTO updateHeroById(UUID id, HeroDTO heroDTO){
         if(heroDTO.getId().equals(id)){
-            verifyHeroIntegrity(heroDTO);
-            factionService.validateFaction(heroDTO.getFaction());
+            validationService.verifyHeroIntegrity(heroDTO);
+            validationService.validateFaction(heroDTO.getFaction());
 
             Hero heroToUpdate = heroRepository.findById(id).orElseThrow(NoResultByIdException::new);
             Hero heroUpdated = HeroMapper.toEntity(heroDTO);
@@ -88,30 +89,6 @@ public class HeroServiceImpl implements HeroService {
             throw new NoResultByIdException();
         }
         heroRepository.deleteById(id);
-    }
-
-    public void validateHero(HeroDTO heroDTO){
-        Hero heroReceived = HeroMapper.toEntity(heroDTO);
-        Hero heroOnBase = heroRepository.findById(heroDTO.getId()).orElseThrow(NoResultByIdException::new);
-        if (!heroOnBase.getName().equals(heroReceived.getName())
-                || !heroOnBase.getReserveSlot().equals(heroReceived.getReserveSlot())
-                || !heroOnBase.getLandmarkSlot().equals(heroReceived.getLandmarkSlot())
-                || !heroOnBase.getEffect().equals(heroReceived.getEffect())) {
-            throw new BadRequestException();
-        }
-
-        factionService.validateFaction(heroDTO.getFaction());
-    }
-
-    public void verifyHeroIntegrity(HeroDTO heroDTO) {
-        if(heroDTO.getName() == null || heroDTO.getName().isEmpty()
-        || heroDTO.getReserveSlot() == null || heroDTO.getReserveSlot() < 0
-                || heroDTO.getLandmarkSlot() == null || heroDTO.getLandmarkSlot() < 0
-        || heroDTO.getEffect() == null || heroDTO.getEffect().isEmpty()){
-            throw new BadRequestException();
-        }
-        // On vérifie l'intégrité du sous-objet faction par son propre service
-        factionService.verifyFactionIntegrity(heroDTO.getFaction());
     }
 
 }

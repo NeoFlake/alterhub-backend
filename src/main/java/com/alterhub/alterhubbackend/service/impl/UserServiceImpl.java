@@ -8,6 +8,7 @@ import com.alterhub.alterhubbackend.entity.Player;
 import com.alterhub.alterhubbackend.entity.User;
 import com.alterhub.alterhubbackend.exception.*;
 import com.alterhub.alterhubbackend.mapper.UserMapper;
+import com.alterhub.alterhubbackend.repository.PlayerRepository;
 import com.alterhub.alterhubbackend.repository.UserRepository;
 import com.alterhub.alterhubbackend.service.interfaces.DeckService;
 import com.alterhub.alterhubbackend.service.interfaces.PlayerService;
@@ -35,6 +36,7 @@ public class UserServiceImpl implements UserService {
     private static final Pattern PASSWORD_REGEX = Pattern.compile("^(?=.{12,}$)(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\w\\s]).*$");
     private final RoleService roleService;
     private final DeckService deckService;
+    private final PlayerRepository playerRepository;
 
     public User getUserByIdInternalUsage(UUID id) {
         return userRepository.findById(id).orElseThrow(NoResultByIdException::new);
@@ -142,7 +144,7 @@ public class UserServiceImpl implements UserService {
             userRequestDTO.setEmail(Encode.forHtml(userRequestDTO.getEmail()));
             userRequestDTO.setPassword(Encode.forHtml(userRequestDTO.getPassword()));
 
-            Player playerLinkedWithThatPlayerName = playerService.mapPlayerWithSubObject(playerService.getPlayerByName(userRequestDTO.getPlayerName()));
+            Player playerLinkedWithThatPlayerName = playerRepository.findByName(userRequestDTO.getPlayerName()).orElseThrow(NoResultByIdException::new);
 
             // On vérifie ensuite que le nom du joueur correspond bien à celui en base
             if(!playerLinkedWithThatPlayerName.getUser().getId().equals(userRequestDTO.getId())) {

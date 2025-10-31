@@ -6,9 +6,12 @@ import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.TournamentMapper;
+import com.alterhub.alterhubbackend.mapping.MappingService;
 import com.alterhub.alterhubbackend.repository.TournamentRepository;
+import com.alterhub.alterhubbackend.service.DeckCountService;
 import com.alterhub.alterhubbackend.service.interfaces.ParticipantService;
 import com.alterhub.alterhubbackend.service.interfaces.TournamentService;
+import com.alterhub.alterhubbackend.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import org.owasp.encoder.Encode;
 import org.springframework.data.domain.Page;
@@ -28,11 +31,14 @@ public class TournamentServiceImpl implements TournamentService {
 
     private final TournamentRepository tournamentRepository;
     private final ParticipantService participantService;
+    private final MappingService  mappingService;
+    private final ValidationService validationService;
 
     private final LocalDate startOfWeekLocalDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
     private final LocalDate endOfWeekLocalDate = LocalDate.now();
     private final LocalDate startOfMonthLocalDate = LocalDate.now().withDayOfMonth(1);
     private final LocalDate endOfMonthLocalDate = LocalDate.now();
+    private final DeckCountService deckCountService;
 
     public Page<TournamentDTO> getAllTournaments(Pageable pageable) {
         Page<Tournament> tournamentPage = tournamentRepository.findAll(pageable);
@@ -206,28 +212,12 @@ public class TournamentServiceImpl implements TournamentService {
             throw new BadRequestException();
         }
 
-        tournamentDTO.getParticipants().forEach(participantService::verifyParticipantIntegrity);
+        tournamentDTO.getParticipants().forEach(validationService::verifyParticipantIntegrity);
 
     }
 
     public Boolean existsById(UUID tournamentId) {
         return tournamentRepository.existsById(tournamentId);
-    }
-
-    public TournamentDTO mapTournamentDTOWithSubObject(Tournament tournament) {
-        return TournamentMapper.toDto(tournament, participantService.mapParticipantsDTOWithSubObjects(tournament.getParticipants()));
-    }
-
-    public List<TournamentDTO> mapTournamentsDTOWithSubObject(List<Tournament> tournaments) {
-        return tournaments.stream().map(this::mapTournamentDTOWithSubObject).toList();
-    }
-
-    public Tournament mapTournamentWithSubObject(TournamentDTO tournamentDTO) {
-        return TournamentMapper.toEntity(tournamentDTO, participantService.mapParticipantsWithSubObjects(tournamentDTO.getParticipants()));
-    }
-
-    public List<Tournament> mapTournamentsWithSubObject(List<TournamentDTO> tournamentsDTO) {
-        return tournamentsDTO.stream().map(this::mapTournamentWithSubObject).toList();
     }
 
 }

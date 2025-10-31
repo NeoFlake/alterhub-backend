@@ -8,6 +8,7 @@ import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.ElementMapper;
 import com.alterhub.alterhubbackend.repository.ElementRepository;
 import com.alterhub.alterhubbackend.service.interfaces.ElementService;
+import com.alterhub.alterhubbackend.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,8 @@ public class ElementServiceImpl implements ElementService {
 
     private final ElementRepository elementRepository;
 
+    private final ValidationService validationService;
+
     public List<ElementDTO> getAllElements() {
         return elementRepository.findAll()
                 .stream()
@@ -35,14 +38,14 @@ public class ElementServiceImpl implements ElementService {
     }
 
     public ElementDTO createElement(ElementDTO elementDTO) {
-        verifyElementIntegrity(elementDTO);
+        validationService.verifyElementIntegrity(elementDTO);
         Element element = ElementMapper.toEntity(elementDTO);
         return ElementMapper.toDTO(elementRepository.save(element));
     }
 
     public ElementDTO updateElementById(UUID id, ElementDTO elementDTO) {
         if (elementDTO.getId().equals(id)) {
-            verifyElementIntegrity(elementDTO);
+            validationService.verifyElementIntegrity(elementDTO);
             Element elementToUpdate = elementRepository.findById(id).orElseThrow(NoResultByIdException::new);
             ;
             Element elementUpdated = ElementMapper.toEntity(elementDTO);
@@ -67,18 +70,6 @@ public class ElementServiceImpl implements ElementService {
             throw new NoResultByIdException();
         }
         elementRepository.deleteById(id);
-    }
-
-    public void verifyElementIntegrity(ElementDTO elementDTO) {
-        if ((elementDTO.getMainCost() != null && elementDTO.getMainCost().isEmpty())
-                || (elementDTO.getRecallCost() != null && elementDTO.getRecallCost().isEmpty())
-                || (elementDTO.getOceanPower() != null && elementDTO.getOceanPower().isEmpty())
-                || (elementDTO.getMountainPower() != null && elementDTO.getMountainPower().isEmpty())
-                || (elementDTO.getForestPower() != null && elementDTO.getForestPower().isEmpty())
-                || (elementDTO.getMainEffect() != null && elementDTO.getMainEffect().isEmpty())
-                || (elementDTO.getEchoEffect() != null && elementDTO.getEchoEffect().isEmpty())) {
-            throw new BadRequestException();
-        }
     }
 
 }

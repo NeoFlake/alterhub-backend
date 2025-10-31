@@ -6,15 +6,17 @@ import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.CardMapper;
+import com.alterhub.alterhubbackend.mapping.MappingService;
 import com.alterhub.alterhubbackend.repository.CardRepository;
+import com.alterhub.alterhubbackend.service.DeckCountService;
 import com.alterhub.alterhubbackend.service.interfaces.*;
+import com.alterhub.alterhubbackend.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -22,27 +24,30 @@ import java.util.UUID;
 public class CardServiceImpl implements CardService {
 
     private final CardRepository cardRepository;
-    private final FactionService factionService;
-    private final TypeService typeService;
-    private final SubTypeService subTypeService;
-    private final RarityService rarityService;
-    private final ElementService elementService;
-    private final SetService setService;
+    private final ValidationService validationService;
+    private final MappingService mappingService;
+    private final DeckCountService deckCountService;
 
     public Page<CardDTO> getAllCards(Pageable pageable) {
         Page<Card> cardPage = cardRepository.findAll(pageable);
-        return new PageImpl<>(mapCardsWithDeckCount(cardPage.getContent()), pageable, cardPage.getTotalElements());
+        return new PageImpl<>(
+                mappingService.mapCardsWithDeckCount(cardPage.getContent(), deckCountService.mapCardsWithDeckCount(cardPage.getContent())),
+                pageable,
+                cardPage.getTotalElements()
+        );
     }
 
     public CardDTO getCardById(UUID id) {
         Card card = cardRepository.findById(id).orElseThrow(NoResultByIdException::new);
-        return mapWithDeckCount(card);
+        Integer deckCount = cardRepository.countDecksContainingCard(card.getId());
+        return mappingService.mapWithDeckCount(card, deckCount);
     }
 
     public CardDTO getCardByAlteredId(String alteredId) {
         if (alteredId != null && !alteredId.isEmpty()) {
             Card card = cardRepository.findByAlteredId(alteredId).orElseThrow(NoResultByIdException::new);
-            return mapWithDeckCount(card);
+            Integer deckCount = cardRepository.countDecksContainingCard(card.getId());
+            return mappingService.mapWithDeckCount(card, deckCount);
         } else {
             throw new BadRequestException();
         }
@@ -53,7 +58,11 @@ public class CardServiceImpl implements CardService {
             throw new BadRequestException();
         }
         Page<Card> cardPage = cardRepository.findByTypeId(typeId, pageable);
-        return new PageImpl<>(mapCardsWithDeckCount(cardPage.getContent()), pageable, cardPage.getTotalElements());
+        return new PageImpl<>(
+                mappingService.mapCardsWithDeckCount(cardPage.getContent(), deckCountService.mapCardsWithDeckCount(cardPage.getContent())),
+                pageable,
+                cardPage.getTotalElements()
+        );
     }
 
     public Page<CardDTO> getCardsBySubTypeId(UUID subTypeId, Pageable pageable) {
@@ -61,7 +70,11 @@ public class CardServiceImpl implements CardService {
             throw new BadRequestException();
         }
         Page<Card> cardPage = cardRepository.findBySubtypes_Id(subTypeId, pageable);
-        return new PageImpl<>(mapCardsWithDeckCount(cardPage.getContent()), pageable, cardPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapCardsWithDeckCount(
+                cardPage.getContent(), deckCountService.mapCardsWithDeckCount(cardPage.getContent())),
+                pageable,
+                cardPage.getTotalElements()
+        );
     }
 
     public Page<CardDTO> getCardsByRarityId(UUID rarityId, Pageable pageable) {
@@ -69,7 +82,11 @@ public class CardServiceImpl implements CardService {
             throw new BadRequestException();
         }
         Page<Card> cardPage = cardRepository.findByRarityId(rarityId, pageable);
-        return new PageImpl<>(mapCardsWithDeckCount(cardPage.getContent()), pageable, cardPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapCardsWithDeckCount(
+                cardPage.getContent(), deckCountService.mapCardsWithDeckCount(cardPage.getContent())),
+                pageable,
+                cardPage.getTotalElements()
+        );
     }
 
     public Page<CardDTO> getCardsByFactionId(UUID factionId, Pageable pageable) {
@@ -77,18 +94,23 @@ public class CardServiceImpl implements CardService {
             throw new BadRequestException();
         }
         Page<Card> cardPage = cardRepository.findByFactionId(factionId, pageable);
-        return new PageImpl<>(mapCardsWithDeckCount(cardPage.getContent()), pageable, cardPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapCardsWithDeckCount(
+                cardPage.getContent(), deckCountService.mapCardsWithDeckCount(cardPage.getContent())),
+                pageable,
+                cardPage.getTotalElements()
+        );
     }
 
     public CardDTO addCard(CardDTO cardDTO) {
-        verifyCardIntegrity(cardDTO);
-        return mapWithDeckCount(cardRepository.save(CardMapper.toEntity(cardDTO)));
+        validationService.verifyCardIntegrity(cardDTO);
+        Integer deckCount = cardRepository.countDecksContainingCard(cardDTO.getId());
+        return mappingService.mapWithDeckCount(cardRepository.save(CardMapper.toEntity(cardDTO)), deckCount);
     }
 
     public CardDTO updateCardById(UUID id, CardDTO cardDTO) {
         if (cardDTO.getId().equals(id)) {
-            verifyCardIntegrity(cardDTO);
-            validateCardSubObject(cardDTO);
+            validationService.verifyCardIntegrity(cardDTO);
+            validationService.validateCardSubObject(cardDTO);
 
             Card cardToUpdate = cardRepository.findById(id).orElseThrow(NoResultByIdException::new);
             Card cardUpdated = CardMapper.toEntity(cardDTO);
@@ -108,8 +130,8 @@ public class CardServiceImpl implements CardService {
             cardToUpdate.setIsErrated(cardUpdated.getIsErrated());
 
             Card card = cardRepository.save(cardToUpdate);
-
-            return mapWithDeckCount(card);
+            Integer deckCount = cardRepository.countDecksContainingCard(card.getId());
+            return mappingService.mapWithDeckCount(card, deckCount);
         } else {
             throw new IdNotMatchException();
         }
@@ -120,70 +142,6 @@ public class CardServiceImpl implements CardService {
             throw new NoResultByIdException();
         }
         cardRepository.deleteById(id);
-    }
-
-    public Integer getDeckCount(UUID cardId) {
-        return cardRepository.countDecksContainingCard(cardId);
-    }
-
-    public CardDTO mapWithDeckCount(Card card) {
-        Integer deckCount = getDeckCount(card.getId());
-        return CardMapper.toDTO(card, deckCount);
-    }
-
-    public void verifyCardIntegrity(CardDTO cardDTO) {
-        if (cardDTO.getAlteredId() == null || cardDTO.getAlteredId().isEmpty()
-                || cardDTO.getReference() == null || cardDTO.getReference().isEmpty()
-                || cardDTO.getName() == null || cardDTO.getName().isEmpty()
-                || cardDTO.getImage() == null || cardDTO.getImage().isEmpty()
-                || cardDTO.getIsSuspended() == null
-                || cardDTO.getIsBanned() == null
-                || cardDTO.getIsErrated() == null
-        ) {
-            throw new BadRequestException();
-        }
-        factionService.verifyFactionIntegrity(cardDTO.getFaction());
-        typeService.verifyTypeIntegrity(cardDTO.getType());
-        if (cardDTO.getSubTypes() != null && !cardDTO.getSubTypes().isEmpty()) {
-            cardDTO.getSubTypes().forEach(subTypeService::verifySubTypeIntegrity);
-        }
-        cardDTO.getSets().forEach(setService::verifySetIntegrity);
-        rarityService.verifyRarityIntegrity(cardDTO.getRarity());
-        elementService.verifyElementIntegrity(cardDTO.getElement());
-    }
-
-    public void validateCard(CardDTO cardDTO) {
-        Card cardReceived = CardMapper.toEntity(cardDTO);
-        Card cardOnBase = cardRepository.findById(cardDTO.getId()).orElseThrow(NoResultByIdException::new);
-        if (!cardOnBase.getAlteredId().equals(cardReceived.getAlteredId())
-                || !cardOnBase.getReference().equals(cardReceived.getReference())
-                || !cardOnBase.getName().equals(cardReceived.getName())
-                || !cardOnBase.getImage().equals(cardReceived.getImage())
-                || !cardOnBase.getIsSuspended().equals(cardReceived.getIsSuspended())
-                || !cardOnBase.getIsErrated().equals(cardReceived.getIsErrated())
-                || !cardOnBase.getIsBanned().equals(cardReceived.getIsBanned())) {
-            throw new BadRequestException();
-        }
-
-        validateCardSubObject(cardDTO);
-
-    }
-
-    public List<CardDTO> mapCardsWithDeckCount(List<Card> cards) {
-        return cards.stream()
-                .map(this::mapWithDeckCount)
-                .toList();
-    }
-
-    private void validateCardSubObject(CardDTO cardDTO) {
-        factionService.validateFaction(cardDTO.getFaction());
-        typeService.validateType(cardDTO.getType());
-
-        if(cardDTO.getSubTypes() != null && !cardDTO.getSubTypes().isEmpty()) {
-            cardDTO.getSubTypes().forEach(subTypeService::validateSubType);
-        }
-        cardDTO.getSets().forEach(setService::validateSet);
-        rarityService.validateRarity(cardDTO.getRarity());
     }
 
 }

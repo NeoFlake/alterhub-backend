@@ -10,7 +10,9 @@ import com.alterhub.alterhubbackend.entity.User;
 import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.*;
+import com.alterhub.alterhubbackend.mapping.MappingService;
 import com.alterhub.alterhubbackend.repository.PlayerRepository;
+import com.alterhub.alterhubbackend.repository.UserRepository;
 import com.alterhub.alterhubbackend.service.interfaces.*;
 import lombok.RequiredArgsConstructor;
 import org.owasp.encoder.Encode;
@@ -22,24 +24,26 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 @RequiredArgsConstructor
 public class PlayerServiceImpl implements PlayerService {
 
     private final PlayerRepository playerRepository;
 
-    private final DeckService deckService;
     private final ParticipantService participantService;
-    private final UserService userService;
+    private final UserRepository userRepository;
+    private final MappingService mappingService;
 
     public Page<PlayerDTO> getAllPlayers(Pageable pageable) {
         Page<Player> playerPage = playerRepository.findAll(pageable);
-        List<PlayerDTO> playersDTO = mapPlayersDTOWithSubObject(playerPage.getContent());
+        List<PlayerDTO> playersDTO = mappingService.mapPlayersDTOWithSubObject(playerPage.getContent());
         return new PageImpl<>(playersDTO, pageable, playerPage.getTotalElements());
     }
 
     public PlayerDTO getPlayerById(UUID id) {
-        return mapPlayerDTOWithSubObject(playerRepository.findById(id).orElseThrow(NoResultByIdException::new));
+        return mappingService.mapPlayerDTOWithSubObject(playerRepository.findById(id).orElseThrow(NoResultByIdException::new));
     }
 
     public Player getPlayerByNameInternalUsage(String name) {
@@ -52,28 +56,33 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     public PlayerDTO getPlayerByName(String name) {
-        return mapPlayerDTOWithSubObject(getPlayerByNameInternalUsage(name));
+        return mappingService.mapPlayerDTOWithSubObject(getPlayerByNameInternalUsage(name));
     }
 
     public PlayerDTO getPlayerByUserId(UUID id) {
-        return mapPlayerDTOWithSubObject(playerRepository.findByUser_Id(id).orElseThrow(NoResultByIdException::new));
+        return mappingService.mapPlayerDTOWithSubObject(playerRepository.findByUser_Id(id).orElseThrow(NoResultByIdException::new));
     }
 
     public PlayerDTO addPlayer(PlayerDTO playerDTO) {
         verifyPlayerIntegrity(playerDTO);
-        return mapPlayerDTOWithSubObject(playerRepository.save(mapPlayerWithSubObject(playerDTO)));
+
+        User user = playerDTO.getUserId() != null
+                ? userRepository.findById(playerDTO.getUserId()).orElseThrow()
+                : null;
+
+        return mappingService.mapPlayerDTOWithSubObject(playerRepository.save(mappingService.mapPlayerWithSubObject(playerDTO, user)));
     }
 
     public PlayerDTO setLinkBetweenUserAndPlayer(User user, UUID playerId) {
         Player playerToLink = playerRepository.findById(playerId).orElseThrow(NoResultByIdException::new);
         playerToLink.setUser(user);
-        return mapPlayerDTOWithSubObject(playerRepository.save(playerToLink));
+        return mappingService.mapPlayerDTOWithSubObject(playerRepository.save(playerToLink));
     }
 
     public PlayerDTO unsetUserFromPlayer(UUID userId) {
         Player playerToUnlink = playerRepository.findByUser_Id(userId).orElseThrow(NoResultByIdException::new);
         playerToUnlink.setUser(null);
-        return mapPlayerDTOWithSubObject(playerRepository.save(playerToUnlink));
+        return mappingService.mapPlayerDTOWithSubObject(playerRepository.save(playerToUnlink));
     }
 
     public void verifyPlayerIntegrity(PlayerDTO playerDTO){
@@ -81,39 +90,10 @@ public class PlayerServiceImpl implements PlayerService {
             throw new BadRequestException();
         }
 
-        if(playerDTO.getDecks() != null && !playerDTO.getDecks().isEmpty()){
-            playerDTO.getDecks().forEach(deckService::validateDeck);
-        }
-
-        if(playerDTO.getParticipants() != null && !playerDTO.getParticipants().isEmpty()){
-            playerDTO.getParticipants().forEach(participantService::validateParticipant);
-        }
-
     }
 
     public Boolean existsByName(String name) {
         return playerRepository.existsByName(name);
-    }
-
-    public PlayerDTO mapPlayerDTOWithSubObject(Player player) {
-        List<DeckDTO> decksDTO = deckService.mapDecksDTOWithSubObjects(player.getDecks());
-        List<ParticipantDTO> participantsDTO = participantService.mapParticipantsDTOWithSubObjects(player.getParticipants());
-
-        return PlayerMapper.toDTO(player, decksDTO, participantsDTO);
-    }
-
-    public List<PlayerDTO> mapPlayersDTOWithSubObject(List<Player> players) {
-        return players.stream().map(this::mapPlayerDTOWithSubObject).toList();
-    }
-
-    public Player mapPlayerWithSubObject(PlayerDTO playerDTO) {
-        List<Deck> decks = deckService.mapDecksWithSubObjects(playerDTO.getDecks());
-        List<Participant> participants = participantService.mapParticipantsWithSubObjects(playerDTO.getParticipants());
-        User user = playerDTO.getUserId() != null
-                ? userService.getUserByIdInternalUsage(playerDTO.getUserId())
-                : null;
-
-        return PlayerMapper.toEntity(playerDTO, decks, participants, user);
     }
 
 }

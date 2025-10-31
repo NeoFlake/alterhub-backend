@@ -39,16 +39,4 @@ public interface ParticipantService {
     void deleteParticipantById(UUID id);
 
     void deleteParticipantsByTournamentId(UUID tournamentId);
-
-    ParticipantDTO mapParticipantDTOWithSubObjects(Participant participant);
-
-    List<ParticipantDTO> mapParticipantsDTOWithSubObjects(List<Participant> participants);
-
-    Participant mapParticipantWithSubObjects(ParticipantDTO participantDTO);
-
-    List<Participant> mapParticipantsWithSubObjects(List<ParticipantDTO> participantsDTO);
-
-    void validateParticipant(ParticipantDTO participantDTO);
-
-    void verifyParticipantIntegrity(ParticipantDTO participantDTO);
 }

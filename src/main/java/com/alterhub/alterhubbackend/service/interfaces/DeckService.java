@@ -67,16 +67,4 @@ public interface DeckService {
     void deleteDeckById(UUID id);
 
     void deleteDeckNonParticipantByPlayerId(UUID playerId);
-
-    void validateDeck(DeckDTO deckDTO);
-
-    void verifyDeckIntegrity(DeckDTO deckDTO);
-
-    DeckDTO mapDeckDTOWithSubObjects(Deck deck);
-
-    List<DeckDTO> mapDecksDTOWithSubObjects(List<Deck> decks);
-
-    Deck mapDeckWithSubObjects(DeckDTO deckDTO);
-
-    List<Deck> mapDecksWithSubObjects(List<DeckDTO> deckDTO);
 }

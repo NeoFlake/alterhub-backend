@@ -1,14 +1,12 @@
 package com.alterhub.alterhubbackend.service.impl;
 
 import com.alterhub.alterhubbackend.dto.ParticipantDTO;
-import com.alterhub.alterhubbackend.entity.Deck;
 import com.alterhub.alterhubbackend.entity.Participant;
 import com.alterhub.alterhubbackend.entity.Player;
 import com.alterhub.alterhubbackend.entity.Tournament;
 import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
-import com.alterhub.alterhubbackend.mapper.ParticipantMapper;
 import com.alterhub.alterhubbackend.mapping.MappingService;
 import com.alterhub.alterhubbackend.repository.ParticipantRepository;
 import com.alterhub.alterhubbackend.repository.PlayerRepository;
@@ -16,8 +14,6 @@ import com.alterhub.alterhubbackend.repository.TournamentRepository;
 import com.alterhub.alterhubbackend.service.DeckCountService;
 import com.alterhub.alterhubbackend.service.interfaces.DeckService;
 import com.alterhub.alterhubbackend.service.interfaces.ParticipantService;
-import com.alterhub.alterhubbackend.service.interfaces.PlayerService;
-import com.alterhub.alterhubbackend.service.interfaces.TournamentService;
 import com.alterhub.alterhubbackend.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,8 +29,6 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     private final ParticipantRepository participantRepository;
     private final DeckService deckService;
-    private final PlayerService playerService;
-    private final TournamentService tournamentService;
 
     private final ValidationService validationService;
     private final MappingService mappingService;

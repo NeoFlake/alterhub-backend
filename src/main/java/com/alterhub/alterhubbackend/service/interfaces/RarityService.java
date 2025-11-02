@@ -17,8 +17,4 @@ public interface RarityService {
 
     void deleteRarityById(UUID id);
 
-    void verifyRarityIntegrity (RarityDTO rarityDTO);
-
-    void validateRarity(RarityDTO rarityDTO);
-
 }

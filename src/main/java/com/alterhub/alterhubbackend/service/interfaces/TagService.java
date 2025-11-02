@@ -19,6 +19,4 @@ public interface TagService {
 
     void deleteTagById(UUID id);
 
-    void verifyTagIntegrity(TagDTO tagDTO);
-
 }

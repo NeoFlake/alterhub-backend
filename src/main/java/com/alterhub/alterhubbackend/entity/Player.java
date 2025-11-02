@@ -28,9 +28,11 @@ public class Player {
     private User user;
 
     @OneToMany(mappedBy = "player")
+    @Builder.Default
     private List<Deck> decks = new ArrayList<>();
 
     @OneToMany(mappedBy = "player")
+    @Builder.Default
     private List<Participant> participants = new ArrayList<>();
 
 }

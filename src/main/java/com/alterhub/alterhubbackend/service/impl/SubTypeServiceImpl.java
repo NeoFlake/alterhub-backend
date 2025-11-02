@@ -1,16 +1,13 @@
 package com.alterhub.alterhubbackend.service.impl;
 
 import com.alterhub.alterhubbackend.dto.SubTypeDTO;
-import com.alterhub.alterhubbackend.dto.TypeDTO;
 import com.alterhub.alterhubbackend.entity.SubType;
-import com.alterhub.alterhubbackend.entity.Type;
-import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.SubTypeMapper;
-import com.alterhub.alterhubbackend.mapper.TypeMapper;
 import com.alterhub.alterhubbackend.repository.SubTypeRepository;
 import com.alterhub.alterhubbackend.service.interfaces.SubTypeService;
+import com.alterhub.alterhubbackend.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +19,8 @@ import java.util.UUID;
 public class SubTypeServiceImpl implements SubTypeService {
 
     private final SubTypeRepository subTypeRepository;
+
+    private final ValidationService validationService;
 
     public List<SubTypeDTO> getAllSubTypes() {
         return subTypeRepository.findAll()
@@ -36,14 +35,14 @@ public class SubTypeServiceImpl implements SubTypeService {
     }
 
     public SubTypeDTO createSubType(SubTypeDTO subTypeDTO) {
-        verifySubTypeIntegrity(subTypeDTO);
+        validationService.verifySubTypeIntegrity(subTypeDTO);
         SubType subType = SubTypeMapper.toEntity(subTypeDTO);
         return SubTypeMapper.toDTO(subTypeRepository.save(subType));
     }
 
     public SubTypeDTO updateSubTypeById(UUID id, SubTypeDTO subTypeDTO) {
         if (subTypeDTO.getId().equals(id)) {
-            verifySubTypeIntegrity(subTypeDTO);
+            validationService.verifySubTypeIntegrity(subTypeDTO);
             SubType subTypeToUpdate = subTypeRepository.findById(id)
                     .orElseThrow(NoResultByIdException::new);
             SubType subTypeUpdated = SubTypeMapper.toEntity(subTypeDTO);
@@ -64,24 +63,6 @@ public class SubTypeServiceImpl implements SubTypeService {
             throw new NoResultByIdException();
         }
         subTypeRepository.deleteById(id);
-    }
-
-    public void verifySubTypeIntegrity(SubTypeDTO subTypeDTO) {
-        if (subTypeDTO.getSubTypeId() == null || subTypeDTO.getSubTypeId().isEmpty()
-                || subTypeDTO.getName() == null || subTypeDTO.getName().isEmpty()
-                || subTypeDTO.getReference() == null || subTypeDTO.getReference().isEmpty()) {
-            throw new BadRequestException();
-        }
-    }
-
-    public void validateSubType(SubTypeDTO subTypeDTO) {
-        SubType subTypeReceived = SubTypeMapper.toEntity(subTypeDTO);
-        SubType subTypeOnBase = subTypeRepository.findById(subTypeReceived.getId()).orElseThrow(NoResultByIdException::new);
-        if(!subTypeOnBase.getSubTypeId().equals(subTypeReceived.getSubTypeId())
-                || !subTypeOnBase.getName().equals(subTypeReceived.getName())
-                || !subTypeOnBase.getReference().equals(subTypeReceived.getReference())) {
-            throw new BadRequestException();
-        }
     }
 
 }

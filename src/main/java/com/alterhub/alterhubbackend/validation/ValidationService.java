@@ -5,121 +5,37 @@ import com.alterhub.alterhubbackend.entity.*;
 import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.InvalidDeckSizeException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
-import com.alterhub.alterhubbackend.mapper.CardMapper;
-import com.alterhub.alterhubbackend.mapper.DeckMapper;
-import com.alterhub.alterhubbackend.mapper.FactionMapper;
-import com.alterhub.alterhubbackend.mapper.HeroMapper;
+import com.alterhub.alterhubbackend.exception.PasswordWeaknessException;
+import com.alterhub.alterhubbackend.mapper.*;
 import com.alterhub.alterhubbackend.repository.*;
-import com.alterhub.alterhubbackend.service.interfaces.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.UUID;
+import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 @Service
 public class ValidationService {
 
-    private final CardRepository cardRepository;
-    private final DeckRepository deckRepository;
     private final PlayerRepository playerRepository;
     private final FactionRepository factionRepository;
-    private final HeroRepository heroRepository;
-    private final ParticipantRepository participantRepository;
-
-    private final TypeService typeService;
-    private final SubTypeService subTypeService;
-    private final SetService setService;
-    private final RarityService rarityService;
-    private final ValidationService  validationService;
+    private final SetRepository setRepository;
+    private final RarityRepository rarityRepository;
+    private final TypeRepository typeRepository;
     private final TournamentRepository tournamentRepository;
+    private final SubTypeRepository subTypeRepository;
+    private final UserRepository userRepository;
 
+    private static final Pattern PASSWORD_REGEX = Pattern.compile("^(?=.{12,}$)(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\w\\s]).*$");
 
-    public void validateCard(CardDTO cardDTO) {
-        Card cardReceived = CardMapper.toEntity(cardDTO);
-        Card cardOnBase = cardRepository.findById(cardDTO.getId()).orElseThrow(NoResultByIdException::new);
-        if (!cardOnBase.getAlteredId().equals(cardReceived.getAlteredId())
-                || !cardOnBase.getReference().equals(cardReceived.getReference())
-                || !cardOnBase.getName().equals(cardReceived.getName())
-                || !cardOnBase.getImage().equals(cardReceived.getImage())
-                || !cardOnBase.getIsSuspended().equals(cardReceived.getIsSuspended())
-                || !cardOnBase.getIsErrated().equals(cardReceived.getIsErrated())
-                || !cardOnBase.getIsBanned().equals(cardReceived.getIsBanned())) {
+    public void verifyRarityIntegrity (RarityDTO rarityDTO){
+        if (rarityDTO.getRarityId() == null || rarityDTO.getRarityId().isEmpty()
+                || rarityDTO.getName() == null || rarityDTO.getName().isEmpty()
+                || rarityDTO.getReference() == null || rarityDTO.getReference().isEmpty()) {
             throw new BadRequestException();
         }
-
-        validateCardSubObject(cardDTO);
-
-    }
-
-    public void validateCardSubObject(CardDTO cardDTO) {
-        validateFaction(cardDTO.getFaction());
-        typeService.validateType(cardDTO.getType());
-
-        if(cardDTO.getSubTypes() != null && !cardDTO.getSubTypes().isEmpty()) {
-            cardDTO.getSubTypes().forEach(subTypeService::validateSubType);
-        }
-        cardDTO.getSets().forEach(setService::validateSet);
-        rarityService.validateRarity(cardDTO.getRarity());
-    }
-
-    public void validateDeck(DeckDTO deckDTO) {
-
-        Player playerOnBase = playerRepository.findById(deckDTO.getPlayerId()).orElseThrow(NoResultByIdException::new);
-
-        Deck deckReceived = DeckMapper.toEntity(deckDTO, playerOnBase);
-        Deck deckOnBase = deckRepository.findById(deckDTO.getId()).orElseThrow(NoResultByIdException::new);
-
-        if (!deckOnBase.getName().equals(deckReceived.getName())
-                || !deckOnBase.getDescription().equals(deckReceived.getDescription())
-                || !deckOnBase.getDateOfCreation().equals(deckReceived.getDateOfCreation())
-                || !deckOnBase.getLastModification().equals(deckReceived.getLastModification())
-                || !deckOnBase.getPlayer().getId().equals(playerOnBase.getId())) {
-            throw new BadRequestException();
-        }
-
-        validateFaction(deckDTO.getFaction());
-        validateHero(deckDTO.getHero());
-
-        if (deckOnBase.getCards().size() == deckReceived.getCards().size()) {
-            deckDTO.getCards().forEach(validationService::validateCard);
-        }
-
-    }
-
-    public void validateFaction(FactionDTO factionReceived) {
-        Faction faction = FactionMapper.toEntity(factionReceived);
-        Faction factionOnBase = factionRepository.findById(faction.getId()).orElseThrow(NoResultByIdException::new);
-        if (!factionOnBase.getFactionId().equals(faction.getFactionId())
-                || !factionOnBase.getName().equals(faction.getName())
-                || !factionOnBase.getReference().equals(faction.getReference())
-                || !factionOnBase.getColor().equals(faction.getColor())) {
-            throw new BadRequestException();
-        }
-    }
-
-    public void validateHero(HeroDTO heroDTO){
-        Hero heroReceived = HeroMapper.toEntity(heroDTO);
-        Hero heroOnBase = heroRepository.findById(heroDTO.getId()).orElseThrow(NoResultByIdException::new);
-        if (!heroOnBase.getName().equals(heroReceived.getName())
-                || !heroOnBase.getReserveSlot().equals(heroReceived.getReserveSlot())
-                || !heroOnBase.getLandmarkSlot().equals(heroReceived.getLandmarkSlot())
-                || !heroOnBase.getEffect().equals(heroReceived.getEffect())) {
-            throw new BadRequestException();
-        }
-
-        validationService.validateFaction(heroDTO.getFaction());
-    }
-
-    public void validateParticipant(ParticipantDTO participantDTO) {
-        Participant participantOnBase = participantRepository.findById(participantDTO.getId()).orElseThrow(NoResultByIdException::new);
-
-        if(!participantOnBase.getScore().equals(participantDTO.getScore())
-                || !participantOnBase.getClassement().equals(participantDTO.getClassement())
-                || !participantOnBase.getPlayer().getName().equals(participantDTO.getPlayerName())
-                || !participantOnBase.getTournament().getId().equals(participantDTO.getTournamentId())) {
-            throw new BadRequestException();
-        }
-
-        validationService.validateDeck(participantDTO.getDeck());
     }
 
     public void verifyDeckIntegrity(DeckDTO deckDTO) {
@@ -139,7 +55,7 @@ public class ValidationService {
         } else if (deckDTO.getCards().size() < 39 || deckDTO.getCards().size() > 59) {
             throw new InvalidDeckSizeException();
         } else {
-            deckDTO.getCards().forEach(validationService::verifyCardIntegrity);
+            deckDTO.getCards().forEach(this::verifyCardIntegrity);
         }
 
     }
@@ -156,12 +72,12 @@ public class ValidationService {
             throw new BadRequestException();
         }
         verifyFactionIntegrity(cardDTO.getFaction());
-        typeService.verifyTypeIntegrity(cardDTO.getType());
+        verifyTypeIntegrity(cardDTO.getType());
         if (cardDTO.getSubTypes() != null && !cardDTO.getSubTypes().isEmpty()) {
-            cardDTO.getSubTypes().forEach(subTypeService::verifySubTypeIntegrity);
+            cardDTO.getSubTypes().forEach(this::verifySubTypeIntegrity);
         }
-        cardDTO.getSets().forEach(setService::verifySetIntegrity);
-        rarityService.verifyRarityIntegrity(cardDTO.getRarity());
+        cardDTO.getSets().forEach(this::verifySetIntegrity);
+        verifyRarityIntegrity(cardDTO.getRarity());
         verifyElementIntegrity(cardDTO.getElement());
     }
 
@@ -193,7 +109,7 @@ public class ValidationService {
                 || heroDTO.getEffect() == null || heroDTO.getEffect().isEmpty()){
             throw new BadRequestException();
         }
-        validationService.verifyFactionIntegrity(heroDTO.getFaction());
+        verifyFactionIntegrity(heroDTO.getFaction());
     }
 
     public void verifyParticipantIntegrity(ParticipantDTO participantDTO) {
@@ -204,8 +120,158 @@ public class ValidationService {
             throw new BadRequestException();
         }
 
-        validationService.verifyDeckIntegrity(participantDTO.getDeck());
+        verifyDeckIntegrity(participantDTO.getDeck());
 
+    }
+
+    public void verifyTournamentIntegrity(TournamentDTO tournamentDTO) {
+
+        if(tournamentDTO.getName() == null || tournamentDTO.getName().isEmpty()
+                || tournamentDTO.getNumberOfPlayers() == null || tournamentDTO.getNumberOfPlayers() <= 0
+                || tournamentDTO.getLocation() == null || tournamentDTO.getLocation().isEmpty()
+                || tournamentDTO.getDate() == null || tournamentDTO.getDate().isAfter(LocalDate.now())){
+            throw new BadRequestException();
+        }
+
+        if(!tournamentDTO.getParticipants().isEmpty()){
+            tournamentDTO.getParticipants().forEach(this::verifyParticipantIntegrity);
+        }
+
+    }
+
+    public void verifySetIntegrity(SetDTO setDTO) {
+        if (setDTO.getSetId() == null || setDTO.getSetId().isEmpty()
+                || setDTO.getName() == null || setDTO.getName().isEmpty()
+                || setDTO.getReference() == null || setDTO.getReference().isEmpty()) {
+            throw new BadRequestException();
+        }
+    }
+
+    public void verifySubTypeIntegrity(SubTypeDTO subTypeDTO) {
+        if (subTypeDTO.getSubTypeId() == null || subTypeDTO.getSubTypeId().isEmpty()
+                || subTypeDTO.getName() == null || subTypeDTO.getName().isEmpty()
+                || subTypeDTO.getReference() == null || subTypeDTO.getReference().isEmpty()) {
+            throw new BadRequestException();
+        }
+    }
+
+    public void verifyTagIntegrity(TagDTO tagDTO) {
+        if (tagDTO.getName() == null || tagDTO.getName().isEmpty()) {
+            throw new BadRequestException();
+        }
+    }
+
+    public void verifyTypeIntegrity(TypeDTO typeDTO) {
+        if (typeDTO.getTypeId() == null || typeDTO.getTypeId().isEmpty()
+                || typeDTO.getName() == null || typeDTO.getName().isEmpty()
+                || typeDTO.getReference() == null || typeDTO.getReference().isEmpty()) {
+            throw new BadRequestException();
+        }
+    }
+
+    public void verifyUserRequestIntegrity(UserRequestDTO userRequestDTO) {
+        if (userRequestDTO.getLastName() == null || userRequestDTO.getLastName().isEmpty()
+                || userRequestDTO.getFirstName() == null || userRequestDTO.getFirstName().isEmpty()
+                || userRequestDTO.getEmail() == null || userRequestDTO.getEmail().isEmpty()
+                || userRequestDTO.getPlayerName() == null || userRequestDTO.getPlayerName().isEmpty()
+                || userRequestDTO.getDateOfCreation() == null || userRequestDTO.getLastModification() == null
+                || userRequestDTO.getPassword() == null || userRequestDTO.getPassword().isEmpty()
+                || (userRequestDTO.getNewPassword() != null && userRequestDTO.getNewPassword().isEmpty())) {
+            throw new BadRequestException();
+        }
+    }
+
+    public void verifyUserAuthenticationIntegrity(UserAuthenticationDTO userAuthenticationDTO) {
+        if (userAuthenticationDTO.getEmail() == null || userAuthenticationDTO.getEmail().isEmpty()
+                || userAuthenticationDTO.getPassword() == null || userAuthenticationDTO.getPassword().isEmpty()) {
+            throw new BadRequestException();
+        }
+    }
+
+    public void validateCardSubObject(CardDTO cardDTO) {
+        validateFaction(cardDTO.getFaction());
+        validateType(cardDTO.getType());
+
+        if(cardDTO.getSubTypes() != null && !cardDTO.getSubTypes().isEmpty()) {
+            cardDTO.getSubTypes().forEach(this::validateSubType);
+        }
+        cardDTO.getSets().forEach(this::validateSet);
+        validateRarity(cardDTO.getRarity());
+    }
+
+    public void validateFaction(FactionDTO factionReceived) {
+        Faction faction = FactionMapper.toEntity(factionReceived);
+        Faction factionOnBase = factionRepository.findById(faction.getId()).orElseThrow(NoResultByIdException::new);
+        if (!factionOnBase.getFactionId().equals(faction.getFactionId())
+                || !factionOnBase.getName().equals(faction.getName())
+                || !factionOnBase.getReference().equals(faction.getReference())
+                || !factionOnBase.getColor().equals(faction.getColor())) {
+            throw new BadRequestException();
+        }
+    }
+
+    public void validateRarity(RarityDTO rarityDTO) {
+        Rarity rarityReceived = RarityMapper.toEntity(rarityDTO);
+        Rarity rarityOnBase = rarityRepository.findById(rarityReceived.getId()).orElseThrow(NoResultByIdException::new);
+        if(!rarityOnBase.getRarityId().equals(rarityReceived.getRarityId())
+                || !rarityOnBase.getName().equals(rarityReceived.getName())
+                || !rarityOnBase.getReference().equals(rarityReceived.getReference())) {
+            throw new BadRequestException();
+        }
+    }
+
+    public void validateSet(SetDTO setDTO) {
+        Set setReceived = SetMapper.toEntity(setDTO);
+        Set setOnBase = setRepository.findById(setReceived.getId()).orElseThrow(NoResultByIdException::new);
+        if(!setOnBase.getSetId().equals(setReceived.getSetId())
+                || !setOnBase.getName().equals(setReceived.getName())
+                || !setOnBase.getReference().equals(setReceived.getReference())) {
+            throw new BadRequestException();
+        }
+    }
+
+    public void validateSubType(SubTypeDTO subTypeDTO) {
+        SubType subTypeReceived = SubTypeMapper.toEntity(subTypeDTO);
+        SubType subTypeOnBase = subTypeRepository.findById(subTypeReceived.getId()).orElseThrow(NoResultByIdException::new);
+        if(!subTypeOnBase.getSubTypeId().equals(subTypeReceived.getSubTypeId())
+                || !subTypeOnBase.getName().equals(subTypeReceived.getName())
+                || !subTypeOnBase.getReference().equals(subTypeReceived.getReference())) {
+            throw new BadRequestException();
+        }
+    }
+
+    public void validateType(TypeDTO typeDTO) {
+        Type typeReceived = TypeMapper.toEntity(typeDTO);
+        Type typeOnBase = typeRepository.findById(typeReceived.getId()).orElseThrow(NoResultByIdException::new);
+        if(!typeOnBase.getTypeId().equals(typeReceived.getTypeId())
+                || !typeOnBase.getName().equals(typeReceived.getName())
+                || !typeOnBase.getReference().equals(typeReceived.getReference())) {
+            throw new BadRequestException();
+        }
+    }
+
+    public void validateRequestUser(UserRequestDTO userRequestDTO) {
+        Player player = playerRepository.findByName(userRequestDTO.getPlayerName()).orElseThrow(NoResultByIdException::new);
+        User userReceived = UserMapper.toEntityFromRequestDTO(userRequestDTO, player);
+        validateUser(userReceived, userRequestDTO.getId());
+    }
+
+    public void validateUser(User userReceived, UUID id) {
+        User userOnBase = userRepository.findById(id).orElseThrow(NoResultByIdException::new);
+
+        if (!userReceived.getLastname().equals(userOnBase.getLastname())
+                || !userReceived.getFirstname().equals(userOnBase.getFirstname())
+                || !userReceived.getEmail().equals(userOnBase.getEmail())
+                || !userReceived.getDateOfCreation().equals(userOnBase.getDateOfCreation())
+                || !userReceived.getLastModification().equals(userOnBase.getLastModification())) {
+            throw new BadRequestException();
+        }
+    }
+
+    public void validatePasswordStrength(String password) {
+        if (password == null || !PASSWORD_REGEX.matcher(password).matches()) {
+            throw new PasswordWeaknessException();
+        }
     }
 
 }

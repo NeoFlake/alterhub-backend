@@ -17,8 +17,4 @@ public interface SubTypeService {
 
     void deleteSubTypeById(UUID id);
 
-    void verifySubTypeIntegrity(SubTypeDTO subTypeDTO);
-
-    void validateSubType(SubTypeDTO subTypeDTO);
-
 }

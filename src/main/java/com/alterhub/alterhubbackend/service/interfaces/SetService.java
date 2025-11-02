@@ -17,8 +17,4 @@ public interface SetService {
 
     void deleteSetById(UUID id);
 
-    void verifySetIntegrity(SetDTO setDTO);
-
-    void validateSet(SetDTO setDTO);
-
 }

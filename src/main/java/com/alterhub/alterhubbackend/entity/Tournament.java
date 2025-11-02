@@ -35,6 +35,7 @@ public class Tournament {
     private LocalDate date;
 
     @OneToMany(mappedBy = "tournament")
+    @Builder.Default
     private List<Participant> participants = new ArrayList<>();
 
 }

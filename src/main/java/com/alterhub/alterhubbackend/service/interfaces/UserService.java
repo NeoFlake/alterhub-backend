@@ -22,9 +22,4 @@ public interface UserService {
     Boolean accessGranted(UserRequestDTO userRequestDTO);
 
     void deleteUserById(UUID id, UserAuthenticationDTO userAuthenticationDTO);
-
-    void verifyUserRequestIntegrity(UserRequestDTO userRequestDTO);
-
-    void verifyUserAuthenticationIntegrity(UserAuthenticationDTO userAuthenticationDTO);
-
 }

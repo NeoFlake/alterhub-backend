@@ -14,6 +14,7 @@ import com.alterhub.alterhubbackend.service.interfaces.DeckService;
 import com.alterhub.alterhubbackend.service.interfaces.PlayerService;
 import com.alterhub.alterhubbackend.service.interfaces.RoleService;
 import com.alterhub.alterhubbackend.service.interfaces.UserService;
+import com.alterhub.alterhubbackend.validation.ValidationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.owasp.encoder.Encode;
@@ -23,7 +24,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -33,10 +33,11 @@ public class UserServiceImpl implements UserService {
     private final PlayerService playerService;
     private final PasswordEncoder passwordEncoder;
 
-    private static final Pattern PASSWORD_REGEX = Pattern.compile("^(?=.{12,}$)(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\w\\s]).*$");
     private final RoleService roleService;
     private final DeckService deckService;
     private final PlayerRepository playerRepository;
+
+    private final ValidationService validationService;
 
     public User getUserByIdInternalUsage(UUID id) {
         return userRepository.findById(id).orElseThrow(NoResultByIdException::new);
@@ -49,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public UserDTO addUser(UserRequestDTO userRequestDTO) {
-        verifyUserRequestIntegrity(userRequestDTO);
+        validationService.verifyUserRequestIntegrity(userRequestDTO);
 
         UserRequestDTO userDTOToSave = new UserRequestDTO();
         Player playerToSave;
@@ -64,7 +65,7 @@ public class UserServiceImpl implements UserService {
         userDTOToSave.setDateOfCreation(LocalDate.now());
         userDTOToSave.setLastModification(LocalDateTime.now());
 
-        validatePasswordStrength(userRequestDTO.getPassword());
+        validationService.validatePasswordStrength(userRequestDTO.getPassword());
 
         // Cryptage du mot de passe pour le préparer à la pousse en base
         userDTOToSave.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
@@ -109,7 +110,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDTO authentication(UserAuthenticationDTO userAuthenticationDTO) {
-        verifyUserAuthenticationIntegrity(userAuthenticationDTO);
+        validationService.verifyUserAuthenticationIntegrity(userAuthenticationDTO);
         userAuthenticationDTO.setEmail(Encode.forHtml(userAuthenticationDTO.getEmail()));
         userAuthenticationDTO.setPassword(Encode.forHtml(userAuthenticationDTO.getPassword()));
         if(!userRepository.existsByEmail(userAuthenticationDTO.getEmail())) {
@@ -126,15 +127,15 @@ public class UserServiceImpl implements UserService {
     }
 
     public Boolean accessGranted(UserRequestDTO userRequestDTO) {
-        verifyUserRequestIntegrity(userRequestDTO);
-        validateRequestUser(userRequestDTO);
+        validationService.verifyUserRequestIntegrity(userRequestDTO);
+        validationService.validateRequestUser(userRequestDTO);
         return roleService.permissionGrantedForUser(userRequestDTO.getId());
     }
 
     @Transactional
     public UserDTO updateUserById(UUID id, UserRequestDTO userRequestDTO) {
         if(userRequestDTO.getId().equals(id)) {
-            verifyUserRequestIntegrity(userRequestDTO);
+            validationService.verifyUserRequestIntegrity(userRequestDTO);
 
             // On encode les informations en provenance du front pour éviter
             // les injections malveillantes.
@@ -172,7 +173,7 @@ public class UserServiceImpl implements UserService {
                 if(userRequestDTO.getNewPassword().isEmpty() || userRequestDTO.getNewPassword().equals(userRequestDTO.getPassword())) {
                     throw new BadRequestException();
                 }
-                validatePasswordStrength(userRequestDTO.getNewPassword());
+                validationService.validatePasswordStrength(userRequestDTO.getNewPassword());
 
                 userRequestDTO.setPassword(passwordEncoder.encode(userRequestDTO.getNewPassword()));
 
@@ -214,49 +215,6 @@ public class UserServiceImpl implements UserService {
 
         // Enfin, on supprime proprement l'user
         userRepository.deleteById(id);
-    }
-
-    private void validateRequestUser(UserRequestDTO userRequestDTO) {
-        Player player = playerService.getPlayerByNameInternalUsage(userRequestDTO.getPlayerName());
-        User userReceived = UserMapper.toEntityFromRequestDTO(userRequestDTO, player);
-        validateUser(userReceived, userRequestDTO.getId());
-    }
-
-    private void validateUser(User userReceived, UUID id) {
-        User userOnBase = userRepository.findById(id).orElseThrow(NoResultByIdException::new);
-
-        if (!userReceived.getLastname().equals(userOnBase.getLastname())
-                || !userReceived.getFirstname().equals(userOnBase.getFirstname())
-                || !userReceived.getEmail().equals(userOnBase.getEmail())
-                || !userReceived.getDateOfCreation().equals(userOnBase.getDateOfCreation())
-                || !userReceived.getLastModification().equals(userOnBase.getLastModification())) {
-            throw new BadRequestException();
-        }
-    }
-
-    public void verifyUserRequestIntegrity(UserRequestDTO userRequestDTO) {
-        if (userRequestDTO.getLastName() == null || userRequestDTO.getLastName().isEmpty()
-                || userRequestDTO.getFirstName() == null || userRequestDTO.getFirstName().isEmpty()
-                || userRequestDTO.getEmail() == null || userRequestDTO.getEmail().isEmpty()
-                || userRequestDTO.getPlayerName() == null || userRequestDTO.getPlayerName().isEmpty()
-                || userRequestDTO.getDateOfCreation() == null || userRequestDTO.getLastModification() == null
-                || userRequestDTO.getPassword() == null || userRequestDTO.getPassword().isEmpty()
-                || (userRequestDTO.getNewPassword() != null && userRequestDTO.getNewPassword().isEmpty())) {
-            throw new BadRequestException();
-        }
-    }
-
-    public void verifyUserAuthenticationIntegrity(UserAuthenticationDTO userAuthenticationDTO) {
-        if (userAuthenticationDTO.getEmail() == null || userAuthenticationDTO.getEmail().isEmpty()
-                || userAuthenticationDTO.getPassword() == null || userAuthenticationDTO.getPassword().isEmpty()) {
-            throw new BadRequestException();
-        }
-    }
-
-    private void validatePasswordStrength(String password) {
-        if (password == null || !PASSWORD_REGEX.matcher(password).matches()) {
-            throw new PasswordWeaknessException();
-        }
     }
 
 }

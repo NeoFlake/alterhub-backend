@@ -2,12 +2,12 @@ package com.alterhub.alterhubbackend.service.impl;
 
 import com.alterhub.alterhubbackend.dto.TypeDTO;
 import com.alterhub.alterhubbackend.entity.Type;
-import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.TypeMapper;
 import com.alterhub.alterhubbackend.repository.TypeRepository;
 import com.alterhub.alterhubbackend.service.interfaces.TypeService;
+import com.alterhub.alterhubbackend.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +19,8 @@ import java.util.UUID;
 public class TypeServiceImpl implements TypeService {
 
     private final TypeRepository typeRepository;
+
+    private final ValidationService validationService;
 
     /**
      * Permet de récupérer l'ensemble des types disponibles
@@ -48,14 +50,14 @@ public class TypeServiceImpl implements TypeService {
     }
 
     public TypeDTO createType(TypeDTO typeDTO) {
-        verifyTypeIntegrity(typeDTO);
+        validationService.verifyTypeIntegrity(typeDTO);
         Type type = TypeMapper.toEntity(typeDTO);
         return TypeMapper.toDTO(typeRepository.save(type));
     }
 
     public TypeDTO updateTypeById(UUID id, TypeDTO typeDTO) {
         if (typeDTO.getId().equals(id)) {
-            verifyTypeIntegrity(typeDTO);
+            validationService.verifyTypeIntegrity(typeDTO);
             Type typeToUpdate = typeRepository.findById(id)
                     .orElseThrow(NoResultByIdException::new);
             Type typeUpdated = TypeMapper.toEntity(typeDTO);
@@ -77,24 +79,6 @@ public class TypeServiceImpl implements TypeService {
             throw new NoResultByIdException();
         }
         typeRepository.deleteById(id);
-    }
-
-    public void verifyTypeIntegrity(TypeDTO typeDTO) {
-        if (typeDTO.getTypeId() == null || typeDTO.getTypeId().isEmpty()
-                || typeDTO.getName() == null || typeDTO.getName().isEmpty()
-                || typeDTO.getReference() == null || typeDTO.getReference().isEmpty()) {
-            throw new BadRequestException();
-        }
-    }
-
-    public void validateType(TypeDTO typeDTO) {
-        Type typeReceived = TypeMapper.toEntity(typeDTO);
-        Type typeOnBase = typeRepository.findById(typeReceived.getId()).orElseThrow(NoResultByIdException::new);
-        if(!typeOnBase.getTypeId().equals(typeReceived.getTypeId())
-        || !typeOnBase.getName().equals(typeReceived.getName())
-        || !typeOnBase.getReference().equals(typeReceived.getReference())) {
-            throw new BadRequestException();
-        }
     }
 
 }

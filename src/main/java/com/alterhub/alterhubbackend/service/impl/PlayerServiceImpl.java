@@ -1,10 +1,6 @@
 package com.alterhub.alterhubbackend.service.impl;
 
-import com.alterhub.alterhubbackend.dto.DeckDTO;
-import com.alterhub.alterhubbackend.dto.ParticipantDTO;
 import com.alterhub.alterhubbackend.dto.PlayerDTO;
-import com.alterhub.alterhubbackend.entity.Deck;
-import com.alterhub.alterhubbackend.entity.Participant;
 import com.alterhub.alterhubbackend.entity.Player;
 import com.alterhub.alterhubbackend.entity.User;
 import com.alterhub.alterhubbackend.exception.BadRequestException;
@@ -21,18 +17,15 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
 public class PlayerServiceImpl implements PlayerService {
 
     private final PlayerRepository playerRepository;
-
-    private final ParticipantService participantService;
     private final UserRepository userRepository;
     private final MappingService mappingService;
 
@@ -69,8 +62,8 @@ public class PlayerServiceImpl implements PlayerService {
         User user = playerDTO.getUserId() != null
                 ? userRepository.findById(playerDTO.getUserId()).orElseThrow()
                 : null;
-
-        return mappingService.mapPlayerDTOWithSubObject(playerRepository.save(mappingService.mapPlayerWithSubObject(playerDTO, user)));
+        // N'oublions pas que l'on créé un nouveau Player, il n'a aucune participation ni aucun deck en l'état...
+        return mappingService.mapPlayerDTOWithSubObject(playerRepository.save(PlayerMapper.toEntity(playerDTO, new ArrayList<>(), new ArrayList<>(), user)));
     }
 
     public PlayerDTO setLinkBetweenUserAndPlayer(User user, UUID playerId) {

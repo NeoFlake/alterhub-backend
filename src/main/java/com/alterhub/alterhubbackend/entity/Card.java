@@ -47,6 +47,7 @@ public class Card {
             inverseJoinColumns = @JoinColumn(name = "subTypesId")
     )
     @Column(nullable = false)
+    @Builder.Default
     private List<SubType> subtypes = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)

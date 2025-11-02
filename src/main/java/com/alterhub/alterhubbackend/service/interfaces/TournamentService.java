@@ -1,7 +1,6 @@
 package com.alterhub.alterhubbackend.service.interfaces;
 
 import com.alterhub.alterhubbackend.dto.TournamentDTO;
-import com.alterhub.alterhubbackend.entity.Tournament;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -49,20 +48,10 @@ public interface TournamentService {
 
     Boolean existsById(UUID tournamentId);
 
-    void verifyTournamentIntegrity(TournamentDTO tournamentDTO);
-
     TournamentDTO addTournament(TournamentDTO tournamentDTO);
 
     TournamentDTO updateTournamentById(UUID id, TournamentDTO tournamentDTO);
 
     void deleteTournamentById(UUID id);
-
-    TournamentDTO mapTournamentDTOWithSubObject(Tournament tournament);
-
-    List<TournamentDTO> mapTournamentsDTOWithSubObject(List<Tournament> tournaments);
-
-    Tournament mapTournamentWithSubObject(TournamentDTO tournamentDTO);
-
-    List<Tournament> mapTournamentsWithSubObject(List<TournamentDTO> tournamentsDTO);
 
 }

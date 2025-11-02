@@ -34,6 +34,7 @@ public class Hero {
             inverseJoinColumns = @JoinColumn(name = "setsId")
     )
     @Column(nullable = false)
+    @Builder.Default
     private List<Set> sets = new ArrayList<>();
 
     private Short reserveSlot;

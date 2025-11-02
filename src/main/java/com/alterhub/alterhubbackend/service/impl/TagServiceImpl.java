@@ -2,12 +2,12 @@ package com.alterhub.alterhubbackend.service.impl;
 
 import com.alterhub.alterhubbackend.dto.TagDTO;
 import com.alterhub.alterhubbackend.entity.*;
-import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.TagMapper;
 import com.alterhub.alterhubbackend.repository.TagRepository;
 import com.alterhub.alterhubbackend.service.interfaces.TagService;
+import com.alterhub.alterhubbackend.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +19,8 @@ import java.util.UUID;
 public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
+
+    private final ValidationService validationService;
 
     public List<TagDTO> getAllTags() {
         return tagRepository.findAll()
@@ -38,7 +40,7 @@ public class TagServiceImpl implements TagService {
     }
 
     public TagDTO createTag(TagDTO tagDTO) {
-        verifyTagIntegrity(tagDTO);
+        validationService.verifyTagIntegrity(tagDTO);
         Tag tag = TagMapper.toEntity(tagDTO);
         return TagMapper.toDTO(tagRepository.save(tag));
     }
@@ -47,7 +49,7 @@ public class TagServiceImpl implements TagService {
         if (!tagDTO.getId().equals(id)){
             throw new IdNotMatchException();
         }
-        verifyTagIntegrity(tagDTO);
+        validationService.verifyTagIntegrity(tagDTO);
 
         Tag tagUpdated = TagMapper.toEntity(tagDTO);
         Tag tagToUpdate = tagRepository.findById(tagDTO.getId()).orElseThrow(NoResultByIdException::new);
@@ -66,12 +68,6 @@ public class TagServiceImpl implements TagService {
             throw new NoResultByIdException();
         }
         tagRepository.deleteById(id);
-    }
-
-    public void verifyTagIntegrity(TagDTO tagDTO) {
-        if (tagDTO.getName() == null || tagDTO.getName().isEmpty()) {
-            throw new BadRequestException();
-        }
     }
 
 }

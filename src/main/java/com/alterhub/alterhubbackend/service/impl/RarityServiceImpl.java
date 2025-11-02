@@ -2,12 +2,12 @@ package com.alterhub.alterhubbackend.service.impl;
 
 import com.alterhub.alterhubbackend.dto.RarityDTO;
 import com.alterhub.alterhubbackend.entity.Rarity;
-import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.RarityMapper;
 import com.alterhub.alterhubbackend.repository.RarityRepository;
 import com.alterhub.alterhubbackend.service.interfaces.RarityService;
+import com.alterhub.alterhubbackend.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +19,7 @@ import java.util.UUID;
 public class RarityServiceImpl implements RarityService {
 
     private final RarityRepository rarityRepository;
+    private final ValidationService validationService;
 
     public List<RarityDTO> getAllRarities() {
         return rarityRepository.findAll()
@@ -33,14 +34,14 @@ public class RarityServiceImpl implements RarityService {
     }
 
     public RarityDTO createRarity(RarityDTO rarityDTO) {
-        verifyRarityIntegrity(rarityDTO);
+        validationService.verifyRarityIntegrity(rarityDTO);
         Rarity rarity = RarityMapper.toEntity(rarityDTO);
         return RarityMapper.toDTO(rarityRepository.save(rarity));
     }
 
     public RarityDTO updateRarityById(UUID id, RarityDTO rarityDTO) {
         if(rarityDTO.getId().equals(id)) {
-            verifyRarityIntegrity(rarityDTO);
+            validationService.verifyRarityIntegrity(rarityDTO);
             Rarity rarityToUpdate = rarityRepository.findById(id)
                     .orElseThrow(NoResultByIdException::new);
             Rarity subTypeUpdated = RarityMapper.toEntity(rarityDTO);
@@ -61,24 +62,6 @@ public class RarityServiceImpl implements RarityService {
             throw new NoResultByIdException();
         }
         rarityRepository.deleteById(id);
-    }
-
-    public void verifyRarityIntegrity (RarityDTO rarityDTO){
-        if (rarityDTO.getRarityId() == null || rarityDTO.getRarityId().isEmpty()
-                || rarityDTO.getName() == null || rarityDTO.getName().isEmpty()
-                || rarityDTO.getReference() == null || rarityDTO.getReference().isEmpty()) {
-            throw new BadRequestException();
-        }
-    }
-
-    public void validateRarity(RarityDTO rarityDTO) {
-        Rarity rarityReceived = RarityMapper.toEntity(rarityDTO);
-        Rarity rarityOnBase = rarityRepository.findById(rarityReceived.getId()).orElseThrow(NoResultByIdException::new);
-        if(!rarityOnBase.getRarityId().equals(rarityReceived.getRarityId())
-                || !rarityOnBase.getName().equals(rarityReceived.getName())
-                || !rarityOnBase.getReference().equals(rarityReceived.getReference())) {
-            throw new BadRequestException();
-        }
     }
 
 }

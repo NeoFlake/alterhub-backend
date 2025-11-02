@@ -1,16 +1,13 @@
 package com.alterhub.alterhubbackend.service.impl;
 
 import com.alterhub.alterhubbackend.dto.SetDTO;
-import com.alterhub.alterhubbackend.dto.SubTypeDTO;
 import com.alterhub.alterhubbackend.entity.Set;
-import com.alterhub.alterhubbackend.entity.SubType;
-import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.SetMapper;
-import com.alterhub.alterhubbackend.mapper.SubTypeMapper;
 import com.alterhub.alterhubbackend.repository.SetRepository;
 import com.alterhub.alterhubbackend.service.interfaces.SetService;
+import com.alterhub.alterhubbackend.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +19,8 @@ import java.util.UUID;
 public class SetServiceImpl implements SetService {
 
     private final SetRepository setRepository;
+
+    private final ValidationService validationService;
 
     public List<SetDTO> getAllSets() {
         return setRepository.findAll()
@@ -36,14 +35,14 @@ public class SetServiceImpl implements SetService {
     }
 
     public SetDTO createSet(SetDTO setDTO) {
-        verifySetIntegrity(setDTO);
+        validationService.verifySetIntegrity(setDTO);
         Set set = SetMapper.toEntity(setDTO);
         return SetMapper.toDTO(setRepository.save(set));
     }
 
     public SetDTO updateSetById(UUID id, SetDTO setDTO) {
         if (setDTO.getId().equals(id)) {
-            verifySetIntegrity(setDTO);
+            validationService.verifySetIntegrity(setDTO);
             Set setToUpdate = setRepository.findById(id)
                     .orElseThrow(NoResultByIdException::new);
             Set setUpdated = SetMapper.toEntity(setDTO);
@@ -64,24 +63,6 @@ public class SetServiceImpl implements SetService {
             throw new NoResultByIdException();
         }
         setRepository.deleteById(id);
-    }
-
-    public void verifySetIntegrity(SetDTO setDTO) {
-        if (setDTO.getSetId() == null || setDTO.getSetId().isEmpty()
-                || setDTO.getName() == null || setDTO.getName().isEmpty()
-                || setDTO.getReference() == null || setDTO.getReference().isEmpty()) {
-            throw new BadRequestException();
-        }
-    }
-
-    public void validateSet(SetDTO setDTO) {
-        Set setReceived = SetMapper.toEntity(setDTO);
-        Set setOnBase = setRepository.findById(setReceived.getId()).orElseThrow(NoResultByIdException::new);
-        if(!setOnBase.getSetId().equals(setReceived.getSetId())
-                || !setOnBase.getName().equals(setReceived.getName())
-                || !setOnBase.getReference().equals(setReceived.getReference())) {
-            throw new BadRequestException();
-        }
     }
 
 }

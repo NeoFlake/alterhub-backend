@@ -5,10 +5,8 @@ import com.alterhub.alterhubbackend.entity.Tournament;
 import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
-import com.alterhub.alterhubbackend.mapper.TournamentMapper;
 import com.alterhub.alterhubbackend.mapping.MappingService;
 import com.alterhub.alterhubbackend.repository.TournamentRepository;
-import com.alterhub.alterhubbackend.service.DeckCountService;
 import com.alterhub.alterhubbackend.service.interfaces.ParticipantService;
 import com.alterhub.alterhubbackend.service.interfaces.TournamentService;
 import com.alterhub.alterhubbackend.validation.ValidationService;
@@ -38,23 +36,22 @@ public class TournamentServiceImpl implements TournamentService {
     private final LocalDate endOfWeekLocalDate = LocalDate.now();
     private final LocalDate startOfMonthLocalDate = LocalDate.now().withDayOfMonth(1);
     private final LocalDate endOfMonthLocalDate = LocalDate.now();
-    private final DeckCountService deckCountService;
 
     public Page<TournamentDTO> getAllTournaments(Pageable pageable) {
         Page<Tournament> tournamentPage = tournamentRepository.findAll(pageable);
-        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
     public TournamentDTO getTournamentById(UUID tournamentId) {
         Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow(NoResultByIdException::new);
-        return mapTournamentDTOWithSubObject(tournament);
+        return mappingService.mapTournamentDTOWithSubObject(tournament);
     }
 
     public TournamentDTO getTournamentByName(String tournamentName) {
         if (tournamentName == null || tournamentName.isEmpty()) {
             throw new BadRequestException();
         }
-        return mapTournamentDTOWithSubObject(tournamentRepository.findByName(Encode.forHtml(tournamentName)));
+        return mappingService.mapTournamentDTOWithSubObject(tournamentRepository.findByName(Encode.forHtml(tournamentName)));
     }
 
     public Page<TournamentDTO> getTournamentByLessOfNumberOfPlayer(Integer numberOfPlayers, Pageable pageable) {
@@ -62,7 +59,7 @@ public class TournamentServiceImpl implements TournamentService {
             throw new BadRequestException();
         }
         Page<Tournament> tournamentPage = tournamentRepository.findByNumberOfPlayersIsLessThanEqual(numberOfPlayers, pageable);
-        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
     public Page<TournamentDTO> getTournamentByGreaterOfNumberOfPlayer(Integer numberOfPlayers, Pageable pageable) {
@@ -70,7 +67,7 @@ public class TournamentServiceImpl implements TournamentService {
             throw new BadRequestException();
         }
         Page<Tournament> tournamentPage = tournamentRepository.findByNumberOfPlayersIsGreaterThanEqual(numberOfPlayers, pageable);
-        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
     public Page<TournamentDTO> getTournamentBetweenARangeOfNumberOfPlayers(Integer minimalNumberOfPlayers, Integer maximalNumberOfPlayers, Pageable pageable) {
@@ -78,7 +75,7 @@ public class TournamentServiceImpl implements TournamentService {
             throw new BadRequestException();
         }
         Page<Tournament> tournamentPage = tournamentRepository.findByNumberOfPlayersIsBetween(minimalNumberOfPlayers, maximalNumberOfPlayers, pageable);
-        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
     public Page<TournamentDTO> getTournamentByLocation(String location, Pageable pageable) {
@@ -86,7 +83,7 @@ public class TournamentServiceImpl implements TournamentService {
             throw new BadRequestException();
         }
         Page<Tournament> tournamentPage = tournamentRepository.findByLocation(Encode.forHtml(location), pageable);
-        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
     public Page<TournamentDTO> getTournamentByDate(LocalDate date, Pageable pageable) {
@@ -94,7 +91,7 @@ public class TournamentServiceImpl implements TournamentService {
             throw new BadRequestException();
         }
         Page<Tournament> tournamentPage = tournamentRepository.findByDate(date, pageable);
-        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
     public Page<TournamentDTO> getTournamentPlayedBeforeADate(LocalDate date, Pageable pageable) {
@@ -102,7 +99,7 @@ public class TournamentServiceImpl implements TournamentService {
             throw new BadRequestException();
         }
         Page<Tournament> tournamentPage = tournamentRepository.findByDateIsBefore(date, pageable);
-        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
     public Page<TournamentDTO> getTournamentPlayedAfterADate(LocalDate date, Pageable pageable) {
@@ -110,7 +107,7 @@ public class TournamentServiceImpl implements TournamentService {
             throw new BadRequestException();
         }
         Page<Tournament> tournamentPage = tournamentRepository.findByDateIsAfter(date, pageable);
-        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
     public Page<TournamentDTO> getTournamentPlayedBetweenARangeOfDate(LocalDate startingDate, LocalDate endingDate, Pageable pageable) {
@@ -118,17 +115,17 @@ public class TournamentServiceImpl implements TournamentService {
             throw new BadRequestException();
         }
         Page<Tournament> tournamentPage = tournamentRepository.findByDateIsBetween(startingDate, endingDate, pageable);
-        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
     public Page<TournamentDTO> getTournamentPlayedThisWeek(Pageable pageable) {
         Page<Tournament> tournamentPage = tournamentRepository.findByDateIsBetween(startOfWeekLocalDate, endOfWeekLocalDate, pageable);
-        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
     public Page<TournamentDTO> getTournamentPlayedThisMonth(Pageable pageable) {
         Page<Tournament> tournamentPage = tournamentRepository.findByDateIsBetween(startOfMonthLocalDate, endOfMonthLocalDate, pageable);
-        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
     public Page<TournamentDTO> getTournamentByPlayerId(UUID playerId, Pageable pageable) {
@@ -136,7 +133,7 @@ public class TournamentServiceImpl implements TournamentService {
             throw new BadRequestException();
         }
         Page<Tournament> tournamentPage = tournamentRepository.findByParticipantsPlayer_Id(playerId, pageable);
-        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
     public Page<TournamentDTO> getTournamentsByFactionId(UUID factionId, Pageable pageable) {
@@ -144,7 +141,7 @@ public class TournamentServiceImpl implements TournamentService {
             throw new BadRequestException();
         }
         Page<Tournament> tournamentPage = tournamentRepository.findByParticipantsDeckFaction_Id(factionId, pageable);
-        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
     public Page<TournamentDTO> getTournamentsByFactionIdIn(List<UUID> factionIds, Pageable pageable) {
@@ -152,7 +149,7 @@ public class TournamentServiceImpl implements TournamentService {
             throw new BadRequestException();
         }
         Page<Tournament> tournamentPage = tournamentRepository.findByParticipantsDeckFaction_IdIn(factionIds, pageable);
-        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
     public Page<TournamentDTO> getTournamentsByHeroId(UUID heroId, Pageable pageable) {
@@ -160,7 +157,7 @@ public class TournamentServiceImpl implements TournamentService {
             throw new BadRequestException();
         }
         Page<Tournament> tournamentPage = tournamentRepository.findByParticipantsDeckHero_Id(heroId, pageable);
-        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
     public Page<TournamentDTO> getTournamentsByHeroIdIn(List<UUID> heroIds, Pageable pageable) {
@@ -168,20 +165,20 @@ public class TournamentServiceImpl implements TournamentService {
             throw new BadRequestException();
         }
         Page<Tournament> tournamentPage = tournamentRepository.findByParticipantsDeckHero_IdIn(heroIds, pageable);
-        return new PageImpl<>(mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
+        return new PageImpl<>(mappingService.mapTournamentsDTOWithSubObject(tournamentPage.getContent()), pageable, tournamentPage.getTotalElements());
     }
 
     public TournamentDTO addTournament(TournamentDTO tournamentDTO) {
-        verifyTournamentIntegrity(tournamentDTO);
-        return mapTournamentDTOWithSubObject(tournamentRepository.save(mapTournamentWithSubObject(tournamentDTO)));
+        validationService.verifyTournamentIntegrity(tournamentDTO);
+        return mappingService.mapTournamentDTOWithSubObject(tournamentRepository.save(mappingService.mapTournamentWithSubObject(tournamentDTO)));
     }
 
     public TournamentDTO updateTournamentById(UUID id, TournamentDTO tournamentDTO) {
         if(tournamentDTO.getId().equals(id)) {
-            verifyTournamentIntegrity(tournamentDTO);
+            validationService.verifyTournamentIntegrity(tournamentDTO);
 
             Tournament tournamentToUpdate = tournamentRepository.findById(tournamentDTO.getId()).orElseThrow(NoResultByIdException::new);
-            Tournament tournamentUpdated = mapTournamentWithSubObject(tournamentDTO);
+            Tournament tournamentUpdated = mappingService.mapTournamentWithSubObject(tournamentDTO);
 
             tournamentToUpdate.setName(Encode.forHtml(tournamentUpdated.getName()));
             tournamentToUpdate.setNumberOfPlayers(tournamentUpdated.getNumberOfPlayers());
@@ -189,7 +186,7 @@ public class TournamentServiceImpl implements TournamentService {
             tournamentToUpdate.setDate(tournamentUpdated.getDate());
             tournamentToUpdate.setParticipants(tournamentUpdated.getParticipants());
 
-            return mapTournamentDTOWithSubObject(tournamentRepository.save(tournamentToUpdate));
+            return mappingService.mapTournamentDTOWithSubObject(tournamentRepository.save(tournamentToUpdate));
         } else {
             throw new IdNotMatchException();
         }
@@ -201,19 +198,6 @@ public class TournamentServiceImpl implements TournamentService {
         }
         participantService.deleteParticipantsByTournamentId(id);
         tournamentRepository.deleteById(id);
-    }
-
-    public void verifyTournamentIntegrity(TournamentDTO tournamentDTO) {
-
-        if(tournamentDTO.getName() == null || tournamentDTO.getName().isEmpty()
-        || tournamentDTO.getNumberOfPlayers() == null || tournamentDTO.getNumberOfPlayers() <= 0
-        || tournamentDTO.getLocation() == null || tournamentDTO.getLocation().isEmpty()
-            || tournamentDTO.getDate() == null || tournamentDTO.getDate().isAfter(LocalDate.now())){
-            throw new BadRequestException();
-        }
-
-        tournamentDTO.getParticipants().forEach(validationService::verifyParticipantIntegrity);
-
     }
 
     public Boolean existsById(UUID tournamentId) {

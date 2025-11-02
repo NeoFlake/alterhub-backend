@@ -3,14 +3,13 @@ package com.alterhub.alterhubbackend.mapping;
 import com.alterhub.alterhubbackend.dto.*;
 import com.alterhub.alterhubbackend.entity.*;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
-import com.alterhub.alterhubbackend.exception.NotFindByArgumentException;
 import com.alterhub.alterhubbackend.mapper.*;
 import com.alterhub.alterhubbackend.repository.PlayerRepository;
-import com.alterhub.alterhubbackend.repository.TournamentRepository;
 import com.alterhub.alterhubbackend.service.DeckCountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -20,6 +19,8 @@ import java.util.UUID;
 public class MappingService {
 
     private final DeckCountService deckCountService;
+
+    private final PlayerRepository playerRepository;
 
     public CardDTO mapWithDeckCount(Card card, Integer count) {
         return CardMapper.toDTO(card, count);
@@ -63,25 +64,6 @@ public class MappingService {
         return ParticipantMapper.toEntity(participantDTO, player, tournament, deck);
     }
 
-    public List<Participant> mapParticipantsWithSubObjects(List<ParticipantDTO> participantsDTO, List<Player> players, List<Tournament> tournaments) {
-        return participantsDTO.stream().map(participantDTO -> {
-
-            Player playerParticipant = players
-                    .stream()
-                    .filter(player -> participantDTO.getPlayerName().equals(player.getName()))
-                    .findFirst()
-                    .orElseThrow(NotFindByArgumentException::new);
-
-            Tournament tournamentParticipant = tournaments
-                    .stream()
-                    .filter(tournament -> participantDTO.getTournamentId().equals(tournament.getId()))
-                    .findFirst()
-                    .orElseThrow(NotFindByArgumentException::new);
-
-            return mapParticipantWithSubObjects(participantDTO, playerParticipant, tournamentParticipant);
-        }).toList();
-    }
-
     public PlayerDTO mapPlayerDTOWithSubObject(Player player) {
         List<DeckDTO> decksDTO = mapDecksDTOWithSubObjects(player.getDecks(), deckCountService.mapDecksObjectWithCardsDeckCounted(player.getDecks()));
         List<ParticipantDTO> participantsDTO = mapParticipantsDTOWithSubObjects(
@@ -94,17 +76,6 @@ public class MappingService {
 
     public List<PlayerDTO> mapPlayersDTOWithSubObject(List<Player> players) {
         return players.stream().map(this::mapPlayerDTOWithSubObject).toList();
-    }
-
-    public Player mapPlayerWithSubObject(PlayerDTO playerDTO, User user) {
-        List<Deck> decks = mapDecksFromPlayer(playerDTO, user);
-        List<Participant> participants = mapParticipantsWithSubObjects(playerDTO.getParticipants());
-
-        return PlayerMapper.toEntity(playerDTO, decks, participants, user);
-    }
-
-    private List<Deck> mapDecksFromPlayer(PlayerDTO playerDTO, User user) {
-        return playerDTO.getDecks().stream().map(deckDTO -> DeckMapper.toEntity(deckDTO, mapPlayerWithSubObject(playerDTO, user))).toList();
     }
 
     public TournamentDTO mapTournamentDTOWithSubObject(Tournament tournament) {
@@ -122,11 +93,20 @@ public class MappingService {
     }
 
     public Tournament mapTournamentWithSubObject(TournamentDTO tournamentDTO) {
-        return TournamentMapper.toEntity(tournamentDTO, mapParticipantsWithSubObjects(tournamentDTO.getParticipants()));
-    }
 
-    public List<Tournament> mapTournamentsWithSubObject(List<TournamentDTO> tournamentsDTO) {
-        return tournamentsDTO.stream().map(this::mapTournamentWithSubObject).toList();
+        Tournament tournament = TournamentMapper.toEntity(tournamentDTO, new ArrayList<>());
+
+        if(!tournamentDTO.getParticipants().isEmpty()){
+            List<Participant> participants = tournamentDTO.getParticipants().stream().map(participantDTO -> {
+                // Malheureusement je n'ai pas trouvé de meilleure solution pour ce problème
+                Player player = playerRepository.findByName(participantDTO.getPlayerName()).orElseThrow(NoResultByIdException::new);
+                return mapParticipantWithSubObjects(participantDTO, player, tournament);
+            }).toList();
+
+            tournament.setParticipants(participants);
+        }
+
+        return tournament;
     }
 
 }

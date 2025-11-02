@@ -53,6 +53,7 @@ public class Deck {
             inverseJoinColumns = @JoinColumn(name = "cardId")
     )
     @Column(nullable = false)
+    @Builder.Default
     private List<Card> cards = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -61,6 +62,7 @@ public class Deck {
             inverseJoinColumns = @JoinColumn(name = "tagId")
     )
     @Column(nullable = false)
+    @Builder.Default
     private List<Tag> tags = new ArrayList<>();
 
     @Column(nullable = false)

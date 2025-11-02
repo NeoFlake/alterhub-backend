@@ -17,8 +17,4 @@ public interface TypeService {
 
     void deleteTypeById(UUID id);
 
-    void verifyTypeIntegrity(TypeDTO typeDTO);
-
-    void validateType(TypeDTO typeDTO);
-
 }

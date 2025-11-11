@@ -34,17 +34,17 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> addCard(@RequestBody UserRequestDTO userRequestDTO) {
+    public ResponseEntity<UserDTO> addUser(@RequestBody UserRequestDTO userRequestDTO) {
         return ResponseEntity.ok(userService.addUser(userRequestDTO));
     }
 
     @PutMapping(ApiRoutes.SEARCH_BY_ID)
-    public ResponseEntity<UserDTO> updateCardById(@PathVariable UUID id, @RequestBody UserRequestDTO userRequestDTO) {
+    public ResponseEntity<UserDTO> updateUserById(@PathVariable UUID id, @RequestBody UserRequestDTO userRequestDTO) {
         return ResponseEntity.ok(userService.updateUserById(id, userRequestDTO));
     }
 
     @DeleteMapping(ApiRoutes.SEARCH_BY_ID)
-    public ResponseEntity<Map<String, String>> deleteCardById(@PathVariable UUID id, @RequestParam UserAuthenticationDTO userAuthenticationDTO) {
+    public ResponseEntity<Map<String, String>> deleteUserById(@PathVariable UUID id, @RequestParam UserAuthenticationDTO userAuthenticationDTO) {
         userService.deleteUserById(id, userAuthenticationDTO);
         Map<String, String> response = Map.of("message", ReturnMessages.SUPPRESSION_SUCCESS);
         return ResponseEntity.ok(response);

@@ -7,6 +7,7 @@ import com.alterhub.alterhubbackend.entity.Set;
 import com.alterhub.alterhubbackend.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -15,7 +16,6 @@ import reactor.core.publisher.Mono;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.concurrent.ThreadLocalRandom;
-import java.time.Duration;
 
 import java.io.IOException;
 
@@ -45,12 +45,6 @@ public class AlteredSyncService {
 
     private final List<String> FACTIONS = List.of("AX", "BR", "LY", "MU", "OR", "YZ");
 
-    // --- paramètres de throttling/retry (ajoute en tant que champs privés de la classe) ---
-    private final long MIN_DELAY_MS = 50L;      // borne basse du délai aléatoire
-    private final long MAX_DELAY_MS = 150L;     // borne haute du délai aléatoire
-    private final int DETAIL_RETRY_MAX = 4;     // nombre max de tentatives pour le fetch détaillé
-    private final long BASE_BACKOFF_MS = 200L;  // backoff de base (sera multiplié exponentiellement)
-
     @PostConstruct
     @SuppressWarnings("unused")
     public void init() {
@@ -59,7 +53,12 @@ public class AlteredSyncService {
 
         // Crée le dossier images si nécessaire
         File file = new File(IMAGE_FOLDER);
-        if (!file.exists()) file.mkdirs();
+        if (!file.exists()) {
+            boolean created = file.mkdirs();
+            if (!created) {
+                log.error("Impossible de créer le dossier {}", IMAGE_FOLDER);
+            }
+        }
     }
 
     public void syncAllCardsByFaction(SseEmitter emitter) {
@@ -73,7 +72,6 @@ public class AlteredSyncService {
                 List<AlteredCardDTO> cardDTOs = fetchCardsPage(faction, page);
 
                 if (cardDTOs.isEmpty()) {
-                    hasMore = false;
                     break;
                 }
 
@@ -113,7 +111,11 @@ public class AlteredSyncService {
     // --- fetch détaillé avec retry/backoff/jitter ---
     private AlteredCardDTO fetchDetailedCard(String alteredId) {
         int attempt = 0;
+        // nombre max de tentatives pour le fetch détaillé
+        final int DETAIL_RETRY_MAX = 4;
         while (attempt < DETAIL_RETRY_MAX) {
+            // backoff de base (sera multiplié exponentiellement)
+            final long BASE_BACKOFF_MS = 200L;
             try {
                 Mono<AlteredCardDTO> response = webClient.get()
                         .uri("/{id}?locale=fr-fr", alteredId)
@@ -123,9 +125,10 @@ public class AlteredSyncService {
                 AlteredCardDTO detail = response.block();
                 return detail == null ? new AlteredCardDTO() : detail;
             } catch (WebClientResponseException we) {
-                int status = we.getRawStatusCode();
+                HttpStatusCode status = we.getStatusCode();
+                int statusCode = status.value();
                 // si 429 or 503 on retryable server error -> backoff et retry
-                if (status == 429 || status == 503 || (status >= 500 && status < 600)) {
+                if (statusCode == 429 || (statusCode >= 500 && statusCode < 600)) {
                     attempt++;
                     long backoff = BASE_BACKOFF_MS * (1L << (attempt - 1)); // exponentiel
                     // add jitter
@@ -137,7 +140,6 @@ public class AlteredSyncService {
                     } catch (InterruptedException ie) {
                         Thread.currentThread().interrupt();
                     }
-                    continue;
                 } else {
                     log.error("Erreur HTTP non retryable lors du fetch détail {} : status {}", alteredId, status);
                     return new AlteredCardDTO();
@@ -300,6 +302,11 @@ public class AlteredSyncService {
     // --- utilitaire : sleep aléatoire entre appels pour désynchroniser les requêtes ----
     private void randomSleep() {
         try {
+            // borne haute du délai aléatoire
+            final long MAX_DELAY_MS = 150L;
+            // --- paramètres de throttling/retry (ajoute en tant que champs privés de la classe) ---
+            // borne basse du délai aléatoire
+            final long MIN_DELAY_MS = 50L;
             long delay = MIN_DELAY_MS + ThreadLocalRandom.current().nextLong(MAX_DELAY_MS - MIN_DELAY_MS + 1);
             Thread.sleep(delay);
         } catch (InterruptedException ie) {

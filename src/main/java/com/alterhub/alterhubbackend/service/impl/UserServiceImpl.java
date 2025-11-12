@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService {
             playerToSave = playerService.getPlayerByNameInternalUsage(userRequestDTO.getPlayerName());
         }
 
-        User userSaved =  userRepository.save(UserMapper.toEntityFromRequestDTO(userDTOToSave, playerToSave));
+        User userSaved = userRepository.save(UserMapper.toEntityFromRequestDTO(userDTOToSave, playerToSave));
 
         playerService.setLinkBetweenUserAndPlayer(userSaved, playerToSave.getId());
 

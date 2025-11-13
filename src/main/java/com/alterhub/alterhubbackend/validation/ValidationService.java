@@ -169,6 +169,16 @@ public class ValidationService {
         }
     }
 
+    public void verifyUserIntegrity(UserDTO userDTO) {
+        if (userDTO.getLastName() == null || userDTO.getLastName().isEmpty()
+                || userDTO.getFirstName() == null || userDTO.getFirstName().isEmpty()
+                || userDTO.getEmail() == null || userDTO.getEmail().isEmpty()
+                || userDTO.getPlayerName() == null || userDTO.getPlayerName().isEmpty()
+                || userDTO.getDateOfCreation() == null || userDTO.getLastModification() == null) {
+            throw new BadRequestException();
+        }
+    }
+
     public void verifyUserRequestIntegrity(UserRequestDTO userRequestDTO) {
         if (userRequestDTO.getLastName() == null || userRequestDTO.getLastName().isEmpty()
                 || userRequestDTO.getFirstName() == null || userRequestDTO.getFirstName().isEmpty()
@@ -250,10 +260,10 @@ public class ValidationService {
         }
     }
 
-    public void validateRequestUser(UserRequestDTO userRequestDTO) {
-        Player player = playerRepository.findByName(userRequestDTO.getPlayerName()).orElseThrow(NoResultByIdException::new);
-        User userReceived = UserMapper.toEntityFromRequestDTO(userRequestDTO, player);
-        validateUser(userReceived, userRequestDTO.getId());
+    public void validateRequestUser(UserDTO userDTO) {
+        Player player = playerRepository.findByName(userDTO.getPlayerName()).orElseThrow(NoResultByIdException::new);
+        User userReceived = UserMapper.toEntityFromDTO(userDTO, player);
+        validateUser(userReceived, userDTO.getId());
     }
 
     public void validateUser(User userReceived, UUID id) {

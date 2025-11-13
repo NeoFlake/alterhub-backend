@@ -1,11 +1,9 @@
 package com.alterhub.alterhubbackend.service.impl;
 
-import com.alterhub.alterhubbackend.dto.PlayerDTO;
-import com.alterhub.alterhubbackend.dto.UserAuthenticationDTO;
-import com.alterhub.alterhubbackend.dto.UserDTO;
-import com.alterhub.alterhubbackend.dto.UserRequestDTO;
+import com.alterhub.alterhubbackend.dto.*;
 import com.alterhub.alterhubbackend.entity.Player;
 import com.alterhub.alterhubbackend.entity.User;
+import com.alterhub.alterhubbackend.enums.Role;
 import com.alterhub.alterhubbackend.exception.*;
 import com.alterhub.alterhubbackend.mapper.UserMapper;
 import com.alterhub.alterhubbackend.repository.PlayerRepository;
@@ -30,12 +28,13 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final PlayerService playerService;
+    private final PlayerRepository playerRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     private final RoleService roleService;
     private final DeckService deckService;
-    private final PlayerRepository playerRepository;
+    private final PlayerService playerService;
 
     private final ValidationService validationService;
 
@@ -105,6 +104,15 @@ public class UserServiceImpl implements UserService {
 
         playerService.setLinkBetweenUserAndPlayer(userSaved, playerToSave.getId());
 
+        // Création du role pour le nouvel utilisateur
+        RoleDTO roleDTO = new RoleDTO();
+
+        roleDTO.setUserId(userSaved.getId());
+        roleDTO.setRole(Role.USER);
+
+        // Insertion role de l'utilisateur en base de donnée
+        roleService.addRole(roleDTO);
+
         return  UserMapper.toDto(userSaved);
 
     }
@@ -126,10 +134,10 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toDto(userOnBase);
     }
 
-    public Boolean accessGranted(UserRequestDTO userRequestDTO) {
-        validationService.verifyUserRequestIntegrity(userRequestDTO);
-        validationService.validateRequestUser(userRequestDTO);
-        return roleService.permissionGrantedForUser(userRequestDTO.getId());
+    public Boolean accessGranted(UserDTO userDTO) {
+        validationService.verifyUserIntegrity(userDTO);
+        validationService.validateRequestUser(userDTO);
+        return roleService.permissionGrantedForUser(userDTO.getId());
     }
 
     @Transactional

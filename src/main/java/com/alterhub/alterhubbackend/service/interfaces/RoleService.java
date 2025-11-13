@@ -6,9 +6,7 @@ import java.util.UUID;
 
 public interface RoleService {
 
-    RoleDTO addRole(RoleDTO roleDTO);
-
-    RoleDTO updateRoleById(UUID id, RoleDTO roleDTO);
+    void addRole(RoleDTO roleDTO);
 
     void deleteRoleByUserId(UUID id);
 

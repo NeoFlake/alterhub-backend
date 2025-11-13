@@ -29,8 +29,8 @@ public class UserController {
     }
 
     @PostMapping(ApiRoutes.Users.ACCESS_GRANTED)
-    public ResponseEntity<Boolean> accessGranted(@RequestBody UserRequestDTO userRequestDTO) {
-        return ResponseEntity.ok(userService.accessGranted(userRequestDTO));
+    public ResponseEntity<Boolean> accessGranted(@RequestBody UserDTO userDTO) {
+        return ResponseEntity.ok(userService.accessGranted(userDTO));
     }
 
     @PostMapping

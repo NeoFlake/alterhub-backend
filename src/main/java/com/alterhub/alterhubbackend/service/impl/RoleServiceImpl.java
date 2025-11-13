@@ -1,8 +1,6 @@
 package com.alterhub.alterhubbackend.service.impl;
 
 import com.alterhub.alterhubbackend.dto.RoleDTO;
-import com.alterhub.alterhubbackend.entity.Role;
-import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.RoleMapper;
 import com.alterhub.alterhubbackend.repository.RoleRepository;
@@ -22,22 +20,8 @@ public class RoleServiceImpl implements RoleService {
         return roleRepository.existsByUserIdAndRole(id, com.alterhub.alterhubbackend.enums.Role.ADMIN);
     }
 
-    public RoleDTO addRole(RoleDTO roleDTO) {
-        return RoleMapper.toDto(roleRepository.save(RoleMapper.toEntity(roleDTO)));
-    }
-
-    public RoleDTO updateRoleById(UUID id, RoleDTO roleDTO) {
-        if(roleDTO.getId().equals(id)) {
-            Role roleToUpdate = roleRepository.findById(id).orElseThrow(NoResultByIdException::new);
-            Role roleUpdated = RoleMapper.toEntity(roleDTO);
-
-            roleToUpdate.setUserId(roleUpdated.getUserId());
-            roleToUpdate.setRole(roleUpdated.getRole());
-            return RoleMapper.toDto(roleRepository.save(roleToUpdate));
-
-        } else {
-            throw new IdNotMatchException();
-        }
+    public void addRole(RoleDTO roleDTO) {
+        RoleMapper.toDto(roleRepository.save(RoleMapper.toEntity(roleDTO)));
     }
 
     public void deleteRoleByUserId(UUID id) {

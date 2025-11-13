@@ -19,7 +19,7 @@ public interface UserService {
 
     UserDTO updateUserById(UUID id, UserRequestDTO userRequestDTO);
 
-    Boolean accessGranted(UserRequestDTO userRequestDTO);
+    Boolean accessGranted(UserDTO userDTO);
 
     void deleteUserById(UUID id, UserAuthenticationDTO userAuthenticationDTO);
 }

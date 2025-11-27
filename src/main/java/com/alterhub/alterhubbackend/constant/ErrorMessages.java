@@ -12,5 +12,6 @@ public final class ErrorMessages {
     public static final String PLAYER_NAME_ALREADY_TAKEN = "Le nom de joueur que vous souhaitez et déjà utilisé";
     public static final String EMAIL_ALREADY_TAKEN = "Votre requête n'a pas pu aboutir, veuillez recommencer";
     public static final String REFRESH_TOKEN_EXPIRED = "Reconnexion nécessaire pour continuer à utiliser nos services";
+    public static final String CREATE_AUTH_TOKEN_TRY_OVERFLOW = "Échec lors de l'authentification, veuillez recommencer";
 
 }

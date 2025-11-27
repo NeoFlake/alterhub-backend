@@ -142,6 +142,8 @@ public final class ApiRoutes {
         public static final String ROOT = BASE_API_URL + USERS;
         public static final String AUTHENTICATION = "/authentication";
         public static final String ACCESS_GRANTED = "/access";
+        public static final String REFRESH_TOKEN = "/token/refresh";
+        public static final String LOGOUT = "/logout";
     }
 
 }

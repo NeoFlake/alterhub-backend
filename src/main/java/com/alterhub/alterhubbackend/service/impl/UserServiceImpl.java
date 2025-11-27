@@ -8,10 +8,7 @@ import com.alterhub.alterhubbackend.exception.*;
 import com.alterhub.alterhubbackend.mapper.UserMapper;
 import com.alterhub.alterhubbackend.repository.PlayerRepository;
 import com.alterhub.alterhubbackend.repository.UserRepository;
-import com.alterhub.alterhubbackend.service.interfaces.DeckService;
-import com.alterhub.alterhubbackend.service.interfaces.PlayerService;
-import com.alterhub.alterhubbackend.service.interfaces.RoleService;
-import com.alterhub.alterhubbackend.service.interfaces.UserService;
+import com.alterhub.alterhubbackend.service.interfaces.*;
 import com.alterhub.alterhubbackend.validation.ValidationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +32,7 @@ public class UserServiceImpl implements UserService {
     private final RoleService roleService;
     private final DeckService deckService;
     private final PlayerService playerService;
+    private final AuthService authService;
 
     private final ValidationService validationService;
 
@@ -117,7 +115,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    public UserDTO authentication(UserAuthenticationDTO userAuthenticationDTO) {
+    public AuthResponseDTO authentication(UserAuthenticationDTO userAuthenticationDTO) {
         validationService.verifyUserAuthenticationIntegrity(userAuthenticationDTO);
         userAuthenticationDTO.setEmail(Encode.forHtml(userAuthenticationDTO.getEmail()));
         userAuthenticationDTO.setPassword(Encode.forHtml(userAuthenticationDTO.getPassword()));
@@ -131,7 +129,11 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException();
         }
 
-        return UserMapper.toDto(userOnBase);
+        UserDTO userDTO = UserMapper.toDto(userOnBase);
+
+        Boolean accessGranted = roleService.permissionGrantedForUser(userDTO.getId());
+
+        return authService.createAuthResponse(userDTO, accessGranted);
     }
 
     public Boolean accessGranted(UserDTO userDTO) {

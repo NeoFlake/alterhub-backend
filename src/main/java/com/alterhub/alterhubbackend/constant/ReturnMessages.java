@@ -6,4 +6,6 @@ public final class ReturnMessages {
 
     public final static String SUPPRESSION_SUCCESS = "Élément supprimé avec succès";
 
+    public static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
+
 }

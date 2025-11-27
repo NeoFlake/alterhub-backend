@@ -1,5 +1,6 @@
 package com.alterhub.alterhubbackend.service.interfaces;
 
+import com.alterhub.alterhubbackend.dto.AuthResponseDTO;
 import com.alterhub.alterhubbackend.dto.UserAuthenticationDTO;
 import com.alterhub.alterhubbackend.dto.UserDTO;
 import com.alterhub.alterhubbackend.dto.UserRequestDTO;
@@ -15,7 +16,7 @@ public interface UserService {
 
     UserDTO addUser(UserRequestDTO userRequestDTO);
 
-    UserDTO authentication(UserAuthenticationDTO userAuthenticationDTO);
+    AuthResponseDTO authentication(UserAuthenticationDTO userAuthenticationDTO);
 
     UserDTO updateUserById(UUID id, UserRequestDTO userRequestDTO);
 

@@ -1,14 +1,15 @@
 package com.alterhub.alterhubbackend.service.interfaces;
 
-import com.alterhub.alterhubbackend.entity.RefreshToken;
-
 import java.util.UUID;
 
 public interface RefreshTokenService {
 
-    RefreshToken createRefreshToken(UUID userId);
+    String createRefreshToken(UUID userId);
 
-    RefreshToken verifyExpiration(RefreshToken token);
+    UUID validate(String token);
 
+    void revokedByToken(String token);
+
+    void deleteRefreshToken(UUID userId);
 
 }

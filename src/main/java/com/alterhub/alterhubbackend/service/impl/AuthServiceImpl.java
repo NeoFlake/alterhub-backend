@@ -5,6 +5,7 @@ import com.alterhub.alterhubbackend.dto.AuthPayloadDTO;
 import com.alterhub.alterhubbackend.dto.AuthResponseDTO;
 import com.alterhub.alterhubbackend.dto.UserDTO;
 import com.alterhub.alterhubbackend.entity.User;
+import com.alterhub.alterhubbackend.exception.ExpiredRefreshTokenException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.UserMapper;
 import com.alterhub.alterhubbackend.repository.RoleRepository;
@@ -12,11 +13,14 @@ import com.alterhub.alterhubbackend.repository.UserRepository;
 import com.alterhub.alterhubbackend.service.interfaces.AuthService;
 import com.alterhub.alterhubbackend.service.interfaces.JwtService;
 import com.alterhub.alterhubbackend.service.interfaces.RefreshTokenService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -31,7 +35,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
-    public AuthResponseDTO createAuthResponse(UserDTO userDTO, Boolean accessGranted){
+    public AuthResponseDTO createAuthResponse(UserDTO userDTO, Boolean accessGranted) {
         Map<String, Object> extraClaims = new HashMap<>();
 
         String accessToken = jwtService.generateToken(userDTO.getId(), accessGranted, extraClaims);
@@ -40,14 +44,14 @@ public class AuthServiceImpl implements AuthService {
 
         ResponseCookie cookie = ResponseCookie.from(ReturnMessages.REFRESH_TOKEN_COOKIE_NAME, refreshToken)
                 .httpOnly(true)
-                .secure(true)
                 .path("/")
+                .sameSite("Lax")
                 .maxAge(Duration.ofDays(14))
                 .build();
 
         AuthPayloadDTO payloadDTO = AuthPayloadDTO.builder()
                 .accessToken(accessToken)
-                .userDTO(userDTO)
+                .user(userDTO)
                 .build();
 
         return AuthResponseDTO.builder()
@@ -57,7 +61,18 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
-    public AuthResponseDTO refreshToken(String refreshToken) {
+    public AuthResponseDTO refreshToken(HttpServletRequest request) {
+
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            throw new ExpiredRefreshTokenException();
+        }
+
+        String refreshToken = Arrays.stream(cookies)
+                .filter(c -> "refreshToken".equals(c.getName()))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElseThrow(ExpiredRefreshTokenException::new);
         UUID userIdFromValidToken = refreshTokenService.validate(refreshToken);
 
         User user = userRepository.findById(userIdFromValidToken).orElseThrow(NoResultByIdException::new);
@@ -68,8 +83,8 @@ public class AuthServiceImpl implements AuthService {
 
         ResponseCookie cookie = ResponseCookie.from(ReturnMessages.REFRESH_TOKEN_COOKIE_NAME, newRefreshToken)
                 .httpOnly(true)
-                .secure(true)
                 .path("/")
+                .sameSite("Lax")
                 .maxAge(Duration.ofDays(14))
                 .build();
 
@@ -79,7 +94,7 @@ public class AuthServiceImpl implements AuthService {
 
         AuthPayloadDTO payloadDTO = AuthPayloadDTO.builder()
                 .accessToken(accessToken)
-                .userDTO(UserMapper.toDto(user))
+                .user(UserMapper.toDto(user))
                 .build();
 
         return AuthResponseDTO.builder()
@@ -95,7 +110,7 @@ public class AuthServiceImpl implements AuthService {
         refreshTokenService.deleteRefreshToken(userId);
         return ResponseCookie.from(ReturnMessages.REFRESH_TOKEN_COOKIE_NAME, "")
                 .httpOnly(true)
-                .secure(true)
+                .sameSite("Lax")
                 .path("/")
                 .maxAge(0)
                 .build();

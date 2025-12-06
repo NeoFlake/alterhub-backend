@@ -5,6 +5,7 @@ import com.alterhub.alterhubbackend.constant.ReturnMessages;
 import com.alterhub.alterhubbackend.dto.*;
 import com.alterhub.alterhubbackend.service.interfaces.AuthService;
 import com.alterhub.alterhubbackend.service.interfaces.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -41,8 +42,8 @@ public class UserController {
     }
 
     @PostMapping(ApiRoutes.Users.REFRESH_TOKEN)
-    public ResponseEntity<AuthPayloadDTO> refreshToken(@RequestBody String refreshToken){
-        AuthResponseDTO response = authService.refreshToken(refreshToken);
+    public ResponseEntity<AuthPayloadDTO> refreshToken(HttpServletRequest request){
+        AuthResponseDTO response = authService.refreshToken(request);
         return ResponseEntity.ok()
                 .header("Set-Cookie", response.getRefreshTokenCookie().toString())
                 .body(response.getAuthentificationInfos());

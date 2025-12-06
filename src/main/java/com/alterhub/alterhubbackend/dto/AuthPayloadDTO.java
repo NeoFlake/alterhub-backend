@@ -14,6 +14,6 @@ public class AuthPayloadDTO {
     // Le jeton jwt correctement formaté
     private String accessToken;
     // On inclus le userDTO historiquement présent dans notre retour
-    private UserDTO userDTO;
+    private UserDTO user;
 
 }

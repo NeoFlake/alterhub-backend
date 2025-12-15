@@ -41,7 +41,7 @@ public class AlteredSyncService {
     private WebClient webClient;
 
     private final int ITEMS_PER_PAGE = 36;
-    private final String IMAGE_FOLDER = "images/cards/";
+    private final String IMAGE_FOLDER = "src/main/resources/static/images/cards/";
 
     private final List<String> FACTIONS = List.of("AX", "BR", "LY", "MU", "OR", "YZ");
 

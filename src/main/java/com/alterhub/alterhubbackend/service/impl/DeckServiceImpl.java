@@ -352,9 +352,6 @@ public class DeckServiceImpl implements DeckService {
     }
 
     public void deleteDeckNonParticipantByPlayerId(UUID playerId) {
-        if (!deckRepository.existsByPlayer_Id(playerId)) {
-            throw new NoResultByIdException();
-        }
         deckRepository.deleteByPlayer_IdAndIsParticipantFalse(playerId);
     }
 

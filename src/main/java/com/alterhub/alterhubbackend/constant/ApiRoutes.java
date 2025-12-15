@@ -144,6 +144,7 @@ public final class ApiRoutes {
         public static final String ACCESS_GRANTED = "/access";
         public static final String REFRESH_TOKEN = "/token/refresh";
         public static final String LOGOUT = "/logout";
+        public static final String REGISTER = "/register";
     }
 
 }

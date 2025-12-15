@@ -44,3 +44,4 @@ resources/*.sql
 
 #Images
 images
+src/main/resources/static/images/cards/

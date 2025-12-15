@@ -14,6 +14,8 @@ import java.util.UUID;
 
 public interface CardRepository extends JpaRepository<Card, UUID> {
 
+    Page<Card> findAllByOrderByFaction_NameAscSets_NameAscElement_MainCostAsc(Pageable pageable);
+
     Optional<Card> findByAlteredId(String alteredId);
 
     Page<Card> findByTypeId(UUID typeId, Pageable pageable);

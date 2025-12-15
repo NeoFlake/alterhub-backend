@@ -22,5 +22,5 @@ public interface UserService {
 
     Boolean accessGranted(UserDTO userDTO);
 
-    void deleteUserById(UUID id, UserAuthenticationDTO userAuthenticationDTO);
+    void deleteUserById(UUID id);
 }

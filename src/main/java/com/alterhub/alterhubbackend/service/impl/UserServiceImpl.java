@@ -157,7 +157,7 @@ public class UserServiceImpl implements UserService {
 
             Player playerLinkedWithThatPlayerName = playerRepository.findByName(userRequestDTO.getPlayerName()).orElseThrow(NoResultByIdException::new);
 
-            // On vérifie ensuite que le nom du joueur correspond bien à celui en base
+            // On vérifie ensuite que l'id User correspond à l'idUser remonté par le nom de joueur fourni dans la requête
             if(!playerLinkedWithThatPlayerName.getUser().getId().equals(userRequestDTO.getId())) {
                 throw new IdNotMatchException();
             }
@@ -189,6 +189,8 @@ public class UserServiceImpl implements UserService {
 
             }
 
+            // Surtout ne pas oublier d'encoder le mot de passe de nouveau sinon ça flingue le compte xD
+            userRequestDTO.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
             userRequestDTO.setLastModification(LocalDateTime.now());
 
             return UserMapper.toDto(userRepository.save(UserMapper.toEntityFromRequestDTO(userRequestDTO, playerLinkedWithThatPlayerName)));
@@ -199,20 +201,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public void deleteUserById(UUID id, UserAuthenticationDTO userAuthenticationDTO) {
+    public void deleteUserById(UUID id) {
         if(!userRepository.existsById(id)){
             throw new NoResultByIdException();
         }
-
-        if(!userRepository.existsByEmail(userAuthenticationDTO.getEmail())){
-            throw new BadRequestException();
-        } else {
-            User userOnBase = userRepository.findByEmail(userAuthenticationDTO.getEmail());
-            if(!passwordEncoder.matches(userAuthenticationDTO.getPassword(), userOnBase.getPassword())){
-                throw new BadRequestException();
-            }
-        }
-
         // Suppression des decks qui ne sont pas relié à un tournoi par la table des participants :
         // isParticipant = false
         deckService.deleteDeckNonParticipantByPlayerId(playerService.getPlayerByUserId(id).getId());

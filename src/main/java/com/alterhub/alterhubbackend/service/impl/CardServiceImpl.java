@@ -29,7 +29,7 @@ public class CardServiceImpl implements CardService {
     private final DeckCountService deckCountService;
 
     public Page<CardDTO> getAllCards(Pageable pageable) {
-        Page<Card> cardPage = cardRepository.findAll(pageable);
+        Page<Card> cardPage = cardRepository.findAllByOrderByFaction_NameAscSets_NameAscElement_MainCostAsc(pageable);
         return new PageImpl<>(
                 mappingService.mapCardsWithDeckCount(cardPage.getContent(), deckCountService.mapCardsWithDeckCount(cardPage.getContent())),
                 pageable,

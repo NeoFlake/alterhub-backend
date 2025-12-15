@@ -42,7 +42,7 @@ public class UserController {
     }
 
     @PostMapping(ApiRoutes.Users.REFRESH_TOKEN)
-    public ResponseEntity<AuthPayloadDTO> refreshToken(HttpServletRequest request){
+    public ResponseEntity<AuthPayloadDTO> refreshToken(HttpServletRequest request) {
         AuthResponseDTO response = authService.refreshToken(request);
         return ResponseEntity.ok()
                 .header("Set-Cookie", response.getRefreshTokenCookie().toString())
@@ -60,7 +60,7 @@ public class UserController {
                 .build();
     }
 
-    @PostMapping
+    @PostMapping(ApiRoutes.Users.REGISTER)
     public ResponseEntity<UserDTO> addUser(@RequestBody UserRequestDTO userRequestDTO) {
         return ResponseEntity.ok(userService.addUser(userRequestDTO));
     }
@@ -71,10 +71,14 @@ public class UserController {
     }
 
     @DeleteMapping(ApiRoutes.SEARCH_BY_ID)
-    public ResponseEntity<Map<String, String>> deleteUserById(@PathVariable UUID id, @RequestParam UserAuthenticationDTO userAuthenticationDTO) {
-        userService.deleteUserById(id, userAuthenticationDTO);
+    public ResponseEntity<Map<String, String>> deleteUserById(@PathVariable UUID id,
+                                                              @CookieValue(name = ReturnMessages.REFRESH_TOKEN_COOKIE_NAME) String refreshToken) {
+        userService.deleteUserById(id);
+        ResponseCookie deleteCookie = authService.logout(refreshToken);
         Map<String, String> response = Map.of("message", ReturnMessages.SUPPRESSION_SUCCESS);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                .body(response);
     }
 
 }

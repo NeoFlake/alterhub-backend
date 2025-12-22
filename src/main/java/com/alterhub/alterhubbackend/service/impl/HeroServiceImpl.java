@@ -77,6 +77,7 @@ public class HeroServiceImpl implements HeroService {
             heroToUpdate.setReserveSlot(heroUpdated.getReserveSlot());
             heroToUpdate.setLandmarkSlot(heroUpdated.getLandmarkSlot());
             heroToUpdate.setEffect(heroUpdated.getEffect());
+            heroToUpdate.setImage(heroUpdated.getImage());
 
             return HeroMapper.toDTO(heroRepository.save(heroToUpdate));
         } else {

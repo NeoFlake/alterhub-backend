@@ -44,4 +44,7 @@ public class Hero {
     @Column(nullable = false, length = 2048)
     private String effect;
 
+    @Column(nullable = false, length = 512)
+    private String image;
+
 }

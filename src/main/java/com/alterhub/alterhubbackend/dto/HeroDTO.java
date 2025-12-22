@@ -22,5 +22,6 @@ public class HeroDTO {
     private Short reserveSlot;
     private Short landmarkSlot;
     private String effect;
+    private String image;
 
 }

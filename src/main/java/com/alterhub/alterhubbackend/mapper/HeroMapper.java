@@ -22,6 +22,7 @@ public class HeroMapper {
                 .reserveSlot(hero.getReserveSlot())
                 .landmarkSlot(hero.getLandmarkSlot())
                 .effect(hero.getEffect())
+                .image(hero.getImage())
                 .build();
     }
 
@@ -36,6 +37,7 @@ public class HeroMapper {
                 .reserveSlot(heroDTO.getReserveSlot())
                 .landmarkSlot(heroDTO.getLandmarkSlot())
                 .effect(heroDTO.getEffect())
+                .image(heroDTO.getImage())
                 .build();
     }
 

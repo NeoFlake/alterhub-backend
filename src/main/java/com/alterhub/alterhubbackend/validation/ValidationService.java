@@ -106,7 +106,8 @@ public class ValidationService {
         if(heroDTO.getName() == null || heroDTO.getName().isEmpty()
                 || heroDTO.getReserveSlot() == null || heroDTO.getReserveSlot() < 0
                 || heroDTO.getLandmarkSlot() == null || heroDTO.getLandmarkSlot() < 0
-                || heroDTO.getEffect() == null || heroDTO.getEffect().isEmpty()){
+                || heroDTO.getEffect() == null || heroDTO.getEffect().isEmpty()
+        || heroDTO.getImage() == null || heroDTO.getImage().isEmpty()){
             throw new BadRequestException();
         }
         verifyFactionIntegrity(heroDTO.getFaction());

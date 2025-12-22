@@ -12,6 +12,7 @@ public class FactionMapper {
 
         return FactionDTO.builder()
                 .id(faction.getId())
+                .name(faction.getName())
                 .factionId(faction.getFactionId())
                 .reference(faction.getReference())
                 .color(faction.getColor())
@@ -23,6 +24,7 @@ public class FactionMapper {
 
         return Faction.builder()
                 .id(factionDTO.getId())
+                .name(factionDTO.getName())
                 .factionId(factionDTO.getFactionId())
                 .reference(factionDTO.getReference())
                 .color(factionDTO.getColor())

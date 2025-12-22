@@ -282,7 +282,6 @@ public class DeckServiceImpl implements DeckService {
         validationService.verifyDeckIntegrity(deckDTO);
 
         deckDTO.setName(Encode.forHtml(deckDTO.getName()));
-        deckDTO.setDescription(Encode.forHtml(deckDTO.getDescription()));
         deckDTO.setDateOfCreation(LocalDate.now());
         deckDTO.setLastModification(LocalDateTime.now());
         deckDTO.setIsParticipant(false);
@@ -309,7 +308,6 @@ public class DeckServiceImpl implements DeckService {
             Deck deckUpdated = mappingService.mapDeckWithSubObjects(deckDTO, player);
 
             deckToUpdate.setName(Encode.forHtml(deckUpdated.getName()));
-            deckToUpdate.setDescription(Encode.forHtml(deckUpdated.getDescription()));
             deckToUpdate.setPlayer(deckUpdated.getPlayer());
             deckToUpdate.setFaction(deckUpdated.getFaction());
             deckToUpdate.setHero(deckUpdated.getHero());

@@ -26,9 +26,6 @@ public class Deck {
     @Column(nullable = false, length = 128, unique = true)
     private String name;
 
-    @Column(nullable = false, length = 1024)
-    private String description;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "playerId", nullable = false)
     private Player player;

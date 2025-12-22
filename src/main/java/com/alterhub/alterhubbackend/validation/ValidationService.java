@@ -40,7 +40,6 @@ public class ValidationService {
 
     public void verifyDeckIntegrity(DeckDTO deckDTO) {
         if (deckDTO.getName() == null || deckDTO.getName().isEmpty()
-                || deckDTO.getDescription() == null || deckDTO.getDescription().isEmpty()
                 || deckDTO.getPlayerId() == null
                 || deckDTO.getDateOfCreation() == null
                 || deckDTO.getLastModification() == null) {

@@ -2,7 +2,6 @@ package com.alterhub.alterhubbackend.service.impl;
 
 import com.alterhub.alterhubbackend.dto.FactionDTO;
 import com.alterhub.alterhubbackend.entity.Faction;
-import com.alterhub.alterhubbackend.exception.BadRequestException;
 import com.alterhub.alterhubbackend.exception.IdNotMatchException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
 import com.alterhub.alterhubbackend.mapper.FactionMapper;
@@ -24,7 +23,7 @@ public class FactionServiceImpl implements FactionService {
     private final ValidationService validationService;
 
     public List<FactionDTO> getAllFactions() {
-        return factionRepository.findAll()
+        return factionRepository.findAllByOrderByReference()
                 .stream()
                 .map(FactionMapper::toDTO)
                 .toList();

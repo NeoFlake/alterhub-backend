@@ -22,6 +22,7 @@ public class CardController {
 
     @GetMapping
     public ResponseEntity<Page<CardDTO>> getAllCards(Pageable pageable) {
+        System.out.println(cardService.getAllCards(pageable));
         return ResponseEntity.ok(cardService.getAllCards(pageable));
     }
 

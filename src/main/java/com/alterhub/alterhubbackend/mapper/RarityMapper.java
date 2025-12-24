@@ -12,6 +12,7 @@ public class RarityMapper {
 
         return RarityDTO.builder()
                 .id(rarity.getId())
+                .name(rarity.getName())
                 .rarityId(rarity.getRarityId())
                 .reference(rarity.getReference())
                 .build();
@@ -22,6 +23,7 @@ public class RarityMapper {
 
         return Rarity.builder()
                 .id(rarityDTO.getId())
+                .name(rarityDTO.getName())
                 .rarityId(rarityDTO.getRarityId())
                 .reference(rarityDTO.getReference())
                 .build();

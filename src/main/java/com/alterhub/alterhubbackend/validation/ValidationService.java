@@ -85,9 +85,7 @@ public class ValidationService {
                 || (elementDTO.getRecallCost() != null && elementDTO.getRecallCost().isEmpty())
                 || (elementDTO.getOceanPower() != null && elementDTO.getOceanPower().isEmpty())
                 || (elementDTO.getMountainPower() != null && elementDTO.getMountainPower().isEmpty())
-                || (elementDTO.getForestPower() != null && elementDTO.getForestPower().isEmpty())
-                || (elementDTO.getMainEffect() != null && elementDTO.getMainEffect().isEmpty())
-                || (elementDTO.getEchoEffect() != null && elementDTO.getEchoEffect().isEmpty())) {
+                || (elementDTO.getForestPower() != null && elementDTO.getForestPower().isEmpty())) {
             throw new BadRequestException();
         }
     }

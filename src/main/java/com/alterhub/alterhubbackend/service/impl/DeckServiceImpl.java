@@ -286,7 +286,7 @@ public class DeckServiceImpl implements DeckService {
         deckDTO.setLastModification(LocalDateTime.now());
         deckDTO.setIsParticipant(false);
 
-        Player player = playerRepository.findById(deckDTO.getPlayerId()).orElseThrow(NoResultByIdException::new);
+        Player player = playerRepository.findByName(deckDTO.getPlayerName()).orElseThrow(NoResultByIdException::new);
 
         Deck deck = deckRepository.save(mappingService.mapDeckWithSubObjects(deckDTO, player));
 
@@ -303,7 +303,7 @@ public class DeckServiceImpl implements DeckService {
 
             Deck deckToUpdate = deckRepository.findById(id).orElseThrow(NoResultByIdException::new);
 
-            Player player = playerRepository.findById(deckDTO.getPlayerId()).orElseThrow(NoResultByIdException::new);
+            Player player = playerRepository.findByName(deckDTO.getPlayerName()).orElseThrow(NoResultByIdException::new);
 
             Deck deckUpdated = mappingService.mapDeckWithSubObjects(deckDTO, player);
 

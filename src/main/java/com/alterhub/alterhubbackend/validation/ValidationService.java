@@ -40,7 +40,7 @@ public class ValidationService {
 
     public void verifyDeckIntegrity(DeckDTO deckDTO) {
         if (deckDTO.getName() == null || deckDTO.getName().isEmpty()
-                || deckDTO.getPlayerId() == null
+                || deckDTO.getPlayerName() == null
                 || deckDTO.getDateOfCreation() == null
                 || deckDTO.getLastModification() == null) {
             throw new BadRequestException();
@@ -80,12 +80,14 @@ public class ValidationService {
         verifyElementIntegrity(cardDTO.getElement());
     }
 
+    // Très important: on ne check que ces deux informations car toutes les autres peuvent être
+    // null
+    // chaîne vide
+    // Donc comment voir l'intégrity de quelque chose pouvant être null ou vide........
+    // Merci Equinox <3
     public void verifyElementIntegrity(ElementDTO elementDTO) {
         if ((elementDTO.getMainCost() != null && elementDTO.getMainCost().isEmpty())
-                || (elementDTO.getRecallCost() != null && elementDTO.getRecallCost().isEmpty())
-                || (elementDTO.getOceanPower() != null && elementDTO.getOceanPower().isEmpty())
-                || (elementDTO.getMountainPower() != null && elementDTO.getMountainPower().isEmpty())
-                || (elementDTO.getForestPower() != null && elementDTO.getForestPower().isEmpty())) {
+                || (elementDTO.getRecallCost() != null && elementDTO.getRecallCost().isEmpty())) {
             throw new BadRequestException();
         }
     }

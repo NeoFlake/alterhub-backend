@@ -18,7 +18,7 @@ public class DeckDTO {
 
     private UUID id;
     private String name;
-    private UUID playerId;
+    private String playerName;
     private FactionDTO faction;
     private HeroDTO hero;
     private LocalDate dateOfCreation;

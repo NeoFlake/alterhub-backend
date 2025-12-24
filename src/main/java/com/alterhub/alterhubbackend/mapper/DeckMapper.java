@@ -17,7 +17,7 @@ public class DeckMapper {
         return DeckDTO.builder()
                 .id(deck.getId())
                 .name(deck.getName())
-                .playerId(deck.getPlayer().getId())
+                .playerName(deck.getPlayer().getName())
                 .faction(FactionMapper.toDTO(deck.getFaction()))
                 .hero(HeroMapper.toDTO(deck.getHero()))
                 .dateOfCreation(deck.getDateOfCreation())

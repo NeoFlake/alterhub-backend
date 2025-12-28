@@ -17,6 +17,8 @@ public interface DeckRepository extends JpaRepository<Deck, UUID> {
 
     Page<Deck> findByNameContaining(String name, Pageable pageable);
 
+    Boolean existsByName(String name);
+
     Page<Deck> findByPlayer_Id(UUID playerId, Pageable pageable);
 
     Page<Deck> findByFaction_Id(UUID factionId, Pageable pageable);

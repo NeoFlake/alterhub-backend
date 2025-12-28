@@ -70,6 +70,7 @@ public final class ApiRoutes {
         public static final String ROOT = BASE_API_URL + DECKS;
         public static final String BY_NAME = NAME + SEARCH_BY_NAME;
         public static final String BY_LIKE_BY_NAME = BY_NAME + "/like";
+        public static final String EXIST_BY_NAME = NAME + "/exist" + SEARCH_BY_NAME;
         public static final String BY_PLAYER_ID = PLAYERS + SEARCH_BY_ID;
         public static final String BY_FACTION_ID = FACTIONS + SEARCH_BY_ID;
         public static final String BY_HERO_ID = HEROS + SEARCH_BY_ID;

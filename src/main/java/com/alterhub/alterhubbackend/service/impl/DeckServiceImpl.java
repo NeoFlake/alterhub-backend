@@ -84,6 +84,13 @@ public class DeckServiceImpl implements DeckService {
         );
     }
 
+    public Boolean existDeckByName(String name) {
+        if (name == null || name.isEmpty()) {
+            throw new BadRequestException();
+        }
+        return deckRepository.existsByName(Encode.forHtml(name));
+    }
+
     public Page<DeckDTO> getDecksByPlayerId(UUID playerId, Pageable pageable) {
         if(playerId==null){
             throw new BadRequestException();

@@ -1,7 +1,6 @@
 package com.alterhub.alterhubbackend.service.interfaces;
 
 import com.alterhub.alterhubbackend.dto.DeckDTO;
-import com.alterhub.alterhubbackend.entity.Deck;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -17,6 +16,8 @@ public interface DeckService {
     DeckDTO getDeckByName(String name);
 
     Page<DeckDTO> getDecksLikeByName(String name, Pageable pageable);
+
+    Boolean existDeckByName(String name);
 
     Page<DeckDTO> getDecksByPlayerId(UUID playerId, Pageable pageable);
 

@@ -41,6 +41,11 @@ public class DeckController {
         return ResponseEntity.ok(deckService.getDecksLikeByName(name, pageable));
     }
 
+    @GetMapping(ApiRoutes.Decks.EXIST_BY_NAME)
+    public ResponseEntity<Boolean> existDeckByName(@PathVariable String name) {
+        return ResponseEntity.ok(deckService.existDeckByName(name));
+    }
+
     @GetMapping(ApiRoutes.Decks.BY_PLAYER_ID)
     public ResponseEntity<Page<DeckDTO>> getDecksByPlayerId(@PathVariable UUID id, Pageable pageable) {
         return ResponseEntity.ok(deckService.getDecksByPlayerId(id, pageable));

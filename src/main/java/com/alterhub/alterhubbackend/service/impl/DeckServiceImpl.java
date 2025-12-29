@@ -21,6 +21,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -319,7 +320,7 @@ public class DeckServiceImpl implements DeckService {
             deckToUpdate.setFaction(deckUpdated.getFaction());
             deckToUpdate.setHero(deckUpdated.getHero());
             deckToUpdate.setLastModification(LocalDateTime.now());
-            deckToUpdate.setCards(deckUpdated.getCards());
+            deckToUpdate.setCards(new ArrayList<>(deckUpdated.getCards()));
             deckToUpdate.setTags(deckUpdated.getTags());
             deckToUpdate.setIsParticipant(deckUpdated.getIsParticipant());
 

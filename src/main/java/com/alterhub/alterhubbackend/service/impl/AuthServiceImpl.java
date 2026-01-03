@@ -36,12 +36,9 @@ public class AuthServiceImpl implements AuthService {
 
     public String getCookieStatut(String refreshToken) {
 
-        System.out.println(refreshToken);
-
         String cookieStatut;
 
         if(refreshToken == null || refreshToken.isBlank()){
-            System.out.println("Je rentre ici car je suis null ou blank et c'est totalement logique non mais !!");
             cookieStatut = "guest";
         } else {
             Optional<RefreshToken> checkedToken = refreshTokenService.findByToken(refreshToken);

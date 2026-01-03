@@ -26,6 +26,7 @@ public final class ApiRoutes {
     public static final String PARTICIPANTS = "/participants";
     public static final String TOURNAMENTS = "/tournaments";
     public static final String USERS = "/users";
+    public static final String COOKIE_STATUT = "/cookie";
 
     public static final class Types {
         public static final String ROOT = BASE_API_URL + TYPES;

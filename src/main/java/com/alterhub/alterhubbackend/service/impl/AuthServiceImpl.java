@@ -4,6 +4,7 @@ import com.alterhub.alterhubbackend.constant.ReturnMessages;
 import com.alterhub.alterhubbackend.dto.AuthPayloadDTO;
 import com.alterhub.alterhubbackend.dto.AuthResponseDTO;
 import com.alterhub.alterhubbackend.dto.UserDTO;
+import com.alterhub.alterhubbackend.entity.RefreshToken;
 import com.alterhub.alterhubbackend.entity.User;
 import com.alterhub.alterhubbackend.exception.ExpiredRefreshTokenException;
 import com.alterhub.alterhubbackend.exception.NoResultByIdException;
@@ -20,10 +21,8 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.time.Instant;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +33,29 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+
+    public String getCookieStatut(String refreshToken) {
+
+        System.out.println(refreshToken);
+
+        String cookieStatut;
+
+        if(refreshToken == null || refreshToken.isBlank()){
+            System.out.println("Je rentre ici car je suis null ou blank et c'est totalement logique non mais !!");
+            cookieStatut = "guest";
+        } else {
+            Optional<RefreshToken> checkedToken = refreshTokenService.findByToken(refreshToken);
+
+            if(checkedToken.isEmpty() || checkedToken.get().getExpiresAt().isBefore(Instant.now())){
+                cookieStatut = "relog";
+            } else {
+                cookieStatut = "logged";
+            }
+        }
+
+        return cookieStatut;
+
+    }
 
     public AuthResponseDTO createAuthResponse(UserDTO userDTO, Boolean accessGranted) {
         Map<String, Object> extraClaims = new HashMap<>();
@@ -64,6 +86,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponseDTO refreshToken(HttpServletRequest request) {
 
         Cookie[] cookies = request.getCookies();
+
         if (cookies == null) {
             throw new ExpiredRefreshTokenException();
         }
@@ -73,6 +96,7 @@ public class AuthServiceImpl implements AuthService {
                 .findFirst()
                 .map(Cookie::getValue)
                 .orElseThrow(ExpiredRefreshTokenException::new);
+
         UUID userIdFromValidToken = refreshTokenService.validate(refreshToken);
 
         User user = userRepository.findById(userIdFromValidToken).orElseThrow(NoResultByIdException::new);

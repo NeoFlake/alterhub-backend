@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -64,7 +65,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Transactional
     public UUID validate(String token) {
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token).orElseThrow(ExpiredRefreshTokenException::new);
-
         verifyTokenRevocationStatus(refreshToken);
 
         return refreshToken.getUserId();
@@ -100,6 +100,10 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             refreshTokenRepository.delete(token);
             throw new ExpiredRefreshTokenException();
         }
+    }
+
+    public Optional<RefreshToken> findByToken(String token) {
+        return refreshTokenRepository.findByToken(token);
     }
 
 }

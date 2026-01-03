@@ -1,5 +1,8 @@
 package com.alterhub.alterhubbackend.service.interfaces;
 
+import com.alterhub.alterhubbackend.entity.RefreshToken;
+
+import java.util.Optional;
 import java.util.UUID;
 
 public interface RefreshTokenService {
@@ -11,5 +14,7 @@ public interface RefreshTokenService {
     void revokedByToken(String token);
 
     void deleteRefreshToken(UUID userId);
+
+    Optional<RefreshToken> findByToken(String token);
 
 }

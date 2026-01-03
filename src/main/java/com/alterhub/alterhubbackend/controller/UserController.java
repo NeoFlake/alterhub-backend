@@ -28,6 +28,11 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
+    @GetMapping(ApiRoutes.COOKIE_STATUT)
+    public ResponseEntity<Map<String, String>> getCookieStatut(@CookieValue(name = "refreshToken", required = false) String refreshToken){
+        return ResponseEntity.ok(Map.of("cookieStatut", authService.getCookieStatut(refreshToken)));
+    }
+
     @PostMapping(ApiRoutes.Users.AUTHENTICATION)
     public ResponseEntity<AuthPayloadDTO> authentication(@RequestBody UserAuthenticationDTO userAuthenticationDTO) {
         AuthResponseDTO response = userService.authentication(userAuthenticationDTO);

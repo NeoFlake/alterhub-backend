@@ -7,6 +7,8 @@ import org.springframework.http.ResponseCookie;
 
 public interface AuthService {
 
+    String getCookieStatut(String refreshToken);
+
     AuthResponseDTO createAuthResponse(UserDTO userDTO, Boolean accessGranted);
 
     AuthResponseDTO refreshToken(HttpServletRequest request);

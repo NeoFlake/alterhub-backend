@@ -61,6 +61,11 @@ public class DeckController {
         return ResponseEntity.ok(deckService.getDecksByHeroId(id, pageable));
     }
 
+    @GetMapping(ApiRoutes.Decks.FIVE_LATEST_CREATED)
+    public ResponseEntity<Page<DeckDTO>> getLast5DecksCreated(Pageable pageable) {
+        return ResponseEntity.ok(deckService.getLast5DecksCreated(pageable));
+    }
+
     @GetMapping(ApiRoutes.Decks.LATEST_CREATED_BY_FACTION_ID)
     public ResponseEntity<DeckDTO> getLastDeckCreatedByFactionId(@PathVariable UUID id) {
         return ResponseEntity.ok(deckService.getLastDeckCreatedByFactionId(id));
@@ -94,6 +99,11 @@ public class DeckController {
     @GetMapping(ApiRoutes.Decks.CREATED_THIS_MONTH)
     public ResponseEntity<Page<DeckDTO>> getDecksCreatedOThisMonth(Pageable pageable) {
         return ResponseEntity.ok(deckService.getDecksCreatedThisMonth(pageable));
+    }
+
+    @GetMapping(ApiRoutes.Decks.FIVE_LATEST_MODIFIED)
+    public ResponseEntity<Page<DeckDTO>> getLast5DecksModified(Pageable pageable) {
+        return ResponseEntity.ok(deckService.getLast5DecksModified(pageable));
     }
 
     @GetMapping(ApiRoutes.Decks.LATEST_MODIFIED_BY_FACTION_ID)

@@ -25,6 +25,8 @@ public interface DeckService {
 
     Page<DeckDTO> getDecksByHeroId(UUID heroId, Pageable pageable);
 
+    Page<DeckDTO> getLast5DecksCreated(Pageable pageable);
+
     DeckDTO getLastDeckCreatedByFactionId(UUID factionId);
 
     Page<DeckDTO> getLast5DecksCreatedByFactionId(UUID factionId, Pageable pageable);
@@ -38,6 +40,8 @@ public interface DeckService {
     Page<DeckDTO> getDecksCreatedThisWeek(Pageable pageable);
 
     Page<DeckDTO> getDecksCreatedThisMonth(Pageable pageable);
+
+    Page<DeckDTO> getLast5DecksModified(Pageable pageable);
 
     DeckDTO getLastDeckModifiedByFactionId(UUID factionId);
 

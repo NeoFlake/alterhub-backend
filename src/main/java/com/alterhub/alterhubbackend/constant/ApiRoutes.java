@@ -74,6 +74,7 @@ public final class ApiRoutes {
         public static final String BY_PLAYER_ID = PLAYERS + SEARCH_BY_ID;
         public static final String BY_FACTION_ID = FACTIONS + SEARCH_BY_ID;
         public static final String BY_HERO_ID = HEROS + SEARCH_BY_ID;
+        public static final String FIVE_LATEST_CREATED = CREATED + FIVE_LATEST;
         public static final String LATEST_CREATED_BY_FACTION_ID = CREATED + LAST + FACTIONS + SEARCH_BY_ID;
         public static final String FIVE_LATEST_CREATED_BY_FACTION_ID = CREATED + FIVE_LATEST + FACTIONS + SEARCH_BY_ID;
         public static final String LATEST_CREATED_BY_HERO_ID = CREATED + LAST + HEROS + SEARCH_BY_ID;
@@ -81,6 +82,7 @@ public final class ApiRoutes {
         public static final String CREATED_TODAY = CREATED + TODAY;
         public static final String CREATED_THIS_WEEK = CREATED + WEEK;
         public static final String CREATED_THIS_MONTH = CREATED + MONTH;
+        public static final String FIVE_LATEST_MODIFIED = MODIFIED + FIVE_LATEST;
         public static final String LATEST_MODIFIED_BY_FACTION_ID = MODIFIED + LAST + FACTIONS + SEARCH_BY_ID;
         public static final String FIVE_LATEST_MODIFIED_BY_FACTION_ID = MODIFIED + FIVE_LATEST + FACTIONS + SEARCH_BY_ID;
         public static final String LATEST_MODIFIED_BY_HERO_ID = MODIFIED + LAST + HEROS + SEARCH_BY_ID;

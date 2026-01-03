@@ -43,7 +43,7 @@ public class DeckServiceImpl implements DeckService {
     private final LocalDate endOfMonthLocalDate = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth());
     // Dans celui-ci, on tape sur le paramètre lastModification qui est en LocalDateTime
     private final LocalDateTime startOfDayLocalDateTime = LocalDate.now().atStartOfDay();
-    private final LocalDateTime endOfDayLocalDateTime   = LocalDateTime.now();
+    private final LocalDateTime endOfDayLocalDateTime = LocalDateTime.now();
     private final LocalDateTime startOfWeekLocalDateTime = LocalDateTime.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
     private final LocalDateTime endOfWeekLocalDateTime = LocalDateTime.now();
     private final LocalDateTime startOfMonthLocalDateTime = LocalDateTime.now().withDayOfMonth(1);
@@ -93,7 +93,7 @@ public class DeckServiceImpl implements DeckService {
     }
 
     public Page<DeckDTO> getDecksByPlayerId(UUID playerId, Pageable pageable) {
-        if(playerId==null){
+        if (playerId == null) {
             throw new BadRequestException();
         }
         Page<Deck> deckPage = deckRepository.findByPlayer_Id(playerId, pageable);
@@ -105,7 +105,7 @@ public class DeckServiceImpl implements DeckService {
     }
 
     public Page<DeckDTO> getDecksByFactionId(UUID factionId, Pageable pageable) {
-        if(factionId==null){
+        if (factionId == null) {
             throw new BadRequestException();
         }
         Page<Deck> deckPage = deckRepository.findByFaction_Id(factionId, pageable);
@@ -117,7 +117,7 @@ public class DeckServiceImpl implements DeckService {
     }
 
     public Page<DeckDTO> getDecksByHeroId(UUID heroId, Pageable pageable) {
-        if(heroId==null){
+        if (heroId == null) {
             throw new BadRequestException();
         }
         Page<Deck> deckPage = deckRepository.findByHero_id(heroId, pageable);
@@ -129,15 +129,24 @@ public class DeckServiceImpl implements DeckService {
     }
 
     public DeckDTO getLastDeckCreatedByFactionId(UUID factionId) {
-        if(factionId==null){
+        if (factionId == null) {
             throw new BadRequestException();
         }
         Deck deck = deckRepository.findFirstByFaction_IdOrderByDateOfCreationDesc(factionId).orElseThrow(NotFindByArgumentException::new);
         return mappingService.mapDeckDTOWithSubObjects(deck, deckCountService.mapCardsWithDeckCount(deck.getCards()));
     }
 
+    public Page<DeckDTO> getLast5DecksCreated(Pageable pageable) {
+        Page<Deck> deckPage = deckRepository.findTop5ByOrderByDateOfCreationDesc(pageable);
+        return new PageImpl<>(mappingService.mapDecksDTOWithSubObjects(
+                deckPage.getContent(), deckCountService.mapDecksObjectWithCardsDeckCounted(deckPage.getContent())),
+                pageable,
+                deckPage.getTotalElements()
+        );
+    }
+
     public Page<DeckDTO> getLast5DecksCreatedByFactionId(UUID factionId, Pageable pageable) {
-        if(factionId==null){
+        if (factionId == null) {
             throw new BadRequestException();
         }
         Page<Deck> deckPage = deckRepository.findTop5ByFaction_IdOrderByDateOfCreationDesc(factionId, pageable);
@@ -149,7 +158,7 @@ public class DeckServiceImpl implements DeckService {
     }
 
     public DeckDTO getLastDeckCreatedByHeroId(UUID heroId) {
-        if(heroId==null){
+        if (heroId == null) {
             throw new BadRequestException();
         }
         Deck deck = deckRepository.findFirstByHero_IdOrderByDateOfCreationDesc(heroId).orElseThrow(NotFindByArgumentException::new);
@@ -157,7 +166,7 @@ public class DeckServiceImpl implements DeckService {
     }
 
     public Page<DeckDTO> getLast5DecksCreatedByHeroId(UUID heroId, Pageable pageable) {
-        if (heroId==null) {
+        if (heroId == null) {
             throw new BadRequestException();
         }
         Page<Deck> deckPage = deckRepository.findTop5ByHero_IdOrderByDateOfCreationDesc(heroId, pageable);
@@ -195,16 +204,25 @@ public class DeckServiceImpl implements DeckService {
         );
     }
 
-    public DeckDTO getLastDeckModifiedByFactionId(UUID factionId){
-        if(factionId==null){
+    public Page<DeckDTO> getLast5DecksModified(Pageable pageable) {
+        Page<Deck> deckPage = deckRepository.findTop5ByOrderByLastModificationDesc(pageable);
+        return new PageImpl<>(mappingService.mapDecksDTOWithSubObjects(
+                deckPage.getContent(), deckCountService.mapDecksObjectWithCardsDeckCounted(deckPage.getContent())),
+                pageable,
+                deckPage.getTotalElements()
+        );
+    }
+
+    public DeckDTO getLastDeckModifiedByFactionId(UUID factionId) {
+        if (factionId == null) {
             throw new BadRequestException();
         }
         Deck deck = deckRepository.findFirstByFaction_IdOrderByLastModificationDesc(factionId).orElseThrow(NotFindByArgumentException::new);
         return mappingService.mapDeckDTOWithSubObjects(deck, deckCountService.mapCardsWithDeckCount(deck.getCards()));
     }
 
-    public Page<DeckDTO> getLast5DecksModifiedByFactionId(UUID factionId, Pageable pageable){
-        if(factionId==null){
+    public Page<DeckDTO> getLast5DecksModifiedByFactionId(UUID factionId, Pageable pageable) {
+        if (factionId == null) {
             throw new BadRequestException();
         }
         Page<Deck> deckPage = deckRepository.findTop5ByFaction_IdOrderByLastModificationDesc(factionId, pageable);
@@ -215,16 +233,16 @@ public class DeckServiceImpl implements DeckService {
         );
     }
 
-    public DeckDTO getLastDeckModifiedByHeroId(UUID heroId){
-        if(heroId==null){
+    public DeckDTO getLastDeckModifiedByHeroId(UUID heroId) {
+        if (heroId == null) {
             throw new BadRequestException();
         }
         Deck deck = deckRepository.findFirstByHero_IdOrderByLastModificationDesc(heroId).orElseThrow(NotFindByArgumentException::new);
         return mappingService.mapDeckDTOWithSubObjects(deck, deckCountService.mapCardsWithDeckCount(deck.getCards()));
     }
 
-    public Page<DeckDTO> getLast5DecksModifiedByHeroId(UUID heroId, Pageable pageable){
-        if(heroId==null){
+    public Page<DeckDTO> getLast5DecksModifiedByHeroId(UUID heroId, Pageable pageable) {
+        if (heroId == null) {
             throw new BadRequestException();
         }
         Page<Deck> deckPage = deckRepository.findTop5ByHero_IdOrderByLastModificationDesc(heroId, pageable);
@@ -235,7 +253,7 @@ public class DeckServiceImpl implements DeckService {
         );
     }
 
-    public Page<DeckDTO> getDecksModifiedThisDay(Pageable pageable){
+    public Page<DeckDTO> getDecksModifiedThisDay(Pageable pageable) {
         Page<Deck> deckPage = deckRepository.findByLastModificationBetweenOrderByLastModificationDesc(startOfDayLocalDateTime, endOfDayLocalDateTime, pageable);
         return new PageImpl<>(mappingService.mapDecksDTOWithSubObjects(
                 deckPage.getContent(), deckCountService.mapDecksObjectWithCardsDeckCounted(deckPage.getContent())),
@@ -244,7 +262,7 @@ public class DeckServiceImpl implements DeckService {
         );
     }
 
-    public Page<DeckDTO> getDecksModifiedThisWeek(Pageable pageable){
+    public Page<DeckDTO> getDecksModifiedThisWeek(Pageable pageable) {
         Page<Deck> deckPage = deckRepository.findByLastModificationBetweenOrderByLastModificationDesc(startOfWeekLocalDateTime, endOfWeekLocalDateTime, pageable);
         return new PageImpl<>(mappingService.mapDecksDTOWithSubObjects(
                 deckPage.getContent(), deckCountService.mapDecksObjectWithCardsDeckCounted(deckPage.getContent())),
@@ -253,7 +271,7 @@ public class DeckServiceImpl implements DeckService {
         );
     }
 
-    public Page<DeckDTO> getDecksModifiedThisMonth(Pageable pageable){
+    public Page<DeckDTO> getDecksModifiedThisMonth(Pageable pageable) {
         Page<Deck> deckPage = deckRepository.findByLastModificationBetweenOrderByLastModificationDesc(startOfMonthLocalDateTime, endOfMonthLocalDateTime, pageable);
         return new PageImpl<>(mappingService.mapDecksDTOWithSubObjects(
                 deckPage.getContent(), deckCountService.mapDecksObjectWithCardsDeckCounted(deckPage.getContent())),
@@ -262,8 +280,8 @@ public class DeckServiceImpl implements DeckService {
         );
     }
 
-    public Page<DeckDTO> getDecksByTagId(UUID tagId, Pageable pageable){
-        if(tagId==null){
+    public Page<DeckDTO> getDecksByTagId(UUID tagId, Pageable pageable) {
+        if (tagId == null) {
             throw new BadRequestException();
         }
         Page<Deck> deckPage = deckRepository.findByTags_Id(tagId, pageable);
@@ -274,8 +292,8 @@ public class DeckServiceImpl implements DeckService {
         );
     }
 
-    public Page<DeckDTO> getDecksByTagIdIn(List<UUID> tagIds, Pageable pageable){
-        if(tagIds==null){
+    public Page<DeckDTO> getDecksByTagIdIn(List<UUID> tagIds, Pageable pageable) {
+        if (tagIds == null) {
             throw new BadRequestException();
         }
         Page<Deck> deckPage = deckRepository.findByTags_IdIn(tagIds, pageable);
@@ -332,17 +350,17 @@ public class DeckServiceImpl implements DeckService {
         }
     }
 
-    public void patchIsParticipantByDeckId(UUID id, Boolean isParticipant){
+    public void patchIsParticipantByDeckId(UUID id, Boolean isParticipant) {
         Deck deckToUpdate = deckRepository.findById(id).orElseThrow(NoResultByIdException::new);
         deckToUpdate.setIsParticipant(isParticipant);
         Deck deckUpdated = deckRepository.save(deckToUpdate);
         mappingService.mapDeckDTOWithSubObjects(deckUpdated, deckCountService.mapCardsWithDeckCount(deckUpdated.getCards()));
     }
 
-    public void patchIsParticipantByDeckIdIn(List<UUID> deckIds, Boolean isParticipant){
+    public void patchIsParticipantByDeckIdIn(List<UUID> deckIds, Boolean isParticipant) {
         List<Deck> decksToUpdate = deckRepository.findByIdIn(deckIds);
-        if(decksToUpdate.isEmpty()){
-           throw new NoResultByIdException();
+        if (decksToUpdate.isEmpty()) {
+            throw new NoResultByIdException();
         }
         List<Deck> deckUpdated = decksToUpdate.stream().peek(deck -> deck.setIsParticipant(isParticipant)).toList();
         List<Deck> decks = deckRepository.saveAll(deckUpdated);

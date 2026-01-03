@@ -25,6 +25,8 @@ public interface DeckRepository extends JpaRepository<Deck, UUID> {
 
     Page<Deck> findByHero_id(UUID heroId, Pageable pageable);
 
+    Page<Deck> findTop5ByOrderByDateOfCreationDesc(Pageable pageable);
+
     Optional<Deck> findFirstByFaction_IdOrderByDateOfCreationDesc(UUID factionId);
 
     Page<Deck> findTop5ByFaction_IdOrderByDateOfCreationDesc(UUID factionId, Pageable pageable);
@@ -32,6 +34,8 @@ public interface DeckRepository extends JpaRepository<Deck, UUID> {
     Optional<Deck> findFirstByHero_IdOrderByDateOfCreationDesc(UUID factionId);
 
     Page<Deck> findTop5ByHero_IdOrderByDateOfCreationDesc(UUID factionId, Pageable pageable);
+
+    Page<Deck> findTop5ByOrderByLastModificationDesc(Pageable pageable);
 
     Optional<Deck> findFirstByFaction_IdOrderByLastModificationDesc(UUID factionId);
 

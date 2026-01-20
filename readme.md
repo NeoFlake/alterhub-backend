@@ -13,6 +13,7 @@ Voici un résumé des actions à effectuer:
 ## 7/ Installer le projet backend
 ## 8/ Préparer le projet backend et la base de donnée
 ## 9/ Lancer l'application
+## 10/ Déploiement de l'application backend
 
 ## 1/ Installer Java 17
 
@@ -81,3 +82,18 @@ Voici un résumé des actions à effectuer:
 - Ouvrir un terminal de commande interne à Visual Studio COde
 - Effectuer l'instruction npm run start
 - Cela aura pour effet de lancer de manière simultanée les deux projets et de rendre accessible l'application sur la route http://localhost:4200
+
+## 10/ Déploiement de l'application backend
+
+Une fois l'application backend développée et testée en local, il est nécessaire de la déployer sur un serveur pour la rendre accessible en production.
+
+- Ouvrir un terminal dans le dossier du projet backend
+- Exécuter la commande mvn clean package qui compile l'application et génère le fichier JAR exécutable
+- Le fichier JAR est généré dans le dossier /target du projet
+- Créer ou modifier le fichier application.properties avec les paramètres de production (URL de la base de données, port, etc.)
+- Se connecter au serveur via SSH
+- Copier le fichier JAR vers le serveur (généralement dans /opt/monapp/ ou /home/user/apps/)
+- Copier également le fichier application.properties de production au même endroit
+- Lancer l'application avec la commande java -jar nom-du-fichier.jar
+- Pour un démarrage automatique au boot du serveur, configurer un service systemd
+- Vérifier que l'application est accessible sur le port configuré et que les endpoints API répondent correctement
